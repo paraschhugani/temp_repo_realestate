@@ -242,10 +242,10 @@ const ScenarioContent = ({ scenario }: { scenario: any }) => {
   const handleAudioToggle = (message: string) => {
     if (playingAudio === message) {
       setPlayingAudio(null)
-      console.log("Pausing audio for:", message)
+
     } else {
       setPlayingAudio(message)
-      console.log("Playing audio for:", message)
+
     }
   }
 

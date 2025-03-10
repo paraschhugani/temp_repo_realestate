@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowRight, Loader2 } from "lucide-react"
@@ -8,117 +8,91 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@clerk/clerk-react"
+import { OnboardingService } from "@/services/onboarding-service"
+import ScriptNotFound from "./script-not-found"
 
-const initialQuestions = [
-  {
-    label: "Agent Name",
-    id: "agentName",
-    question: "Agent Name",
-    type: "text",
-    placeholder: "Enter agent name",
-  },
-  {
-    label: "Introduction",
-    id: "introduction",
-    question: "May I speak with {Customer Name}?",
-    type: "text",
-    placeholder: "May I speak with {Customer Name}?",
-  },
-  {
-    label: "Book a Meeting Acknowledgement",
-    id: "meetingAcknowledgement",
-    question: "Thank you for filling out our 'Book a Meeting' form.",
-    type: "text",
-    placeholder: "Thank you for filling out our 'Book a Meeting' form.",
-  },
-  {
-    label: "Purpose of the Call",
-    id: "callPurpose",
-    question: "I'm calling to collect a few details before your demo. This helps us set the scope and pricing.",
-    type: "text",
-    placeholder: "I'm calling to collect a few details before your demo. This helps us set the scope and pricing.",
-  },
-  {
-    label: "Information Gathering",
-    id: "annualIncome",
-    question: "What is your estimated annual income?",
-    type: "text",
-    placeholder: "What is your estimated annual income?",
-  },
-  {
-    id: "taxYear",
-    question: "Which tax year did you last file?",
-    type: "text",
-    placeholder: "Which tax year did you last file?",
-  },
-  {
-    id: "llcDetails",
-    question: "Do you have an LLC? If so, can you share some details?",
-    type: "textarea",
-    placeholder: "Do you have an LLC? If so, can you share some details?",
-  },
-  {
-    id: "startTimeline",
-    question: "When do you plan to get started?",
-    type: "text",
-    placeholder: "When do you plan to get started?",
-  },
-  {
-    id: "businessInfo",
-    question: "Can you tell me a little about your business?",
-    type: "textarea",
-    placeholder: "Can you tell me a little about your business?",
-  },
-  {
-    label: "Confirmation & Next Steps",
-    id: "confirmation",
-    question:
-      "Thank you. Let me repeat: Your estimated income is [Repeat Income], you filed taxes for the [Repeat Tax Year], you [do/do not] have an LLC, and you're planning to start [insert timeline]. Is that correct?",
-    type: "textarea",
-    placeholder:
-      "Thank you. Let me repeat: Your estimated income is [Repeat Income], you filed taxes for the [Repeat Tax Year], you [do/do not] have an LLC, and you're planning to start [insert timeline]. Is that correct?",
-  },
-  {
-    id: "meetingSchedule",
-    question: "Great. You will meet with [Otto AI Team Member] on [Meeting Date] at [Meeting Time]. Correct?",
-    type: "text",
-    placeholder: "Great. You will meet with [Otto AI Team Member] on [Meeting Date] at [Meeting Time]. Correct?",
-  },
-  {
-    id: "additionalQuestions",
-    question: "Any other questions?",
-    type: "text",
-    placeholder: "Any other questions?",
-  },
-  {
-    label: "Closing the Call",
-    id: "closingCall",
-    question: "Thank you, [Customer Name]. We look forward to speaking with you soon. Have a great day!",
-    type: "text",
-    placeholder: "Thank you, [Customer Name]. We look forward to speaking with you soon. Have a great day!",
-  },
-]
+interface Question {
+  id: string
+  label?: string
+  question: string
+  type: "text" | "textarea"
+  placeholder: string
+}
 
 interface ScriptFormProps {
-  useCase: string;
-  onSubmit?: () => void;
+  useCase: string
+  onSubmit?: () => void
+}
+
+interface ScriptData {
+  id: string
+  industry: string
+  "agent name": string
+  description: string
+  form: Question[]
 }
 
 export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
-  const [questions, setQuestions] = useState(initialQuestions)
+  const [scriptData, setScriptData] = useState<ScriptData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(true)
+  const [isNotFound, setIsNotFound] = useState(false)
   const router = useRouter()
+  const { getToken, isSignedIn } = useAuth()
+
+  useEffect(() => {
+    const fetchScript = async () => {
+      try {
+        const token = await getToken()
+        if (!token) {
+          router.push('/sign-in')
+          return
+        }
+
+        const onboardingService = new OnboardingService(process.env.NEXT_PUBLIC_BACKEND_URL || '')
+        const data = await onboardingService.getScript(useCase, token) as ScriptData
+        
+        if (data) {
+          setScriptData(data)
+        }
+      } catch (error: any) {
+
+        if (error?.response?.status === 401) {
+          router.push('/sign-in')
+        } else if (error?.response?.status === 404) {
+          setIsNotFound(true)
+        }
+      } finally {
+        setIsInitializing(false)
+      }
+    }
+
+    if (isSignedIn) {
+      fetchScript()
+    } 
+    else {
+      router.push('/sign-in')
+    }
+  }, [useCase, getToken, router, isSignedIn])
+
+  if(isNotFound) {
+    return <ScriptNotFound />
+  }
+
 
   const handleInputChange = (index: number, value: string) => {
-    const newQuestions = [...questions]
-    newQuestions[index].question = value
-    setQuestions(newQuestions)
+    if (!scriptData) return
+
+    const newForm = [...scriptData.form]
+    newForm[index].question = value
+    setScriptData({ ...scriptData, form: newForm })
   }
 
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      console.log("Form data:", questions)
+      // TODO: Add API call to save script
       await new Promise((resolve) => setTimeout(resolve, 1500))
       if (onSubmit) {
         onSubmit()
@@ -134,24 +108,45 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
 
   const formatUseCase = (str: string) => {
     if (!str) return ""
- 
     return str
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ")
   }
 
+  if (isInitializing) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (isNotFound) {
+    return <ScriptNotFound />
+  }
+
+  if (!scriptData) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <p className="text-gray-500">No script data available.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-3xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <h1 className="text-3xl font-extrabold text-center mb-2">Configure Your AI Agent Script</h1>
-        <h2 className="text-lg font-semibold text-center text-gray-600 mb-2">UseCase: {formatUseCase(useCase)}</h2>
+        <h2 className="text-lg font-semibold text-center text-gray-600 mb-2">
+          {scriptData["agent name"]} - {formatUseCase(useCase)}
+        </h2>
         <p className="text-center text-gray-600 text-sm mb-8">
-          Customize the questions your AI agent will ask during automated voice calls.
+          {scriptData.description}
         </p>
 
         <div className="bg-white shadow-md rounded-lg p-6 mb-8 space-y-6">
-          {questions.map((question, index) => (
+          {scriptData.form.map((question, index) => (
             <div key={question.id} className={question.label ? "mt-2" : ""}>
               {question.label && (
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">{question.label}</h3>
