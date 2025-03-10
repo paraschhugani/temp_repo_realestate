@@ -1,6 +1,7 @@
-    import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useUser, useClerk, useAuth } from '@clerk/clerk-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axios from 'axios';
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -10,15 +11,31 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FiUser, FiLogOut } from 'react-icons/fi';
+import { userService } from '@/services/userService';
 
 const UserAvatar = () => {
   const { user } = useUser();
   const { getToken } = useAuth();
+  
   useEffect(() => {
-   const token = getToken();
- console.log(token);
-    console.log(token);
-  }, []);
+    const fetchProtectedData = async () => {
+      try {
+        // const token = await getToken();
+        // console.log('Token:', token);
+        
+        // const userUID = user?.id;
+        // console.log('User UID:', userUID);
+        
+        // const data = await userService.checkSignInStatus(token || '');
+        // console.log('Response data:', data);
+      } catch (error) {
+        console.error('Error fetching protected data:', error);
+      }
+    };
+    
+    fetchProtectedData();
+  }, [getToken, user]);
+  
   const { signOut } = useClerk();
 
   return (
