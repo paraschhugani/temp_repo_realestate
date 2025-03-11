@@ -2,8 +2,6 @@ import axios from "axios";
 import { StorageService, scriptFormKey } from "@/services/storage-service";
 export class OnboardingService {
     baseURL: string;
-   
-
     constructor(baseUrl: string){
         this.baseURL = baseUrl;
         axios.defaults.headers.common['Content-Type'] = 'application/json';

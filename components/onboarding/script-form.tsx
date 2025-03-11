@@ -197,7 +197,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
           <Button 
             onClick={handleSubmit} 
             disabled={isLoading} 
-            className={`bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base group transition-all duration-300 ease-in-ou ${isLoading ? 'cursor-not-allowed' : ''}`}
+            className={`bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base group transition-all duration-300 ease-in-out ${isLoading ? 'cursor-not-allowed' : ''}`}
           >
             {isLoading ? (
               <>
