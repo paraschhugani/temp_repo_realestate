@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@clerk/clerk-react"
 import { OnboardingService } from "@/services/onboarding-service"
 import ScriptNotFound from "./script-not-found"
+import { scriptFormKey, StorageService } from "@/services/storage-service"
 
 interface Question {
   id: string
@@ -39,24 +40,38 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const [isInitializing, setIsInitializing] = useState(true)
   const [isNotFound, setIsNotFound] = useState(false)
   const router = useRouter()
-  const { getToken, isSignedIn } = useAuth()
+  const { getToken, isSignedIn, isLoaded } = useAuth()
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchScript = async () => {
       try {
+      
+        if (!isLoaded) return
+
+  
+        if (isLoaded && !isSignedIn) {
+          router.push('/sign-in')
+          return
+        }
+
         const token = await getToken()
         if (!token) {
-          router.push('/sign-in')
+          if (isMounted) {
+            router.push('/sign-in')
+          }
           return
         }
 
         const onboardingService = new OnboardingService(process.env.NEXT_PUBLIC_BACKEND_URL || '')
         const data = await onboardingService.getScript(useCase, token) as ScriptData
         
-        if (data) {
+        if (data && isMounted) {
           setScriptData(data)
         }
       } catch (error: any) {
+        if (!isMounted) return
 
         if (error?.response?.status === 401) {
           router.push('/sign-in')
@@ -64,17 +79,18 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
           setIsNotFound(true)
         }
       } finally {
-        setIsInitializing(false)
+        if (isMounted) {
+          setIsInitializing(false)
+        }
       }
     }
 
-    if (isSignedIn) {
-      fetchScript()
-    } 
-    else {
-      router.push('/sign-in')
+    fetchScript()
+
+    return () => {
+      isMounted = false
     }
-  }, [useCase, getToken, router, isSignedIn])
+  }, [useCase, getToken, router, isSignedIn, isLoaded])
 
   if(isNotFound) {
     return <ScriptNotFound />
@@ -92,11 +108,11 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      // TODO: Add API call to save script
       await new Promise((resolve) => setTimeout(resolve, 1500))
       if (onSubmit) {
         onSubmit()
       } else {
+        StorageService.setItem(scriptFormKey, JSON.stringify(scriptData))
         router.push(`/launch/${useCase}/integration`)
       }
     } catch (err) {

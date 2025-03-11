@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { StorageService, scriptFormKey } from "@/services/storage-service";
 export class OnboardingService {
     baseURL: string;
    
@@ -12,6 +12,11 @@ export class OnboardingService {
 
     async getScript(useCaseID: string, token: string) {
        try{
+        const scriptForm = StorageService.getItem(scriptFormKey)
+        if (scriptForm) {
+            return JSON.parse(scriptForm)
+        }
+        // else get it from the server
         const response = await axios.get(`${this.baseURL}/scripts/${useCaseID}`,
             {
                 headers: {
@@ -19,7 +24,6 @@ export class OnboardingService {
                 }
             }
         );
-        console.log(response.data)
         return response.data ;
        } catch (error: any) {
         console.error('Error in getScript:', error);

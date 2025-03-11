@@ -3,35 +3,33 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import Image from "next/image"
+
 import { ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-import googleCalendarSvg from "@/assets/svg/google-calendar.svg"
-import calComSvg from "@/assets/svg/cal-com.svg"
-import calendlySvg from "@/assets/svg/calendly.svg"
+import { GoogleCalendar, CalCom, Calendly } from "@/assets/svg/svgs"
 
 interface Provider {
   id: string
   name: string
-  logo: string
+  logo: () => React.JSX.Element
 }
 
 const providers: Provider[] = [
   {
     id: "google-calendar",
     name: "Google Calendar",
-    logo: googleCalendarSvg,
+    logo: GoogleCalendar,
   },
   {
     id: "cal-com",
     name: "Cal.com",
-    logo: calComSvg,
+    logo: CalCom,
   },
   {
     id: "calendly",
     name: "Calendly",
-    logo: calendlySvg,
+    logo: Calendly,
   },
 ]
 
@@ -89,13 +87,7 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
             >
               <div className="flex flex-col items-center">
                 <div className="w-32 h-16 mb-4 flex items-center justify-center">
-                  <Image
-                    src={provider.logo || "/placeholder.svg"}
-                    alt={`${provider.name} logo`}
-                    width={120}
-                    height={30}
-                    className="max-w-full max-h-full object-contain"
-                  />
+                  <provider.logo />
                 </div>
                 <span className="text-lg font-medium text-gray-900">{provider.name}</span>
               </div>

@@ -209,7 +209,7 @@ const FlowDiagram = ({ activeScenario }: { activeScenario: string }) => {
         maxZoom={1.5}
       >
         <Controls />
-        <MiniMap />
+        {/* <MiniMap /> */}
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </div>

@@ -1,10 +1,13 @@
-"use client"
 
-import { use } from "react"
+
 import { ScriptForm } from "@/components/onboarding/script-form"
 
-export default function FormPage({ params }: { params: Promise<{ useCase: string }> }) {
-  const resolvedParams = use(params)
+interface FormPageProps {
+  params: Promise<{ useCase: string }> | { useCase: string }
+}
+
+  export default async function FormPage({ params }: FormPageProps) {
+  const resolvedParams = await params
   const { useCase } = resolvedParams
 
   return (
