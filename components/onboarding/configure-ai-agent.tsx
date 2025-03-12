@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { AIModelService } from "@/services/ai-model-service"
 
 const NODE_WIDTH = 200
 const NODE_HEIGHT = 100
@@ -219,6 +220,9 @@ const FlowDiagram = ({ activeScenario }: { activeScenario: string }) => {
 const ScenarioContent = ({ scenario }: { scenario: any }) => {
   const [visibleMessages, setVisibleMessages] = useState(0)
   const [playingAudio, setPlayingAudio] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<string | null>(null)
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
+  const aiModelService = useMemo(() => new AIModelService(), [])
   const animatedRef = useRef(false)
 
   useEffect(() => {
@@ -239,13 +243,55 @@ const ScenarioContent = ({ scenario }: { scenario: any }) => {
     }
   }, [scenario.content.length])
 
-  const handleAudioToggle = (message: string) => {
+  // Stop audio when component unmounts
+  useEffect(() => {
+    return () => {
+      if (audioElement) {
+        aiModelService.stopAudio(audioElement);
+      }
+    };
+  }, [audioElement, aiModelService]);
+
+  const handleAudioToggle = async (message: string) => {
+    // If already playing this message, stop it
     if (playingAudio === message) {
-      setPlayingAudio(null)
-
-    } else {
-      setPlayingAudio(message)
-
+      if (audioElement) {
+        aiModelService.stopAudio(audioElement);
+        setAudioElement(null);
+      }
+      setPlayingAudio(null);
+      return;
+    }
+    
+    // If playing a different message, stop it first
+    if (audioElement) {
+      aiModelService.stopAudio(audioElement);
+      setAudioElement(null);
+    }
+    
+    // Start loading state
+    setIsLoading(message);
+    
+    try {
+      // Get audio blob from API
+      const audioBlob = await aiModelService.textToSpeech(message);
+      
+      // Play the audio
+      const newAudioElement = await aiModelService.playAudio(audioBlob);
+      
+      // Set the current playing audio
+      setAudioElement(newAudioElement);
+      setPlayingAudio(message);
+      
+      // Set up ended event to reset state
+      newAudioElement.addEventListener('ended', () => {
+        setPlayingAudio(null);
+        setAudioElement(null);
+      });
+    } catch (error) {
+      console.error('Failed to play audio:', error);
+    } finally {
+      setIsLoading(null);
     }
   }
 
@@ -282,7 +328,9 @@ const ScenarioContent = ({ scenario }: { scenario: any }) => {
                               className="p-0.5 h-auto hover:bg-blue-200 transition-colors duration-200"
                               onClick={() => handleAudioToggle(msg.message)}
                             >
-                              {playingAudio === msg.message ? (
+                              {isLoading === msg.message ? (
+                                <Loader2 className="h-3 w-3 text-blue-500 animate-spin" />
+                              ) : playingAudio === msg.message ? (
                                 <Pause className="h-3 w-3 text-blue-500" />
                               ) : (
                                 <Play className="h-3 w-3 text-blue-500" />
@@ -290,7 +338,13 @@ const ScenarioContent = ({ scenario }: { scenario: any }) => {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{playingAudio === msg.message ? "Pause" : "Play"} audio</p>
+                            <p>
+                              {isLoading === msg.message 
+                                ? "Loading audio..." 
+                                : playingAudio === msg.message 
+                                  ? "Pause" 
+                                  : "Play"} audio
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
