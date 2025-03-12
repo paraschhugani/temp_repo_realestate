@@ -47,34 +47,35 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
 
     const fetchScript = async () => {
       try {
-      
-        if (!isLoaded) return
-
-  
+        if (!isLoaded) return 
         if (isLoaded && !isSignedIn) {
-          router.push('/sign-in')
+          router.push('/sign-in?redirect_url=/launch/' + useCase + '/form')
           return
         }
 
-        const token = await getToken()
-        if (!token) {
-          if (isMounted) {
-            router.push('/sign-in')
-          }
-          return
-        }
-
+        const token = await getToken()     
         const onboardingService = new OnboardingService(process.env.NEXT_PUBLIC_BACKEND_URL || '')
-        const data = await onboardingService.getScript(useCase, token) as ScriptData
+        const response = await onboardingService.getScript(useCase, token ?? '')
         
+        let data: ScriptData
+        if (typeof response === 'string') {
+          data = JSON.parse(response) as ScriptData
+        } else {
+          data = response as ScriptData
+        }
+       
         if (data && isMounted) {
-          setScriptData(data)
+          if (!data.form || !Array.isArray(data.form)) {
+            setScriptData({...data, form: []})
+          } else {
+            setScriptData(data)
+          }
         }
       } catch (error: any) {
         if (!isMounted) return
 
         if (error?.response?.status === 401) {
-          router.push('/sign-in')
+          router.push('/sign-in?redirect_url=/launch/' + useCase + '/form')
         } else if (error?.response?.status === 404) {
           setIsNotFound(true)
         }
@@ -91,11 +92,6 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       isMounted = false
     }
   }, [useCase, getToken, router, isSignedIn, isLoaded])
-
-  if(isNotFound) {
-    return <ScriptNotFound />
-  }
-
 
   const handleInputChange = (index: number, value: string) => {
     if (!scriptData) return
@@ -130,7 +126,8 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       .join(" ")
   }
 
-  if (isInitializing) {
+  // Loading state
+  if (isInitializing || isLoading || !scriptData) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -138,22 +135,24 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
     )
   }
 
+  // Not found state
   if (isNotFound) {
     return <ScriptNotFound />
   }
 
-  if (!scriptData) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <p className="text-gray-500">No script data available.</p>
-      </div>
-    )
-  }
+
+
 
   return (
     <div className="max-w-3xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <h1 className="text-3xl font-extrabold text-center mb-2">Configure Your AI Agent Script</h1>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-3xl font-extrabold text-center mb-2">
+          Configure Your AI Agent Script
+        </h1>
         <h2 className="text-lg font-semibold text-center text-gray-600 mb-2">
           {scriptData["agent name"]} - {formatUseCase(useCase)}
         </h2>
@@ -162,42 +161,55 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
         </p>
 
         <div className="bg-white shadow-md rounded-lg p-6 mb-8 space-y-6">
-          {scriptData.form.map((question, index) => (
-            <div key={question.id} className={question.label ? "mt-2" : ""}>
-              {question.label && (
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">{question.label}</h3>
-              )}
-              <Label htmlFor={question.id} className="block text-sm font-medium text-gray-700 mb-1">
-                {question.label ? null : `Question ${index + 1}`}
-              </Label>
-              {question.type === "textarea" ? (
-                <Textarea
-                  id={question.id}
-                  value={question.question}
-                  onChange={(e) => handleInputChange(index, e.target.value)}
-                  placeholder={question.placeholder}
-                  className="w-full mt-1"
-                  rows={4}
-                />
-              ) : (
-                <Input
-                  id={question.id}
-                  type="text"
-                  value={question.question}
-                  onChange={(e) => handleInputChange(index, e.target.value)}
-                  placeholder={question.placeholder}
-                  className="w-full mt-1"
-                />
-              )}
-            </div>
-          ))}
+          {scriptData.form && Array.isArray(scriptData.form) ? (
+            scriptData.form.map((question, index) => (
+              <div key={question.id || index} className={question.label ? "mt-2" : ""}>
+                {question.label && (
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    {question.label}
+                  </h3>
+                )}
+                <Label 
+                  htmlFor={question.id} 
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {question.label ? null : `Question ${index + 1}`}
+                </Label>
+                {question.type === "textarea" ? (
+                  <Textarea
+                    id={question.id}
+                    value={question.question}
+                    onChange={(e) => handleInputChange(index, e.target.value)}
+                    placeholder={question.placeholder}
+                    className="w-full mt-1"
+                    rows={4}
+                  />
+                ) : (
+                  <Input
+                    id={question.id}
+                    type="text"
+                    value={question.question}
+                    onChange={(e) => handleInputChange(index, e.target.value)}
+                    placeholder={question.placeholder}
+                    className="w-full mt-1"
+                  />
+                )}
+              </div>
+            ))
+          ) : (
+            <p>No form questions available.</p>
+          )}
         </div>
 
         <div className="mt-8 flex justify-end">
           <Button 
             onClick={handleSubmit} 
             disabled={isLoading} 
-            className={`bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base group transition-all duration-300 ease-in-out ${isLoading ? 'cursor-not-allowed' : ''}`}
+            className={`
+              bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base 
+              group transition-all duration-300 ease-in-out 
+              ${isLoading ? 'cursor-not-allowed' : ''}
+            `}
           >
             {isLoading ? (
               <>
