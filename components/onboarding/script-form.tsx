@@ -3,22 +3,76 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowRight, Loader2 } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+import { Loader2 } from "lucide-react"
+import { ScriptEditor } from "@/components/script-editor/script-editor"
 import { useAuth } from "@clerk/clerk-react"
 import { OnboardingService } from "@/services/onboarding-service"
 import ScriptNotFound from "./script-not-found"
 import { scriptFormKey, StorageService } from "@/services/storage-service"
 
-interface Question {
+// Define proper TypeScript interfaces for our data structures
+interface ScriptField {
   id: string
   label?: string
   question: string
-  type: "text" | "textarea"
+  type: string
   placeholder: string
+  category?: string
+  required?: boolean
+}
+
+// Internal Script format
+interface Script {
+  id: string
+  industry: string
+  name: string
+  description: string
+  fields: ScriptField[]
+}
+
+// Editor Script format (used by ScriptEditor component)
+interface EditorScript {
+  id: string
+  industry: string
+  "agent name": string
+  description: string
+  form: ScriptField[]
+}
+
+interface Message {
+  speaker: string
+  content: string
+  fieldId?: string
+  placeholder?: string
+}
+
+interface Step {
+  id: string
+  messages: Message[]
+  next?: string[]
+}
+
+interface Scenario {
+  id: string
+  title: string
+  content?: Message[]
+  tabName?: string
+  description?: string
+  steps: Step[]
+}
+
+interface Scenarios {
+  [key: string]: Scenario
+}
+
+// Backend response type
+interface ScriptResponse {
+  id: string
+  name: string
+  description: string
+  industry: string
+  fields: ScriptField[]
+  scenarios: Scenario[]
 }
 
 interface ScriptFormProps {
@@ -26,16 +80,9 @@ interface ScriptFormProps {
   onSubmit?: () => void
 }
 
-interface ScriptData {
-  id: string
-  industry: string
-  "agent name": string
-  description: string
-  form: Question[]
-}
-
 export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
-  const [scriptData, setScriptData] = useState<ScriptData | null>(null)
+  const [scriptData, setScriptData] = useState<Script | null>(null)
+  const [scenarios, setScenarios] = useState<Scenario[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isInitializing, setIsInitializing] = useState(true)
   const [isNotFound, setIsNotFound] = useState(false)
@@ -47,35 +94,48 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
 
     const fetchScript = async () => {
       try {
-        if (!isLoaded) return 
+        if (!isLoaded) return
         if (isLoaded && !isSignedIn) {
-          router.push('/sign-in?redirect_url=/launch/' + useCase + '/form')
+          router.push(`/sign-in?redirect_url=/launch/${useCase}/form`)
           return
         }
 
-        const token = await getToken()     
-        const onboardingService = new OnboardingService(process.env.NEXT_PUBLIC_BACKEND_URL || '')
-        const response = await onboardingService.getScript(useCase, token ?? '')
-        
-        let data: ScriptData
-        if (typeof response === 'string') {
-          data = JSON.parse(response) as ScriptData
+        const token = await getToken()
+        const onboardingService = new OnboardingService(
+          process.env.NEXT_PUBLIC_BACKEND_URL || ""
+        )
+    
+        const response = await onboardingService.getScript(useCase, token ?? "");
+        let data: ScriptResponse
+        if (typeof response === "string") {
+          data = JSON.parse(response)
         } else {
-          data = response as ScriptData
+          data = response
         }
-       
+
         if (data && isMounted) {
-          if (!data.form || !Array.isArray(data.form)) {
-            setScriptData({...data, form: []})
+          // Convert the response to our Script format
+          const formattedScript: Script = {
+            id: data.id,
+            industry: data.industry,
+            name: data.name,
+            description: data.description,
+            fields: data.fields || []
+          }
+          setScriptData(formattedScript)
+          
+          // Set scenarios directly as they're already in the correct format
+          if (Array.isArray(data.scenarios)) {
+            setScenarios(data.scenarios)
           } else {
-            setScriptData(data)
+            setScenarios([])
           }
         }
       } catch (error: any) {
         if (!isMounted) return
 
         if (error?.response?.status === 401) {
-          router.push('/sign-in?redirect_url=/launch/' + useCase + '/form')
+          router.push(`/sign-in?redirect_url=/launch/${useCase}/form`)
         } else if (error?.response?.status === 404) {
           setIsNotFound(true)
         }
@@ -93,22 +153,64 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
     }
   }, [useCase, getToken, router, isSignedIn, isLoaded])
 
-  const handleInputChange = (index: number, value: string) => {
-    if (!scriptData) return
-
-    const newForm = [...scriptData.form]
-    newForm[index].question = value
-    setScriptData({ ...scriptData, form: newForm })
+  const convertToEditorScript = (script: Script): EditorScript => {
+    return {
+      id: script.id,
+      industry: script.industry,
+      "agent name": script.name,
+      description: script.description,
+      form: script.fields
+    }
   }
 
-  const handleSubmit = async () => {
+  const handleSave = (updatedScript: EditorScript, updatedScenarios: any): void => {
+   
+    const formattedScript: Script = {
+      id: updatedScript.id,
+      industry: updatedScript.industry,
+      name: updatedScript["agent name"],
+      description: updatedScript.description,
+      fields: updatedScript.form
+    }
+    
+    // Update local state
+    setScriptData(formattedScript)
+    
+    // Convert scenarios to the format we're using internally (array)
+    let scenariosArray: Scenario[] = []
+    if (updatedScenarios) {
+      if (Array.isArray(updatedScenarios)) {
+        scenariosArray = updatedScenarios
+      } else {
+        // If it's an object of scenarios, convert to array
+        scenariosArray = Object.values(updatedScenarios) as Scenario[]
+      }
+    }
+    setScenarios(scenariosArray)
+
+    // Save to local storage
+    const dataToSave = {
+      script: formattedScript,
+      scenarios: scenariosArray
+    }
+    StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave))
+  }
+
+  const handleSubmit = async (): Promise<void> => {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      if (scriptData && scenarios) {
+        // Save current state before proceeding
+        const dataToSave = {
+          script: scriptData,
+          scenarios: scenarios
+        }
+        StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave))
+      }
+
       if (onSubmit) {
         onSubmit()
       } else {
-        StorageService.setItem(scriptFormKey, JSON.stringify(scriptData))
         router.push(`/launch/${useCase}/integration`)
       }
     } catch (err) {
@@ -118,7 +220,32 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
     }
   }
 
-  const formatUseCase = (str: string) => {
+  // Add a function to load data from local storage
+  useEffect(() => {
+    const loadSavedData = () => {
+      const savedData = StorageService.getItem(scriptFormKey)
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData)
+          if (parsedData.script) {
+            setScriptData(parsedData.script)
+          }
+          if (parsedData.scenarios) {
+            setScenarios(Array.isArray(parsedData.scenarios) ? parsedData.scenarios : Object.values(parsedData.scenarios))
+          }
+        } catch (error) {
+          console.error('Error parsing saved data:', error)
+        }
+      }
+    }
+
+    // Try to load saved data if we don't have data yet
+    if (!scriptData || !scenarios) {
+      loadSavedData()
+    }
+  }, [])
+
+  const formatUseCase = (str: string): string => {
     if (!str) return ""
     return str
       .split("-")
@@ -126,105 +253,50 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       .join(" ")
   }
 
-  // Loading state
-  if (isInitializing || isLoading || !scriptData) {
+  if (isInitializing || isLoading || !scriptData || !scenarios) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
       </div>
     )
   }
 
-  // Not found state
   if (isNotFound) {
     return <ScriptNotFound />
   }
 
-
-
-
   return (
-    <div className="max-w-3xl mx-auto">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-3xl font-extrabold text-center mb-2">
-          Configure Your AI Agent Script
-        </h1>
-        <h2 className="text-lg font-semibold text-center text-gray-600 mb-2">
-          {scriptData["agent name"]} - {formatUseCase(useCase)}
-        </h2>
-        <p className="text-center text-gray-600 text-sm mb-8">
-          {scriptData.description}
-        </p>
+    <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {scriptData && scenarios && (
+            <>
+              <h1 className="text-3xl font-extrabold text-center mb-2">
+                Configure Your AI Agent Script
+              </h1>
+              <h2 className="text-lg font-semibold text-center text-gray-600 mb-2">
+                {scriptData.name} - {formatUseCase(useCase)}
+              </h2>
+              <p className="text-center text-gray-600 text-sm mb-8">
+                {scriptData.description}
+              </p>
 
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8 space-y-6">
-          {scriptData.form && Array.isArray(scriptData.form) ? (
-            scriptData.form.map((question, index) => (
-              <div key={question.id || index} className={question.label ? "mt-2" : ""}>
-                {question.label && (
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                    {question.label}
-                  </h3>
-                )}
-                <Label 
-                  htmlFor={question.id} 
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  {question.label ? null : `Question ${index + 1}`}
-                </Label>
-                {question.type === "textarea" ? (
-                  <Textarea
-                    id={question.id}
-                    value={question.question}
-                    onChange={(e) => handleInputChange(index, e.target.value)}
-                    placeholder={question.placeholder}
-                    className="w-full mt-1"
-                    rows={4}
-                  />
-                ) : (
-                  <Input
-                    id={question.id}
-                    type="text"
-                    value={question.question}
-                    onChange={(e) => handleInputChange(index, e.target.value)}
-                    placeholder={question.placeholder}
-                    className="w-full mt-1"
-                  />
-                )}
+              <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+                <ScriptEditor
+                  script={convertToEditorScript(scriptData)}
+                  scenarios={scenarios}
+                  onSave={handleSave}
+                  onContinue={handleSubmit}
+                />
               </div>
-            ))
-          ) : (
-            <p>No form questions available.</p>
+            </>
           )}
-        </div>
-
-        <div className="mt-8 flex justify-end">
-          <Button 
-            onClick={handleSubmit} 
-            disabled={isLoading} 
-            className={`
-              bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base 
-              group transition-all duration-300 ease-in-out 
-              ${isLoading ? 'cursor-not-allowed' : ''}
-            `}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                Save and Continue
-                <ArrowRight className="ml-2 h-5 w-5 transform transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
-              </>
-            )}
-          </Button>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   )
-} 
+}

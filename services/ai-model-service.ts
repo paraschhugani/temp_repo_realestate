@@ -39,7 +39,6 @@ export class AIModelService {
       try {
         // Create a URL for the blob
         const audioUrl = URL.createObjectURL(audioBlob);
-         console.log("audioUrl", audioUrl);
         // Create an audio element
         const audioElement = new Audio(audioUrl);
         

@@ -8,7 +8,8 @@ import { ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 import { GoogleCalendar, CalCom, Calendly } from "@/assets/svg/svgs"
-
+import { IntegrationService } from "@/services/integration-service"
+import { useAuth } from "@clerk/nextjs"
 interface Provider {
   id: string
   name: string
@@ -17,7 +18,7 @@ interface Provider {
 
 const providers: Provider[] = [
   {
-    id: "google-calendar",
+    id: "google_calendar",
     name: "Google Calendar",
     logo: GoogleCalendar,
   },
@@ -42,6 +43,7 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
   const [selectedProvider, setSelectedProvider] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
+  const { getToken, isSignedIn,userId } = useAuth();
 
   const handleProviderSelect = (providerId: string) => {
     setSelectedProvider(providerId)
@@ -51,11 +53,18 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
     if (!selectedProvider) return
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      if (onComplete) {
-        onComplete()
-      } else {
-        router.push(`/launch/${useCase}/configure`)
+      // await new Promise((resolve) => setTimeout(resolve, 1500))
+      // if (onComplete) {
+      //   onComplete()
+      // } else {
+      //   router.push(`/launch/${useCase}/configure`)
+      // }
+      const token = await getToken();
+      const integrationService = new IntegrationService();
+      const data = await integrationService.initializeIntegration(userId  ?? "", token ?? "", selectedProvider, "localhost:3000");
+      const redirectUrl = data.data.redirect_url;
+      if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
       }
     } catch (err) {
       console.error("Failed to save integration:", err)
