@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { GoogleCalendar, CalCom, Calendly } from "@/assets/svg/svgs"
 import { IntegrationService } from "@/services/integration-service"
 import { useAuth } from "@clerk/nextjs"
-import { toastService } from "@/utils/toast-service"
+import { toastService } from "@/services/toast-service"
 
 interface Provider {
   id: string

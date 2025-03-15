@@ -7,11 +7,6 @@ import Footer from "@/components/footer"
 import { Toaster } from "sonner"
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from '@clerk/nextjs'
 
 const inter = Inter({ subsets: ["latin"] })
