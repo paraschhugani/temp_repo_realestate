@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import { Toaster } from "sonner"
 import {
   ClerkProvider,
   SignInButton,
@@ -35,7 +36,19 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-       
+        <Toaster 
+          position="top-right"
+          expand={true}
+          richColors
+          closeButton
+          toastOptions={{
+            duration: 5000,
+            style: {
+              border: '1px solid',
+              borderRadius: '0.5rem',
+            },
+          }}
+        />
       </body>
     </html>
     </ClerkProvider>

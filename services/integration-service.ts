@@ -31,10 +31,10 @@ export class IntegrationService {
     }
 
 
-    async checkIntegrationConnection(userUID : string, token : string, integrationId : string) {
+    async checkIntegrationConnection(userUID : string, token : string, appName : string) {
         const form = new FormData();
         form.append("user_id", userUID);
-        form.append("integration_id", integrationId);
+        form.append("app_name", appName);
         const response = await axios.post(`${this.baseURL}/integration/check-connection`, form, {
             headers: {
                 Authorization: `Bearer ${token}`,

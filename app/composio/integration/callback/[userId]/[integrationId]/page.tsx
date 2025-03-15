@@ -1,14 +1,19 @@
 "use client"
 
 import { IntegrationService } from "@/services/integration-service";
-import router, { useParams } from "next/navigation";
+import {useParams, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 
 export default function CallbackPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  
   const userId = params.userId as string;
   const integrationId = params.integrationId as string;
+  
+  const appName = searchParams.get('appName');
+  
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
@@ -24,18 +29,18 @@ export default function CallbackPage() {
     const fetchIntegration = async () => {
       setIsLoading(true);
       const integrationService = new IntegrationService();
-      const data = await integrationService.checkIntegrationConnection(userId, token ?? "", integrationId);
+      const data =  await integrationService.checkIntegrationConnection(userId, token ?? "", appName ?? "");
       setIsConnected(data.data.is_connected);
       setIsLoading(false);
       
       if (data.data.is_connected) {
         setTimeout(() => {
-        //  router.push(`/launch/${useCase}/configure`);
+          window.close();
         }, 3000);
       }
     };
     fetchIntegration();
-  }, []);
+  }, [token, userId, integrationId]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -65,19 +70,31 @@ export default function CallbackPage() {
               <h2 className={`text-xl font-semibold mb-2 ${
                 isConnected ? 'text-green-600' : 'text-red-600'
               }`}>
-                {isConnected ? 'Successfully Connected!' : 'Connection Failed'}
+                {isConnected ? `Successfully Connected to ${appName || 'Integration'}!` : 'Connection Failed'}
               </h2>
-              <p className="text-gray-500">
+              <p className="text-gray-500 mb-2">
                 {isConnected 
                   ? 'This window will close automatically in a few seconds...' 
                   : 'Please try again or contact support if the issue persists.'}
               </p>
+              
+              {isConnected && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-blue-700 font-medium">
+                    Please return to the previous tab and click <span className="font-bold">Next</span> to proceed with configuring your AI agent
+                  </p>
+                </div>
+              )}
             </>
           )}
           
-          {/* <div className="mt-6 text-sm text-gray-500">
+          {/* Debug information - comment out in production */}
+          {/* <div className="mt-6 text-sm text-gray-500 border-t pt-4">
+            <p>App Name: {appName}</p>
             <p>Integration ID: {integrationId}</p>
             <p>User ID: {userId}</p>
+            <p>Connected Account ID: {connectedAccountId}</p>
+            <p>Status: {status}</p>
           </div> */}
         </div>
       </div>

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { GoogleCalendar, CalCom, Calendly } from "@/assets/svg/svgs"
 import { IntegrationService } from "@/services/integration-service"
 import { useAuth } from "@clerk/nextjs"
+import { toastService } from "@/utils/toast-service"
+
 interface Provider {
   id: string
   name: string
@@ -18,10 +20,10 @@ interface Provider {
 
 const providers: Provider[] = [
   {
-    id: "google_calendar",
+    id: "googlecalendar",
     name: "Google Calendar",
     logo: GoogleCalendar,
-  },
+  }, 
   {
     id: "cal-com",
     name: "Cal.com",
@@ -47,29 +49,48 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
 
   const handleProviderSelect = (providerId: string) => {
     setSelectedProvider(providerId)
+    handleIntegrationConnect(providerId)
   }
 
-  const handleNextStep = async () => {
-    if (!selectedProvider) return
+  const handleIntegrationConnect = async (providerId: string) => {
+    if (!providerId) return
     setIsLoading(true)
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 1500))
-      // if (onComplete) {
-      //   onComplete()
-      // } else {
-      //   router.push(`/launch/${useCase}/configure`)
-      // }
       const token = await getToken();
       const integrationService = new IntegrationService();
-      const data = await integrationService.initializeIntegration(userId  ?? "", token ?? "", selectedProvider, "localhost:3000");
+      const data = await integrationService.initializeIntegration(userId ?? "", token ?? "", providerId, "localhost:3000");
       const redirectUrl = data.data.redirect_url;
       if (redirectUrl) {
         window.open(redirectUrl, '_blank');
+        toastService.info("Please complete the integration in the new window");
       }
     } catch (err) {
       console.error("Failed to save integration:", err)
+      toastService.error("Failed to initialize integration. Please try again.");
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleNextStep = async () => {
+    try {
+      setIsLoading(true);
+      const token = await getToken();
+      const integrationService = new IntegrationService();
+      const data = await integrationService.checkIntegrationConnection(userId ?? "", token ?? "", selectedProvider);
+      if(data.data.is_connected){
+        toastService.success("Integration connected successfully!");
+        router.push(`/launch/${useCase}/configure`);
+      } else {
+        toastService.warning("Integration connection failed. Please check your integration and try again.");
+        setSelectedProvider("");
+      }
+    } catch (error) {
+      console.error("Failed to check integration connection:", error);
+      toastService.error("Failed to connect to the integration. Please try again later.");
+      setSelectedProvider("");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -105,11 +126,15 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
         </div>
 
         <div className="flex justify-center">
-          <Button onClick={handleNextStep} className="px-8 py-3 text-lg bg-black hover:bg-gray-800 text-white rounded" disabled={isLoading || !selectedProvider}>
+          <Button 
+            onClick={() => handleNextStep()} 
+            className="px-8 py-3 text-lg bg-black hover:bg-gray-800 text-white rounded" 
+            disabled={isLoading || !selectedProvider}
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Connecting...
+                Checking connection...
               </>
             ) : ( 
               <>
