@@ -8,11 +8,11 @@ export class AIModelService {
   baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   
 
-  async textToSpeech(text: string): Promise<Blob> {
+  async textToSpeech(text: string, voice_id: string): Promise<Blob> {
     try {
       const response = await axios.post(
         `${this.baseURL}/text-to-speech`,
-        { text },
+        { text, voice_id},
         {
           responseType: 'blob',
           headers: {
@@ -20,7 +20,7 @@ export class AIModelService {
           },
         }
       );
-      
+   
       return new Blob([response.data], { type: 'audio/mpeg' });
     } catch (error: any) {
       if (error.response?.status === 400) {
@@ -37,8 +37,9 @@ export class AIModelService {
   playAudio(audioBlob: Blob): Promise<HTMLAudioElement> {
     return new Promise((resolve, reject) => {
       try {
-        // Create a URL for the blob
+   
         const audioUrl = URL.createObjectURL(audioBlob);
+
         // Create an audio element
         const audioElement = new Audio(audioUrl);
         
@@ -72,5 +73,19 @@ export class AIModelService {
       audioElement.pause();
       audioElement.currentTime = 0;
     }
+  }
+
+  async getVoiceModelList(token : string) {
+      try{
+        const response = await axios.get(`${this.baseURL}/get-voice-list`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+        });
+        return response.data;
+      } catch (error: any) {
+       console.error("Failed to get voice model list", error);
+      }
   }
 } 

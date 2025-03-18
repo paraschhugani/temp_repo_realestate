@@ -10,7 +10,6 @@ import { OnboardingService } from "@/services/onboarding-service"
 import ScriptNotFound from "./script-not-found"
 import { scriptFormKey, StorageService } from "@/services/storage-service"
 
-// Define proper TypeScript interfaces for our data structures
 interface ScriptField {
   id: string
   label?: string
@@ -19,24 +18,25 @@ interface ScriptField {
   placeholder: string
   category?: string
   required?: boolean
+  value?: string
 }
 
-// Internal Script format
 interface Script {
   id: string
   industry: string
   name: string
+  value : string
   description: string
   fields: ScriptField[]
 }
 
-// Editor Script format (used by ScriptEditor component)
 interface EditorScript {
   id: string
   industry: string
   "agent name": string
   description: string
   form: ScriptField[]
+  value : string
 }
 
 interface Message {
@@ -61,9 +61,6 @@ interface Scenario {
   steps: Step[]
 }
 
-interface Scenarios {
-  [key: string]: Scenario
-}
 
 // Backend response type
 interface ScriptResponse {
@@ -73,6 +70,7 @@ interface ScriptResponse {
   industry: string
   fields: ScriptField[]
   scenarios: Scenario[]
+  value : string
 }
 
 interface ScriptFormProps {
@@ -119,6 +117,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
             id: data.id,
             industry: data.industry,
             name: data.name,
+            value : data.value,
             description: data.description,
             fields: data.fields || []
           }
@@ -159,7 +158,11 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       industry: script.industry,
       "agent name": script.name,
       description: script.description,
-      form: script.fields
+      form: script.fields.map(field => ({
+        ...field,
+        value: field.value || ""
+      })),
+      value: script.value
     }
   }
 
@@ -169,11 +172,15 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       id: updatedScript.id,
       industry: updatedScript.industry,
       name: updatedScript["agent name"],
+      value: updatedScript.value ?? "",
       description: updatedScript.description,
-      fields: updatedScript.form
+      fields: updatedScript.form.map(field => ({
+        ...field,
+        value: field.value || ""
+      }))
     }
     
-    // Update local state
+  
     setScriptData(formattedScript)
     
     // Convert scenarios to the format we're using internally (array)
@@ -191,7 +198,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
     // Save to local storage
     const dataToSave = {
       script: formattedScript,
-      scenarios: scenariosArray
+      scenarios: scenariosArray,
     }
     StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave))
   }
@@ -205,6 +212,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
           script: scriptData,
           scenarios: scenarios
         }
+
         StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave))
       }
 

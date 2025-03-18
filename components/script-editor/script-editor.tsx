@@ -17,6 +17,7 @@ interface ScriptField {
   category?: string;
   required?: boolean;
   description?: string;
+  value?: string;
 }
 
 interface EditorScript {
@@ -25,6 +26,7 @@ interface EditorScript {
   "agent name": string;
   description: string;
   form: ScriptField[];
+  value: string;
 }
 
 interface Message {
@@ -86,7 +88,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
   
     const initialBasicValues: Record<string, string> = {};
     basicFields.forEach((field) => {
-      initialBasicValues[field.id] = field.question;
+      initialBasicValues[field.id] = field.value || field.question;
     });
     setBasicValues(initialBasicValues);
 
@@ -146,7 +148,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
         if (basicValues[field.id]) {
           return {
             ...field,
-            question: basicValues[field.id],
+            value: basicValues[field.id],
           };
         }
         return field;
@@ -226,10 +228,10 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
       </Tabs>
 
       <div className="flex justify-between pt-6 border-t">
-        {/* <Button onClick={handleSave} variant="outline">
+        <Button onClick={handleSave} variant="outline">
           <Save className="mr-2 h-4 w-4" />
           Save Changes
-        </Button> */}
+        </Button>
         <Button onClick={onContinue}>
           Continue
           <ArrowRight className="ml-2 h-4 w-4" />

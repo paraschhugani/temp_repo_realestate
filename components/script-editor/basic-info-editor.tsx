@@ -11,6 +11,7 @@ interface ScriptFieldType {
   category?: string
   required?: boolean
   description?: string
+  value?: string
 }
 
 interface BasicInfoEditorProps {

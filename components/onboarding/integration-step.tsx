@@ -12,7 +12,7 @@ import { IntegrationService } from "@/services/integration-service"
 import { useAuth } from "@clerk/nextjs"
 import { toastService } from "@/services/toast-service"
 
-interface Provider {
+export interface Provider {
   id: string
   name: string
   logo: () => React.JSX.Element

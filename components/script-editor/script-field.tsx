@@ -13,6 +13,7 @@ interface ScriptFieldProps {
     placeholder: string
     description?: string
     required?: boolean
+    value?: string
   }
   value: string
   onChange: (id: string, value: string) => void

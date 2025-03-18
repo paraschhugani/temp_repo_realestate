@@ -23,10 +23,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { AIModelService } from "@/services/ai-model-service"
+import { CampaignService } from "@/services/campaign-service"
+import { useAuth } from "@clerk/nextjs"
+import { toastService } from "@/services/toast-service"
 
 const NODE_WIDTH = 200
 const NODE_HEIGHT = 100
@@ -217,7 +221,7 @@ const FlowDiagram = ({ activeScenario }: { activeScenario: string }) => {
   )
 }
 
-const ScenarioContent = ({ scenario }: { scenario: any }) => {
+const ScenarioContent = ({ scenario, selectedVoiceModel }: { scenario: any, selectedVoiceModel: string }) => {
   const [visibleMessages, setVisibleMessages] = useState(0)
   const [playingAudio, setPlayingAudio] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<string | null>(null)
@@ -273,13 +277,12 @@ const ScenarioContent = ({ scenario }: { scenario: any }) => {
     setIsLoading(message);
     
     try {
-      // Get audio blob from API
-      const audioBlob = await aiModelService.textToSpeech(message);
       
-      // Play the audio
+      const audioBlob = await aiModelService.textToSpeech(message, selectedVoiceModel);
+      
+    
       const newAudioElement = await aiModelService.playAudio(audioBlob);
-      
-      // Set the current playing audio
+    
       setAudioElement(newAudioElement);
       setPlayingAudio(message);
       
@@ -438,22 +441,69 @@ export default function ConfigureAIAgent({ params }: ConfigureAIAgentProps) {
   const [activeScenario, setActiveScenario] = useState(scenarios[0].id)
   const [voiceSpeed, setVoiceSpeed] = useState(1)
   const [voiceModel, setVoiceModel] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [phoneNumberError, setPhoneNumberError] = useState("")
   const [backgroundSound, setBackgroundSound] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isTestingAgent, setIsTestingAgent] = useState(false)
   const router = useRouter()
   const configSectionRef = useRef<HTMLDivElement>(null)
   const [scope, animate] = useAnimate()
   const [showScrollButton, setShowScrollButton] = useState(true)
+  const { getToken, userId } = useAuth()
+  const campaignService = useMemo(() => new CampaignService(), [])
+  const [voiceModelList, setVoiceModelList] = useState<Record<string, any>>({})
 
   useEffect(() => {
     animate(scope.current, { y: [0, 5, 0] }, { repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" })
   }, [animate, scope])
 
-  const handleTestValidate = async () => {
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsLoading(false)
-    router.push(`/launch/${useCase}/audience`)
+
+  useEffect(() => {
+    const fetchVoiceModelList = async () => {
+      try {
+        const token = await getToken();
+        const voiceModelList = await new AIModelService().getVoiceModelList(token ?? "");
+        setVoiceModelList(voiceModelList);
+      } catch (error) {
+        console.error("Error fetching voice models:", error);
+        toastService.error("Failed to load voice models");
+      }
+    }
+    fetchVoiceModelList();
+  }, [getToken])
+
+  const handleTestAgent = async () => {
+    const digitsOnly = phoneNumber.replace(/\D/g, '');
+    if (digitsOnly.length < 10) {
+      setPhoneNumberError("Please enter a valid phone number with at least 10 digits");
+     return;
+    }
+    if(!voiceModel){
+      toastService.error("Please select a voice model");
+      configSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+      return
+    }
+    
+    try {
+      setIsTestingAgent(true);
+      const token = await getToken();
+      
+      await campaignService.testCampaign({
+        phone_number: phoneNumber,
+        voiceModel : voiceModel,
+        voiceSpeed : voiceSpeed,
+        backgroundSound : backgroundSound,
+        token : token ?? "",
+        userID : userId ?? ""
+      });
+      
+
+    } catch (error) {
+      console.error("Error testing agent:", error);
+    } finally {
+      setIsTestingAgent(false);
+    }
   }
 
   const scrollToConfig = () => {
@@ -478,20 +528,79 @@ export default function ConfigureAIAgent({ params }: ConfigureAIAgentProps) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow digits, spaces, dashes, parentheses, and plus sign
+    const formattedValue = value.replace(/[^\d\s\-\(\)\+]/g, '');
+    setPhoneNumber(formattedValue);
+    
+  
+    const digitsOnly = formattedValue.replace(/\D/g, '');
+    if (digitsOnly.length > 0 && digitsOnly.length < 10) {
+      setPhoneNumberError("Phone number must have at least 10 digits");
+    } else {
+      setPhoneNumberError("");
+    }
+  };
+
+  const handleSaveAndContinue = async () => {
+  
+    const digitsOnly = phoneNumber.replace(/\D/g, '');
+    if (digitsOnly.length < 10) {
+      setPhoneNumberError("Please enter a valid phone number with at least 10 digits");
+      configSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    
+    setIsLoading(true)
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    setIsLoading(false)
+    router.push(`/launch/${useCase}/audience`)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-2 sm:px-4 lg:px-6">
       <div className="max-w-full mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-extrabold">Configure Your AI Agent</h1>
-            <Button onClick={() => router.push(`/launch/${useCase}/test`)} className="bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-lg transition-colors duration-300">
-              <Phone className="mr-2 h-4 w-4" />
-              Test the agent
+         <div className="flex items-center gap-4">
+         <div className="">
+                  {/* <Label htmlFor="phone-number">Phone Number</Label> */}
+                  <Input 
+                    id="phone-number" 
+                    type="tel" 
+                    placeholder="Enter phone number" 
+                    value={phoneNumber} 
+                    onChange={handlePhoneNumberChange}
+                    className={`mt-1 ${phoneNumberError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                  />
+                  {phoneNumberError && (
+                    <p className="text-red-500 text-xs mt-1">{phoneNumberError}</p>
+                  )}
+                </div>
+            <Button 
+              onClick={handleTestAgent} 
+              className="bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-lg transition-colors duration-300"
+              disabled={isTestingAgent}
+            >
+              {isTestingAgent ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Initiating call...
+                </>
+              ) : (
+                <>
+                  <Phone className="mr-2 h-4 w-2" />
+                  Test
+                </>
+              )}
             </Button>
+         </div>
           </div>
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="flex flex-col xl:flex-row gap-6 p-4 lg:p-6">
-              <div className="flex-1 flex flex-col h-[800px]">
+              <div className="flex-1 flex flex-col ">
                 <h2 className="text-xl font-semibold mb-4 flex items-center">
                   <MessageSquare className="mr-2" /> Scenarios
                 </h2>
@@ -507,31 +616,41 @@ export default function ConfigureAIAgent({ params }: ConfigureAIAgentProps) {
                   </TabsList>
                   {scenarios.map((scenario) => (
                     <TabsContent key={scenario.id} value={scenario.id} className="mt-4">
-                      <ScenarioContent scenario={scenario} />
+                      <ScenarioContent scenario={scenario} selectedVoiceModel={voiceModel} />
                     </TabsContent>
                   ))}
                 </Tabs>
               </div>
-              <div className="flex-1 h-[800px]">
+              <div className="flex-1 ">
                 <h2 className="text-xl font-semibold mb-4 flex items-center">
                   <GitBranch className="mr-2" /> Conversation Flow
                 </h2>
                 <FlowDiagram activeScenario={activeScenario} />
               </div>
             </div>
-            <div ref={configSectionRef} className="p-6 border-t border-gray-200 mt-6">
+            <div ref={configSectionRef} className="p-6 border-t border-gray-200 ">
               <h2 className="text-xl font-semibold mb-4">Voice AI Configuration</h2>
               <div className="space-y-6">
+               
                 <div>
                   <Label htmlFor="voice-model">Voice Model</Label>
                   <Select value={voiceModel} onValueChange={setVoiceModel}>
                     <SelectTrigger id="voice-model">
                       <SelectValue placeholder="Select a voice model" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="model1">Model 1</SelectItem>
-                      <SelectItem value="model2">Model 2</SelectItem>
-                      <SelectItem value="model3">Model 3</SelectItem>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
+                      {Object.entries(voiceModelList).map(([id, details]) => {
+                        const voiceDetails = details as any;
+                      
+                        const accent = voiceDetails.Accent || "";
+                        const gender = voiceDetails.Gender || "";
+                        const name = voiceDetails["Name "] || `Voice ${id.substring(0, 6)}`;
+                        return (
+                          <SelectItem key={id} value={id}>
+                            {`${accent} - ${gender} - ${name}`}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
@@ -549,7 +668,7 @@ export default function ConfigureAIAgent({ params }: ConfigureAIAgentProps) {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button onClick={handleTestValidate} className="w-full bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base transition-colors duration-300">
+                    <Button onClick={handleSaveAndContinue} className="w-full bg-black hover:bg-gray-800 text-white rounded px-6 py-3 text-base transition-colors duration-300">
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -564,7 +683,7 @@ export default function ConfigureAIAgent({ params }: ConfigureAIAgentProps) {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Click to test and validate your AI agent configuration</p>
+                    <p>Click to save your AI agent configuration and continue</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
