@@ -28,9 +28,9 @@ export class CampaignService {
         const scriptForm = StorageService.getItem(scriptFormKey);
         if (scriptForm) {
             const scriptFormData = JSON.parse(JSON.parse(scriptForm));
-            formData.append('company_name', scriptFormData.script.fields[0].value);
+            formData.append('company_name', scriptFormData.fields[0].value);
             formData.append('app_name', "googlecalender");
-            formData.append('assistant_name',scriptFormData.script.fields[1].value);
+            formData.append('assistant_name',scriptFormData.fields[1].value);
             formData.append('form_model',JSON.stringify(scriptFormData));
         }
       

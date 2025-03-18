@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2, Phone, Headphones } from "lucide-react";
@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { CampaignService } from "@/services/campaign-service";
 
 interface ScriptField {
   id: string;
@@ -93,6 +94,7 @@ interface ScriptFormProps {
 }
 
 export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
+  const campaignService = useMemo(() => new CampaignService(), [])
   const [scriptData, setScriptData] = useState<Script | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,11 +105,13 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState(1);
-  const [backgroundNoise, setBackgroundNoise] = useState(false);
+  const [backgroundSound, setbackgroundSound] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  const [isTestingAgent, setIsTestingAgent] = useState(false);
   const router = useRouter();
-  const { getToken, isSignedIn, isLoaded } = useAuth();
-
+  const { getToken, isSignedIn, isLoaded, userId } = useAuth();
+  const configSectionRef = useRef<HTMLDivElement>(null)
+  const [phoneNumberError, setPhoneNumberError] = useState("")
   useEffect(() => {
     let isMounted = true;
 
@@ -219,7 +223,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       fields: formattedScript.fields,
     });
     setScenarios(formattedScript.scenarios);
-
+     console.log(formattedScript);
     StorageService.setItem(scriptFormKey, JSON.stringify(formattedScript));
   };
 
@@ -239,7 +243,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       if (onSubmit) {
         onSubmit();
       } else {
-        router.push(`/launch/${useCase}/integration`);
+        // router.push(`/launch/${useCase}/integration`);
       }
     } catch (err) {
       console.error("Failed to submit form:", err);
@@ -306,6 +310,29 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const handleTestAgent = async () => {
     setIsTesting(true);
     try {
+      const digitsOnly = phoneNumber.replace(/\D/g, '');
+      if (digitsOnly.length < 10) {
+        setPhoneNumberError("Please enter a valid phone number with at least 10 digits");
+       return;
+      }
+      if(!voiceModel){
+        toastService.error("Please select a voice model");
+        configSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+        return
+      }
+      
+      
+        setIsTestingAgent(true);
+        const token = await getToken();
+        
+        await campaignService.testCampaign({
+          phone_number: phoneNumber,
+          voiceModel : voiceModel,
+          voiceSpeed : voiceSpeed,
+          backgroundSound : backgroundSound,
+          token : token ?? "",
+          userID : userId ?? ""
+        });
       toastService.success("Test call initiated successfully!");
       setIsTestDialogOpen(false);
     } catch (error) {
@@ -313,7 +340,8 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
     } finally {
       setIsTesting(false);
     }
-  };
+  
+}
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
@@ -512,12 +540,12 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
                         </div>
                         <Switch
                           id="background-noise"
-                          checked={backgroundNoise}
-                          onCheckedChange={setBackgroundNoise}
+                          checked={backgroundSound}
+                          onCheckedChange={setbackgroundSound}
                         />
                       </div>
                       <p className="text-xs text-gray-500">
-                        {backgroundNoise
+                        {backgroundSound
                           ? "Adds ambient office sounds to make calls sound more natural"
                           : "No background noise will be added to calls"}
                       </p>
