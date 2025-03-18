@@ -230,15 +230,15 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const handleSubmit = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      if (scriptData && scenarios) {
-        // Save current state before proceeding
-        const dataToSave = {
-          script: scriptData,
-          scenarios: scenarios,
-        };
+      // if (scriptData && scenarios) {
+      //   // Save current state before proceeding
+      //   const dataToSave = {
+      //     script: scriptData,
+      //     scenarios: scenarios,
+      //   };
 
-        StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave));
-      }
+      //   StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave));
+      // }
 
       if (onSubmit) {
         onSubmit();
