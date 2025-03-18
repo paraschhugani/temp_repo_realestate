@@ -44,7 +44,7 @@ const UserAvatar = () => {
 
         <DropdownMenuTrigger asChild>
           <button className="focus:outline-none">
-            <Avatar>
+            <Avatar className="w-10 h-10">
               <AvatarImage src={user?.imageUrl || 'https://github.com/shadcn.png'} alt="User Avatar" />
               <AvatarFallback>
                 {user?.firstName?.charAt(0)}

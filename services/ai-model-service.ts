@@ -10,6 +10,7 @@ export class AIModelService {
 
   async textToSpeech(text: string, voice_id: string): Promise<Blob> {
     try {
+    
       const response = await axios.post(
         `${this.baseURL}/text-to-speech`,
         { text, voice_id},

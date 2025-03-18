@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { User, Bot } from "lucide-react"
 import { ScriptField } from "./script-field"
+import { ChatPreview } from "../chat/chat-preview"
+import { useAudioPlayer } from "@/hooks/use-audio-player"
 
 interface Message {
   speaker: string
@@ -44,12 +43,15 @@ interface ScenarioEditorProps {
   scenarioFields: ScriptFieldType[]
   values: Record<string, Record<string, string>>
   onChange: (scenarioId: string, fieldId: string, value: string) => void
+  voiceModelList: Record<string, any>
+  voiceModel: string
+  setVoiceModel: (voiceModel: string) => void
 }
 
-export function ScenarioEditor({ scenarios, scenarioFields, values, onChange }: ScenarioEditorProps) {
+export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, voiceModelList, voiceModel, setVoiceModel }: ScenarioEditorProps) {
   const [activeScenario, setActiveScenario] = useState<string>("")
+  const { handleAudioToggle, isSpeakerLoading, playingAudio } = useAudioPlayer(voiceModel);
 
- 
   useEffect(() => {
     if (scenarios && scenarios.length > 0) {
       setActiveScenario(scenarios[0].id)
@@ -67,11 +69,8 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange }: 
     return null
   }
 
- 
-
   // Get all messages from all steps for a scenario
   const getScenarioMessages = (scenario: Scenario): Message[] => {
-    
     if (!scenario.steps || !Array.isArray(scenario.steps)) {
       console.error("Scenario steps missing or not an array:", scenario)
       return []
@@ -101,29 +100,14 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange }: 
     })
   }
 
-  // Find all unique fieldIds in the scenarios
-  const getUniqueFieldIds = () => {
-    const fieldIds = new Set<string>()
-    scenarios.forEach(scenario => {
-      const messages = getScenarioMessages(scenario)
-      messages.forEach(message => {
-        if (message.speaker === "agent" && message.fieldId) {
-          fieldIds.add(message.fieldId)
-        }
-      })
-    })
-    return Array.from(fieldIds)
-  }
 
-  // Format field name to Title Case with spaces
+
   const formatFieldName = (fieldName: string) => {
     return fieldName
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, str => str.toUpperCase())
       .trim();
   }
-
-  const uniqueFieldIds = getUniqueFieldIds()
 
 
   return (
@@ -189,13 +173,13 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange }: 
                   </div>
                 </div>
 
-                {/* Display all agent messages with fieldId */}
                 {getScenarioMessages(scenario)
                   .filter(msg => msg.speaker === "agent" && msg.fieldId)
-                  .map((message, index) => {
+                  .map((message : any, index) => {
                     const field = scenarioFields.find(f => f.id === message.fieldId)
-                    const label = field ? formatFieldName(field.label || field.question) : (message.fieldId || "Response")
-                    
+                  
+                    const label = field ? formatFieldName(field.label || field.question) : (message.label || "Response")
+                     console.log("label",label)
                     return (
                       <ScriptField
                         key={`${scenario.id}-${message.fieldId || index}`}
@@ -213,48 +197,15 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange }: 
                   })}
               </div>
 
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Conversation Preview</h3>
-                <Card>
-                  <CardContent className="p-4">
-                    <ScrollArea className="h-[500px] pr-4">
-                      <div className="space-y-4">
-                        {getUpdatedContent(scenario).map((message, index) => (
-                          <div
-                            key={index}
-                            className={`flex ${message.speaker === "customer" ? "justify-end" : "justify-start"}`}
-                          >
-                            <div
-                              className={`flex items-start space-x-2 max-w-[80%] ${
-                                message.speaker === "customer" ? "flex-row-reverse" : "flex-row"
-                              }`}
-                            >
-                              <div
-                                className={`rounded-full p-2 ${
-                                  message.speaker === "customer" ? "bg-green-500" : "bg-blue-500"
-                                }`}
-                              >
-                                {message.speaker === "customer" ? (
-                                  <User className="h-4 w-4 text-white" />
-                                ) : (
-                                  <Bot className="h-4 w-4 text-white" />
-                                )}
-                              </div>
-                              <div
-                                className={`rounded-lg p-3 ${
-                                  message.speaker === "customer" ? "bg-green-100 text-right" : "bg-blue-100"
-                                }`}
-                              >
-                                <p className="text-sm">{message.content}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </div>
+              <ChatPreview 
+                messages={getUpdatedContent(scenario)} 
+                onAudioToggle={handleAudioToggle}
+                isSpeakerLoading={isSpeakerLoading}
+                playingAudio={playingAudio}
+                voiceModelList={voiceModelList}
+                voiceModel={voiceModel}
+                setVoiceModel={setVoiceModel}
+              />
             </div>
           </TabsContent>
         ))}

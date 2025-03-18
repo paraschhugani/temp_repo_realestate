@@ -21,6 +21,7 @@ interface ScriptFieldProps {
 }
 
 export function ScriptField({ field, value, onChange, className = "" }: ScriptFieldProps) {
+
   return (
     <div className={cn("mb-6", className)}>
       <div className="space-y-3">
@@ -30,7 +31,7 @@ export function ScriptField({ field, value, onChange, className = "" }: ScriptFi
             className="block text-base font-semibold text-gray-900"
           >
             {field.label}
-            {/* {field.required && <span className="text-red-500 ml-1">*</span>} */}
+            {field.required && <span className="text-red-400 ml-1">*</span>}
           </label>
         )}
         

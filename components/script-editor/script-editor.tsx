@@ -6,8 +6,23 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Save } from "lucide-react";
 import { BasicInfoEditor } from "./basic-info-editor";
 import { ScenarioEditor } from "./scenario-editor";
+import { AIModelService } from "@/services/ai-model-service";
+import { toastService } from "@/services/toast-service";
+import { useAuth } from "@clerk/nextjs";
 
 // Define interfaces
+interface Message {
+  speaker: string;
+  content: string;
+  fieldId?: string;
+  placeholder?: string;
+  label?: string;
+  question?: string;
+  type?: string;
+  value?: string;
+  response?: string;
+}
+
 interface ScriptField {
   id: string;
   label?: string;
@@ -18,22 +33,15 @@ interface ScriptField {
   required?: boolean;
   description?: string;
   value?: string;
+  messages?: Message[];
 }
 
 interface EditorScript {
   id: string;
   industry: string;
-  "agent name": string;
   description: string;
   form: ScriptField[];
   value: string;
-}
-
-interface Message {
-  speaker: string;
-  content: string;
-  fieldId?: string;
-  placeholder?: string;
 }
 
 interface Step {
@@ -50,7 +58,6 @@ interface Scenario {
   tabName?: string;
 }
 
-// Updated: Scenarios is now a map of scenario objects
 interface Scenarios {
   [key: string]: Scenario;
 }
@@ -60,12 +67,17 @@ interface ScriptEditorProps {
   scenarios: Scenario[];
   onSave: (updatedScript: EditorScript, updatedScenarios: Scenarios) => void;
   onContinue: () => void;
+  voiceModelList: Record<string, any>;
+  voiceModel: string;
+  setVoiceModel: (voiceModel: string) => void;
 }
 
-export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEditorProps) {
+export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel }: ScriptEditorProps) {
   const [activeTab, setActiveTab] = useState("basic");
   const [basicValues, setBasicValues] = useState<Record<string, string>>({});
   const [scenarioValues, setScenarioValues] = useState<Record<string, Record<string, string>>>({});
+ 
+
 
   // Memoize computed fields to avoid re-creation on every render.
   const basicFields = useMemo(
@@ -83,33 +95,38 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
     [script.form]
   );
 
+  console.log(scenarioFields)
+
 
   useEffect(() => {
-  
     const initialBasicValues: Record<string, string> = {};
+  
     basicFields.forEach((field) => {
-      initialBasicValues[field.id] = field.value || field.question;
+      if (field.messages && field.messages.length > 0) {
+        const agentMessage = field.messages.find(message => message.speaker === "agent");
+        if (agentMessage) {
+          initialBasicValues[field.id] = agentMessage.value || agentMessage.question || "";
+        }
+      } else {
+        initialBasicValues[field.id] = field.value || field.question || "";
+      }
     });
+    
     setBasicValues(initialBasicValues);
 
     const initialScenarioValues: Record<string, Record<string, string>> = {};
     
- 
     if (Array.isArray(scenarios)) {
       scenarios.forEach((scenario) => {
-      
-        
         const scenarioVal: Record<string, string> = {};
         
         // Process messages from all steps
         if (scenario.steps && Array.isArray(scenario.steps)) {
           scenario.steps.forEach((step) => {
-            
             if (step.messages && Array.isArray(step.messages)) {
               step.messages.forEach((message) => {
                 if (message.speaker === "agent" && message.fieldId) {
-                
-                  scenarioVal[message.fieldId] = message.content;
+                  scenarioVal[message.fieldId] = message.content || message.value || "";
                 }
               });
             }
@@ -122,6 +139,8 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
     setScenarioValues(initialScenarioValues);
    
   }, [script, scenarios, basicFields, scenarioFields]);
+
+ 
 
   const handleBasicChange = (id: string, value: string): void => {
     setBasicValues((prev) => ({
@@ -141,7 +160,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
   };
 
   const handleSave = (): void => {
-  
+
     const updatedScript: EditorScript = {
       ...script,
       form: script.form.map((field) => {
@@ -149,6 +168,16 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
           return {
             ...field,
             value: basicValues[field.id],
+            messages: field.messages?.map(message => {
+              if (message.speaker === "agent" && message.fieldId === field.id) {
+                return {
+                  ...message,
+                  content: basicValues[field.id],
+                  value: basicValues[field.id]
+                };
+              }
+              return message;
+            })
           };
         }
         return field;
@@ -158,10 +187,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
     // Convert scenarios array to object format for saving
     const updatedScenarios: Scenarios = {};
     scenarios.forEach((scenario) => {
-    
-    
       const updatedSteps = scenario.steps.map((step) => {
-
         const updatedMessages = step.messages.map((message) => {
           if (message.speaker === "agent" && message.fieldId) {
             const value = scenarioValues[scenario.id]?.[message.fieldId];
@@ -169,6 +195,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
               return {
                 ...message,
                 content: value,
+                value: value
               };
             }
           }
@@ -190,7 +217,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
     onSave(updatedScript, updatedScenarios);
   };
 
-  // Don't render if we don't have the required data
+
   if (!script || !Array.isArray(scenarios) || scenarios.length === 0) {
     return null;
   }
@@ -214,7 +241,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
         </div>
 
         <TabsContent value="basic">
-          <BasicInfoEditor basicFields={basicFields} values={basicValues} onChange={handleBasicChange} />
+          <BasicInfoEditor basicFields={basicFields} values={basicValues} onChange={handleBasicChange} voiceModelList={voiceModelList} voiceModel={voiceModel} setVoiceModel={setVoiceModel}  />
         </TabsContent>
 
         <TabsContent value="scenarios">
@@ -223,6 +250,9 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue }: ScriptEd
             scenarioFields={scenarioFields}
             values={scenarioValues}
             onChange={handleScenarioChange}
+            voiceModelList={voiceModelList}
+            voiceModel={voiceModel}
+            setVoiceModel={setVoiceModel}
           />
         </TabsContent>
       </Tabs>
