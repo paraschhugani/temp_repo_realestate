@@ -95,8 +95,6 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
     [script.form]
   );
 
-  console.log(scenarioFields)
-
 
   useEffect(() => {
     const initialBasicValues: Record<string, string> = {};

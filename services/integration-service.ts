@@ -34,7 +34,6 @@ export class IntegrationService {
         const form = new FormData();
         form.append("user_id", userUID);
         form.append("app_name", appName);
-        console.log(token);
         const response = await axios.post(`${this.baseURL}/integration/check-connection`, form, {
             headers: {
                 Authorization: `Bearer ${token}`,

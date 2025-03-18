@@ -5,6 +5,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ScriptField } from "./script-field"
 import { ChatPreview } from "../chat/chat-preview"
 import { useAudioPlayer } from "@/hooks/use-audio-player"
+import { VoiceConfigModal } from "../voice-config/voice-config-modal"
+import { Volume2 } from "lucide-react"
 
 interface Message {
   speaker: string
@@ -51,7 +53,7 @@ interface ScenarioEditorProps {
 export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, voiceModelList, voiceModel, setVoiceModel }: ScenarioEditorProps) {
   const [activeScenario, setActiveScenario] = useState<string>("")
   const { handleAudioToggle, isSpeakerLoading, playingAudio } = useAudioPlayer(voiceModel);
-
+  const selectedVoiceName = voiceModelList[voiceModel]?.name || "No voice selected";
   useEffect(() => {
     if (scenarios && scenarios.length > 0) {
       setActiveScenario(scenarios[0].id)
@@ -112,9 +114,23 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, vo
 
   return (
     <div className="space-y-2 mb-6">
-      <h2 className="text-xl font-semibold text-gray-900">Scenario Scripts</h2>
-      <p className="text-sm text-gray-600">Edit how your agent responds in different conversation scenarios.</p>
-
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Scenario Scripts</h2>
+          <p className="text-sm text-gray-600">Edit how your agent responds in different conversation scenarios.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-2 py-1 border rounded-md text-sm text-gray-600">
+            <Volume2 className="h-4 w-4" />
+            <span className="truncate max-w-[150px]">{selectedVoiceName}</span>
+          </div>
+          <VoiceConfigModal
+            voiceModelList={voiceModelList}
+            voiceModel={voiceModel}
+            setVoiceModel={setVoiceModel}
+          />
+        </div>
+      </div>
       <style jsx global>{`
         .tabs-scrollable::-webkit-scrollbar {
           display: none;
@@ -133,7 +149,7 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, vo
 
       <Tabs value={activeScenario} onValueChange={setActiveScenario} className="w-full">
         <div className="relative w-full mb-6">
-          <div className="overflow-x-auto tabs-scrollable">
+          <div className="overflow-x-auto tabs-scrollable py-2">
             <TabsList className="inline-flex min-w-full">
               {scenarios.map((scenario) => (
                 <TabsTrigger key={scenario.id} value={scenario.id} className="text-sm whitespace-nowrap">
@@ -179,7 +195,7 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, vo
                     const field = scenarioFields.find(f => f.id === message.fieldId)
                   
                     const label = field ? formatFieldName(field.label || field.question) : (message.label || "Response")
-                     console.log("label",label)
+                   
                     return (
                       <ScriptField
                         key={`${scenario.id}-${message.fieldId || index}`}

@@ -24,8 +24,8 @@ interface ChatPreviewProps {
 export function ChatPreview({ messages, onAudioToggle, isSpeakerLoading, playingAudio, setVoiceModel, voiceModelList, voiceModel }: ChatPreviewProps) {
   return (
     <div>
-      <h3 className="text-lg font-medium text-gray-900 ">Conversation Preview</h3>
-      <div className="h-[1px] bg-gray-200"></div>
+      <h3 className="text-lg font-medium text-gray-900 pb-2">Conversation Preview</h3>
+      {/* <div className="h-[1px] bg-gray-200"></div> */}
       {/* <div className="flex flex-col gap-2 my-4">
                   <Label htmlFor="voice-model" className="text-sm text-gray-500 ">Choose a voice model</Label>
                 <Select value={voiceModel} onValueChange={setVoiceModel}>

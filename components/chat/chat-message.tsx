@@ -1,4 +1,4 @@
-import { User, Bot, Loader2, Pause, Play } from "lucide-react"
+import { User, Bot, Loader2, Pause, Play, Headset, Volume2 } from "lucide-react"
 import { Button } from "../ui/button"
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
@@ -14,7 +14,7 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, onAudioToggle, isSpeakerLoading, playingAudio }: ChatMessageProps) {
   return (
-    <div className={`flex ${message.speaker === "customer" ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${message.speaker === "customer" ? "justify-end ml-2" : "justify-start"}`}>
       <div
         className={`flex items-start space-x-2 max-w-[80%] ${
           message.speaker === "customer" ? "flex-row-reverse" : "flex-row"
@@ -28,7 +28,7 @@ export function ChatMessage({ message, onAudioToggle, isSpeakerLoading, playingA
           {message.speaker === "customer" ? (
             <User className="h-4 w-4 text-white" />
           ) : (
-            <Bot className="h-4 w-4 text-white" />
+            <Headset className="h-3.5 w-3.5 text-white" />
           )}
         </div>
         <div
@@ -48,11 +48,11 @@ export function ChatMessage({ message, onAudioToggle, isSpeakerLoading, playingA
                       onClick={() => message.content && onAudioToggle(message.content)}
                     >
                       {isSpeakerLoading === message.content ? (
-                        <Loader2 className="h-3 w-3 text-blue-500 animate-spin" />
+                        <Loader2 className="h-3 w-3 text-black animate-spin" />
                       ) : playingAudio === message.content ? (
-                        <Pause className="h-3 w-3 text-blue-500" />
+                        <Pause className="h-3 w-3 text-black" />
                       ) : (
-                        <Play className="h-3 w-3 text-blue-500" />
+                        <Volume2 className="h-4 w-4" />
                       )}
                     </Button>
                   </TooltipTrigger>
