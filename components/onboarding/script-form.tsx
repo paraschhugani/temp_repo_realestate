@@ -143,6 +143,11 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
           data = response;
         }
 
+        if(data === null) {
+          setIsNotFound(true);
+          return;
+        }
+
         if (data && isMounted) {
           // Convert the response to our Script format
           const formattedScript: Script = {

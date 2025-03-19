@@ -10,9 +10,17 @@ export class OnboardingService {
 
     async getScript(useCaseID: string, token: string) {
        try{
+    
         const scriptForm = StorageService.getItem(scriptFormKey)
-        if (scriptForm) {
-            return JSON.parse(scriptForm)
+        if (scriptForm ) {
+            const temp = JSON.parse(JSON.parse(scriptForm))
+         
+            if(temp.id === useCaseID) {
+                console.log("scriptForm found in local storage")
+                return temp;
+            }else{
+                return null;
+            }
         }
         // else get it from the server
         const response = await axios.get(`${this.baseURL}/scripts/${useCaseID}`,
@@ -22,7 +30,12 @@ export class OnboardingService {
                 }
             }
         );
-        return response.data ;
+        if(response.status === 200) {
+            return response.data ;
+        }else if(response.status === 404) {
+            throw new Error("Script not found");
+        }
+        return null;
        } catch (error: any) {
         console.error('Error in getScript:', error);
         throw error;
