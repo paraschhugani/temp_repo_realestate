@@ -1,8 +1,8 @@
 "use client"
-import { useSearchParams } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
-import { IntegrationService } from "@/services/integration-service";
-import { useEffect, useState } from "react";
+// import { useSearchParams } from "next/navigation";
+// import { useAuth } from "@clerk/nextjs";
+// import { IntegrationService } from "@/services/integration-service";
+// import { useEffect, useState } from "react";
 import { Suspense } from 'react'
 
 export default function TypeformCallbackPage() {
