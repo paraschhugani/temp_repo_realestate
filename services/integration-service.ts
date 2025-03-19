@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { StorageService } from "./storage-service";
 export class IntegrationService {
     baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
@@ -38,10 +38,10 @@ export class IntegrationService {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
-            },
-         
+            },    
         });
         if(response.status === 200){
+            StorageService.setItem("app_name", appName);
             return response.data;
         } else {
             throw new Error("Failed to check integration connection");

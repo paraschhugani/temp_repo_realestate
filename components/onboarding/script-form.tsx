@@ -368,6 +368,21 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     }
   };
 
+  const handleVoiceSpeedChange = (value: number) => {
+    StorageService.setItem("voice_speed", value.toString());
+    setVoiceSpeed(value);
+  }
+
+  const handleBackgroundSoundChange = (value: boolean) => {
+    StorageService.setItem("background_sound", value.toString());
+    setbackgroundSound(value);
+  } 
+
+  const handleVoiceModelChange = (value: string) => {
+    StorageService.setItem("voice_model", value); 
+    setVoiceModel(value);
+  }
+
   if (isInitializing || isLoading || !scriptData || !scenarios) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -521,7 +536,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                           max={2}
                           step={0.1}
                           value={[voiceSpeed]}
-                          onValueChange={(value) => setVoiceSpeed(value[0])}
+                          onValueChange={(value) => handleVoiceSpeedChange(value[0])}
                         />
                       </div>
                       <div className="flex justify-between text-xs text-gray-500">
@@ -566,7 +581,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                         <Switch
                           id="background-noise"
                           checked={backgroundSound}
-                          onCheckedChange={setbackgroundSound}
+                          onCheckedChange={handleBackgroundSoundChange}
                         />
                       </div>
                       <p className="text-xs text-gray-500">
@@ -606,7 +621,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                   onContinue={handleSubmit}
                   voiceModelList={voiceModelList}
                   voiceModel={voiceModel}
-                  setVoiceModel={setVoiceModel}
+                  setVoiceModel={handleVoiceModelChange}
                 />
               </div>
               <SuccessDialog 

@@ -73,7 +73,7 @@ export class CampaignService {
   },) {
     try {
       const formData = new FormData();
-      const audience_id = StorageService.getItem("audience_id");
+      const audience_id = JSON.parse(StorageService.getItem("audience_id") ?? "{}");
       formData.append('audience_id', audience_id ?? "");
       formData.append('campaign_name', campaignData.campaign_name);
       formData.append('campaign_description', campaignData.campaign_description);
@@ -88,11 +88,11 @@ export class CampaignService {
           formData.append('assistant_name',scriptFormData.fields[1].messages[0].value);
           formData.append('form_model',JSON.stringify(scriptFormData));
       }
-      formData.append('bg_noice', "false");
-      formData.append('voice_id', "1");
-      formData.append('speed', "1");
-      formData.append('campaign_start_date', new Date().toISOString());
-      formData.append('campaign_end_date', new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toISOString());
+      formData.append('bg_noice', JSON.parse(StorageService.getItem("background_sound") ?? "{}").toString());
+      formData.append('voice_id', JSON.parse(StorageService.getItem("voice_model") ?? "{}").toString());
+      formData.append('speed', JSON.parse(StorageService.getItem("voice_speed") ?? "{}").toString());
+      formData.append('campaign_start_date', new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/(\d+)\/(\d+)\/(\d+),\s(\d+):(\d+):(\d+)/, '$3-$1-$2 $4:$5:$6'));
+      formData.append('campaign_end_date', new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/(\d+)\/(\d+)\/(\d+),\s(\d+):(\d+):(\d+)/, '$3-$1-$2 $4:$5:$6'));
       
       const response = await axios.post(`${this.baseURL}/campaign/create`, formData, {
         headers: {
