@@ -78,8 +78,6 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
   const [scenarioValues, setScenarioValues] = useState<Record<string, Record<string, string>>>({});
  
 
-
-  // Memoize computed fields to avoid re-creation on every render.
   const basicFields = useMemo(
     () => {
       const fields = script.form.filter(
@@ -158,31 +156,28 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
   };
 
   const handleSave = (): void => {
-
     const updatedScript: EditorScript = {
       ...script,
       form: script.form.map((field) => {
-        if (basicValues[field.id]) {
-          return {
-            ...field,
-            value: basicValues[field.id],
-            messages: field.messages?.map(message => {
-              if (message.speaker === "agent" && message.fieldId === field.id) {
-                return {
-                  ...message,
-                  content: basicValues[field.id],
-                  value: basicValues[field.id]
-                };
-              }
-              return message;
-            })
-          };
+        const updatedField = { ...field };
+        delete updatedField.value; // Remove any field-level value
+        
+        if (field.messages && basicValues[field.id]) {
+          updatedField.messages = field.messages.map(message => {
+            if (message.speaker === "agent") {
+              return {
+                ...message,
+                value: basicValues[field.id]
+              };
+            }
+            return message;
+          });
         }
-        return field;
+        return updatedField;
       }),
     };
 
-    // Convert scenarios array to object format for saving
+
     const updatedScenarios: Scenarios = {};
     scenarios.forEach((scenario) => {
       const updatedSteps = scenario.steps.map((step) => {

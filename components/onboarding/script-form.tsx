@@ -185,10 +185,11 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       id: script.id,
       industry: script.industry,
       description: script.description,
-      form: script.fields.map((field) => ({
-        ...field,
-        value: field.value || "",
-      })),
+      form: script.fields.map((field) => {
+        const convertedField = { ...field };
+        delete convertedField.value;
+        return convertedField;
+      }),
       value: script.value,
     };
   };
@@ -203,10 +204,12 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       name: updatedScript.id,
       description: updatedScript.description,
       industry: updatedScript.industry,
-      fields: updatedScript.form.map((field) => ({
-        ...field,
-        value: field.value || "",
-      })),
+      fields: updatedScript.form.map((field) => {
+        const formattedField = { ...field };
+        // Remove field-level value, as values should only exist in messages
+        delete formattedField.value;
+        return formattedField;
+      }),
       scenarios: Array.isArray(updatedScenarios) 
         ? updatedScenarios 
         : Object.values(updatedScenarios),
@@ -223,7 +226,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       fields: formattedScript.fields,
     });
     setScenarios(formattedScript.scenarios);
-     console.log(formattedScript);
+    console.log(formattedScript);
     StorageService.setItem(scriptFormKey, JSON.stringify(formattedScript));
   };
 
@@ -379,7 +382,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
                     Configure Your AI Agent Script
                   </h1>
                   <h2 className="text-lg font-semibold text-gray-600">
-                    {scriptData.name} - {formatUseCase(useCase)}
+                    Use case : {formatUseCase(useCase)}
                   </h2>
                   <p className="text-gray-600 text-sm mt-2">
                     {scriptData.description}

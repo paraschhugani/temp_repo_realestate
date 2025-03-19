@@ -18,7 +18,7 @@ export class CampaignService {
         const formData = new FormData();
         formData.append('user_id', campaignData.userID);
         formData.append('phone_number', campaignData.phone_number);
-        formData.append('bg_noice', campaignData.backgroundSound.toString());
+        formData.append('bg_noice', campaignData.backgroundSound ? "true" : "false");
         formData.append('voice_id', campaignData.voiceModel);
         formData.append('speed', campaignData.voiceSpeed.toString());
         // formData.append('company_name', campaignData.companyName);
@@ -28,9 +28,9 @@ export class CampaignService {
         const scriptForm = StorageService.getItem(scriptFormKey);
         if (scriptForm) {
             const scriptFormData = JSON.parse(JSON.parse(scriptForm));
-            formData.append('company_name', scriptFormData.fields[0].value);
+            formData.append('company_name', scriptFormData.fields[0].messages[0].value);
             formData.append('app_name', "googlecalender");
-            formData.append('assistant_name',scriptFormData.fields[1].value);
+            formData.append('assistant_name',scriptFormData.fields[1].messages[0].value);
             formData.append('form_model',JSON.stringify(scriptFormData));
         }
       
