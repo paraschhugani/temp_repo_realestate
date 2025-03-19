@@ -56,9 +56,11 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
     if (!providerId) return
     setIsLoading(true)
     try {
+      // get current domain
+      const domain = window.location.hostname;
       const token = await getToken();
       const integrationService = new IntegrationService();
-      const data = await integrationService.initializeIntegration(userId ?? "", token ?? "", providerId, "localhost:3000");
+      const data = await integrationService.initializeIntegration(userId ?? "", token ?? "", providerId, domain);
       const redirectUrl = data.data.redirect_url;
       if (redirectUrl) {
         window.open(redirectUrl, '_blank');
