@@ -21,11 +21,7 @@ const providers: Provider[] = [
     name: "Typeform",
     logo: Typeform,
   }, 
-  {
-    id: "google-sheet",
-    name: "Google Sheet",
-    logo: Typeform,
-  }
+
 
 ]
 
@@ -80,11 +76,11 @@ export function AudienceStep({ useCase, onComplete }: AudienceStepProps) {
               <span className="mx-4 text-gray-500">Or</span>
               <div className="w-1/2 h-px bg-gray-200"></div>
             </div>
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-4 justify-center">
           {providers.map((provider) => (
             <div 
               key={provider.id}
-              className="flex-1 p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer flex items-center justify-center"
+              className="flex-1 p-4 rounded-lg border border-gray-200 hover:border-gray-300 max-w-[200px] hover:shadow-sm transition-all cursor-pointer flex items-center justify-center"
               onClick={() => handleConnect(provider.id)}
             >
               <div className="w-32">

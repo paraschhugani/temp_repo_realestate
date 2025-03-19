@@ -80,7 +80,8 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
       const data = await integrationService.checkIntegrationConnection(userId ?? "", token ?? "", selectedProvider);
       if(data.data.is_connected){
         toastService.success("Integration connected successfully!");
-        router.push(`/launch/${useCase}/configure`);
+        // router.push(`/launch/${useCase}/configure`);
+        router.push(`/launch/${useCase}/audience`);
       } else {
         toastService.warning("Integration connection failed. Please check your integration and try again.");
         setSelectedProvider("");
