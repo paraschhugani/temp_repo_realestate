@@ -93,6 +93,28 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
     [script.form]
   );
 
+  // Add this helper function at the top of the component
+  const replacePlaceholders = (content: string, companyName?: string, agentName?: string) => {
+    let updatedContent = content;
+    if (companyName) {
+      updatedContent = updatedContent.replace(/\[Company Name\]/g, companyName);
+    }
+    if (agentName) {
+      updatedContent = updatedContent.replace(/\[Agent Name\]/g, agentName);
+    }
+    return updatedContent;
+  };
+
+  const STORAGE_KEY = `script_editor_${script.id}`;
+
+  const getStoredValues = () => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  };
+
+  const storeValues = (values: any) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+  };
 
   useEffect(() => {
     const initialBasicValues: Record<string, string> = {};
@@ -108,21 +130,32 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
       }
     });
     
+    // Try to get stored values first
+    const storedValues = getStoredValues();
+    if (storedValues) {
+      setBasicValues(storedValues.basicValues);
+      setScenarioValues(storedValues.scenarioValues);
+      return;
+    }
+
     setBasicValues(initialBasicValues);
 
     const initialScenarioValues: Record<string, Record<string, string>> = {};
     
     if (Array.isArray(scenarios)) {
+      const companyName = initialBasicValues.companyName;
+      const agentName = initialBasicValues.agentName;
+
       scenarios.forEach((scenario) => {
         const scenarioVal: Record<string, string> = {};
         
-        // Process messages from all steps
         if (scenario.steps && Array.isArray(scenario.steps)) {
           scenario.steps.forEach((step) => {
             if (step.messages && Array.isArray(step.messages)) {
               step.messages.forEach((message) => {
-                if (message.speaker === "agent" && message.fieldId) {
-                  scenarioVal[message.fieldId] = message.content || message.value || "";
+                if (message.fieldId) {
+                  const baseContent = message.content || message.value || "";
+                  scenarioVal[message.fieldId] = replacePlaceholders(baseContent, companyName, agentName);
                 }
               });
             }
@@ -133,26 +166,100 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
       });
     }
     setScenarioValues(initialScenarioValues);
+
+    // Store initial values
+    storeValues({
+      basicValues: initialBasicValues,
+      scenarioValues: initialScenarioValues
+    });
    
   }, [script, scenarios, basicFields, scenarioFields]);
 
- 
-
   const handleBasicChange = (id: string, value: string): void => {
-    setBasicValues((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
+    setBasicValues((prev) => {
+      const newBasicValues = {
+        ...prev,
+        [id]: value,
+      };
+
+      // Update scenario messages when company name or agent name changes
+      if (id === "companyName" || id === "agentName") {
+        const updatedScenarios = { ...scenarioValues };
+        
+        scenarios.forEach((scenario) => {
+          const scenarioValues = { ...updatedScenarios[scenario.id] };
+          
+          scenario.steps.forEach((step) => {
+            step.messages.forEach((message) => {
+              if (message.fieldId) {
+                const baseContent = message.content || message.value || "";
+                scenarioValues[message.fieldId] = replacePlaceholders(
+                  baseContent,
+                  id === "companyName" ? value : newBasicValues.companyName,
+                  id === "agentName" ? value : newBasicValues.agentName
+                );
+              }
+            });
+          });
+          
+          updatedScenarios[scenario.id] = scenarioValues;
+        });
+
+        setScenarioValues(updatedScenarios);
+        
+        // Store updated values
+        storeValues({
+          basicValues: newBasicValues,
+          scenarioValues: updatedScenarios
+        });
+
+        // Update basic fields that contain placeholders
+        script.form.forEach((field) => {
+          if (field.messages) {
+            field.messages.forEach((message) => {
+              if (message.speaker === "agent" && message.value) {
+                const updatedContent = replacePlaceholders(
+                  message.value,
+                  id === "companyName" ? value : newBasicValues.companyName,
+                  id === "agentName" ? value : newBasicValues.agentName
+                );
+                if (updatedContent !== message.value) {
+                  newBasicValues[field.id] = updatedContent;
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // Store the final values
+      storeValues({
+        basicValues: newBasicValues,
+        scenarioValues
+      });
+
+      return newBasicValues;
+    });
   };
 
   const handleScenarioChange = (scenarioId: string, fieldId: string, value: string): void => {
-    setScenarioValues((prev) => ({
-      ...prev,
-      [scenarioId]: {
-        ...(prev[scenarioId] || {}),
-        [fieldId]: value,
-      },
-    }));
+    setScenarioValues((prev) => {
+      const newScenarioValues = {
+        ...prev,
+        [scenarioId]: {
+          ...(prev[scenarioId] || {}),
+          [fieldId]: value,
+        },
+      };
+
+      // Store updated values
+      storeValues({
+        basicValues,
+        scenarioValues: newScenarioValues
+      });
+
+      return newScenarioValues;
+    });
   };
 
   const handleSave = (): void => {
