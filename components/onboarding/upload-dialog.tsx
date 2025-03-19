@@ -66,6 +66,7 @@ export function UploadDialog({ open, onOpenChange, onUploadSuccess }: UploadDial
           }
           reader.readAsText(file)
         } catch (error: any) {
+          console.log(error);
           setError(error.message || "Failed to create audience")
         } finally {
           setIsLoading(false)
@@ -135,7 +136,7 @@ export function UploadDialog({ open, onOpenChange, onUploadSuccess }: UploadDial
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-              }} variant="link" className="p-0 h-auto text-black hover:text-black">
+              }} variant="link" className="p-0 h-auto text-blue-500 hover:text-black">
                 Download our CSV
               </Button>{" "}
               template to make sure your CSV is formatted correctly.

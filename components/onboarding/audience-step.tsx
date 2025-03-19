@@ -39,7 +39,8 @@ export function AudienceStep({ useCase, onComplete }: AudienceStepProps) {
     if (onComplete) {
       onComplete()
     } else {
-      router.push(`/launch/${useCase}/aquire-phone`)
+      // router.push(`/launch/${useCase}/aquire-phone`)
+      router.push(`/launch/${useCase}/launch-agent`)
     }
   }
 

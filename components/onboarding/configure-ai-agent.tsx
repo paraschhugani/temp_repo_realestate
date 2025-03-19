@@ -31,6 +31,7 @@ import { AIModelService } from "@/services/ai-model-service"
 import { CampaignService } from "@/services/campaign-service"
 import { useAuth } from "@clerk/nextjs"
 import { toastService } from "@/services/toast-service"
+import { SuccessDialog } from "../ui/success-dialog"
 
 const NODE_WIDTH = 200
 const NODE_HEIGHT = 100

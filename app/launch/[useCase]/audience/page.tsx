@@ -1,5 +1,3 @@
-"use client"
-
 import { use } from "react"
 import { AudienceStep } from "@/components/onboarding/audience-step"
 

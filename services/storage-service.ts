@@ -18,3 +18,4 @@ export class StorageService {
 
 // STORAGE KEY CONSTANTS
 export const scriptFormKey = 'script-form'
+export const audienceIdKey = 'audience_id'

@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { CampaignService } from "@/services/campaign-service";
+import { SuccessDialog } from "../ui/success-dialog";
 
 interface ScriptField {
   id: string;
@@ -90,10 +91,10 @@ interface ScriptResponse {
 
 interface ScriptFormProps {
   useCase: string;
-  onSubmit?: () => void;
+  showLaunchAgent?: boolean;
 }
 
-export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
+export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const campaignService = useMemo(() => new CampaignService(), [])
   const [scriptData, setScriptData] = useState<Script | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[] | null>(null);
@@ -108,10 +109,12 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const [backgroundSound, setbackgroundSound] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isTestingAgent, setIsTestingAgent] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)
   const router = useRouter();
   const { getToken, isSignedIn, isLoaded, userId } = useAuth();
   const configSectionRef = useRef<HTMLDivElement>(null)
   const [phoneNumberError, setPhoneNumberError] = useState("")
+  const [isLaunchingAgent, setIsLaunchingAgent] = useState(false);
   useEffect(() => {
     let isMounted = true;
 
@@ -233,26 +236,18 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
   const handleSubmit = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      // if (scriptData && scenarios) {
-      //   // Save current state before proceeding
-      //   const dataToSave = {
-      //     script: scriptData,
-      //     scenarios: scenarios,
-      //   };
-
-      //   StorageService.setItem(scriptFormKey, JSON.stringify(dataToSave));
-      // }
-
-      if (onSubmit) {
-        onSubmit();
-      } else {
-        // router.push(`/launch/${useCase}/integration`);
-      }
+      setIsSuccessDialogOpen(true);
+     
+      
     } catch (err) {
       console.error("Failed to submit form:", err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleContinueToIntegration = () => {
+    router.push(`/launch/${useCase}/audience`);
   };
 
   useEffect(() => {
@@ -344,8 +339,27 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
       setIsTesting(false);
     }
   
-}
+  }
 
+  const handleLaunchAgent = async () => {
+    setIsLaunchingAgent(true);
+    try {
+      const token = await getToken();
+      await campaignService.launchAgent({
+        campaign_name : "Test Campaign",
+        campaign_description : "Test Campaign Description",
+        campaign_status : "active",
+        userID : userId ?? "",
+        token : token ?? ""
+      });
+      toastService.success("Campaign launched successfully!");
+      setIsLaunchingAgent(false);
+    } catch (error) {
+      toastService.error("Failed to launch campaign");
+    } finally {
+      setIsLaunchingAgent(false);
+    }
+  }
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     if (value.length <= 10) {
@@ -389,7 +403,7 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
                   </p>
                 </div>
                
-                <div className="mt-4 md:mt-0">
+                <div className="mt-4 md:mt-0 flex flex-row gap-4">
                   <Button
                     onClick={() => setIsTestDialogOpen(true)}
                     className="bg-black hover:bg-gray-800 text-white rounded-lg px-8 py-3 text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center"
@@ -397,6 +411,14 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
                     <Phone className="mr-2 h-5 w-5" />
                     Test Agent
                   </Button>
+                  {showLaunchAgent && (
+                    <Button
+                      onClick={handleLaunchAgent}
+                      className="bg-black hover:bg-gray-800 text-white rounded-lg px-8 py-3 text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center"
+                    >
+                      Launch Agent
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -587,6 +609,11 @@ export function ScriptForm({ useCase, onSubmit }: ScriptFormProps) {
                   setVoiceModel={setVoiceModel}
                 />
               </div>
+              <SuccessDialog 
+        open={isSuccessDialogOpen} 
+        onOpenChange={setIsSuccessDialogOpen}
+        onContinue={handleContinueToIntegration}
+      />    
             </>
           )}
         </motion.div>

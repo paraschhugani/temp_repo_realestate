@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { audienceIdKey, StorageService } from "./storage-service";
 interface Audience {
   audience_name: string;
   audience_description: string;
@@ -28,15 +28,22 @@ export class AudienceService {
           },
         }
       );
-      return response.data;
-    } catch (error: any) {
-      if (error.response.status === 401) {
-        throw new Error("Unauthorized");
-      } else if (error.response.status === 400) {
-        throw new Error(error.response.data.message);
+      if(response.status === 200) {
+        console.log(response.data);
+       const audience_id = response.data.audience_id || "";
+       console.log(audience_id);
+       if(audience_id !== "") {
+        StorageService.setItem(audienceIdKey, audience_id);
+       } else {
+        throw new Error(response.data.message);
+       }
       } else {
-        throw new Error("Something went wrong");
+        throw new Error(response.data.message);
       }
+    } catch (error: any) {
+       console.log(error);
+        throw new Error("Something went wrong");
+      
     }   
   }
 

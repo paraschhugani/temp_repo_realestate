@@ -1,5 +1,3 @@
-
-
 import { ScriptForm } from "@/components/onboarding/script-form"
 
 interface FormPageProps {

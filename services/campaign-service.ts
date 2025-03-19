@@ -62,6 +62,53 @@ export class CampaignService {
       throw error;
     }
   }
-} 
 
+  async launchAgent(campaignData: {
+
+    campaign_name : string;
+    campaign_description: string;
+    campaign_status : string; 
+    userID : string;
+    token : string;
+  },) {
+    try {
+      const formData = new FormData();
+      const audience_id = StorageService.getItem("audience_id");
+      formData.append('audience_id', audience_id ?? "");
+      formData.append('campaign_name', campaignData.campaign_name);
+      formData.append('campaign_description', campaignData.campaign_description);
+      formData.append('campaign_status', campaignData.campaign_status);
+      formData.append('plivo_phone_number', "918035736949");
+      formData.append('user_id', campaignData.userID);
+      formData.append('app_name', "googlecalender");
+      const scriptForm = StorageService.getItem(scriptFormKey);
+      if (scriptForm) {
+          const scriptFormData = JSON.parse(JSON.parse(scriptForm));
+          formData.append('company_name', scriptFormData.fields[0].messages[0].value);
+          formData.append('assistant_name',scriptFormData.fields[1].messages[0].value);
+          formData.append('form_model',JSON.stringify(scriptFormData));
+      }
+      formData.append('bg_noice', "false");
+      formData.append('voice_id', "1");
+      formData.append('speed', "1");
+      formData.append('campaign_start_date', new Date().toISOString());
+      formData.append('campaign_end_date', new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toISOString());
+      
+      const response = await axios.post(`${this.baseURL}/campaign/create`, formData, {
+        headers: {
+          "Authorization" : `Bearer ${campaignData.token}`,
+         'Content-Type': 'application/json',
+        }
+      });
+      toastService.success("Campaign launched successfully!");
+      console.log(response.data);
+      return response.data;
+
+
+    }catch (error: any) {
+      console.error("Error launching agent:", error);
+      throw error;
+    }
+  }
+} 
 
