@@ -1,15 +1,12 @@
-import { notFound } from "next/navigation"
+"use client"
+import { notFound, useParams } from "next/navigation"
 import { UseCasesService } from "@/services/use-cases-service"
 import { IndustryPageContent } from "@/components/use-case/IndustryPageContent"
 
-interface PageProps {
-  params: Promise<{ industry: string }> | { industry: string }
-}
-
-export default async function IndustryPage({ params }: PageProps) {
+export default async function IndustryPage() {
   try {
-    const resolvedParams = await params
-    const industry = resolvedParams.industry.toLowerCase()
+    const params = useParams();
+    const industry = params.industry as string;
     const industryData = await UseCasesService.getIndustryData(industry)
 
     if (!industryData) {
