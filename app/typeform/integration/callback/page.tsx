@@ -1,36 +1,36 @@
 "use client"
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { IntegrationService } from "@/services/integration-service";
 import { useEffect, useState } from "react";
 import { Suspense } from 'react'
 
 export default function TypeformCallbackPage() {
-    const searchParams = useSearchParams();
-    const code = searchParams.get('code');
-    const { getToken, userId } = useAuth();
-    const [success , setSuccess] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    // const searchParams = useSearchParams();
+    // const code = searchParams.get('code');
+    // const { getToken, userId } = useAuth();
+    // const [success , setSuccess] = useState(false);
+    // const [isLoading, setIsLoading] = useState(true);
 
     
-    useEffect(() => {
-        const checkConnection = async () => {
-            setIsLoading(true);
-            const token = await getToken();
-            const integrationService = new IntegrationService();
-            const isValid = await integrationService.checkTypeformConnection(userId ?? " ", token ?? " ", code ?? " ");
-            if(isValid){
-                setSuccess(true);
-            }
-            setIsLoading(false);
-        }
-        checkConnection();
-    }, [code, getToken, userId]);
+    // useEffect(() => {
+    //     const checkConnection = async () => {
+    //         setIsLoading(true);
+    //         const token = await getToken();
+    //         const integrationService = new IntegrationService();
+    //         const isValid = await integrationService.checkTypeformConnection(userId ?? " ", token ?? " ", code ?? " ");
+    //         if(isValid){
+    //             setSuccess(true);
+    //         }
+    //         setIsLoading(false);
+    //     }
+    //     checkConnection();
+    // }, [code, getToken, userId]);
     
     return (
       <Suspense>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+      {/* <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
         <div className="text-center">
           {isLoading ? (
             <>
@@ -73,7 +73,7 @@ export default function TypeformCallbackPage() {
               )}
             </>
           )}
-          
+           */}
           {/* Debug information - comment out in production */}
           {/* <div className="mt-6 text-sm text-gray-500 border-t pt-4">
             <p>App Name: {appName}</p>
@@ -82,8 +82,8 @@ export default function TypeformCallbackPage() {
             <p>Connected Account ID: {connectedAccountId}</p>
             <p>Status: {status}</p>
           </div> */}
-        </div>
-      </div>
+        {/* </div> */}
+      {/* </div> */}
     </div>
     </Suspense>
     )
