@@ -115,6 +115,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const configSectionRef = useRef<HTMLDivElement>(null)
   const [phoneNumberError, setPhoneNumberError] = useState("")
   const [isLaunchingAgent, setIsLaunchingAgent] = useState(false);
+  const scriptEditorRef = useRef<{ handleSave: () => void } | null>(null);
   useEffect(() => {
     let isMounted = true;
 
@@ -236,9 +237,9 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const handleSubmit = async (): Promise<void> => {
     setIsLoading(true);
     try {
+
+      scriptEditorRef.current?.handleSave();
       setIsSuccessDialogOpen(true);
-     
-      
     } catch (err) {
       console.error("Failed to submit form:", err);
     } finally {
@@ -247,7 +248,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   };
 
   const handleContinueToIntegration = () => {
-    router.push(`/launch/${useCase}/audience`);
+    router.push(`/launch/${useCase}/integration`);
   };
 
   useEffect(() => {
@@ -308,6 +309,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const handleTestAgent = async () => {
     setIsTesting(true);
     try {
+      scriptEditorRef.current?.handleSave(); // save updated script to localstorage
       const digitsOnly = phoneNumber.replace(/\D/g, '');
       if (digitsOnly.length < 10) {
         setPhoneNumberError("Please enter a valid phone number with at least 10 digits");
@@ -615,6 +617,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
 
               <div className="bg-white shadow-md rounded-lg p-6 mb-8">
                 <ScriptEditor
+                  ref={scriptEditorRef}
                   script={convertToEditorScript(scriptData)}
                   scenarios={scenarios}
                   onSave={handleSave}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Save } from "lucide-react";
@@ -72,7 +72,8 @@ interface ScriptEditorProps {
   setVoiceModel: (voiceModel: string) => void;
 }
 
-export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel }: ScriptEditorProps) {
+export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorProps>(
+  ({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel }, ref) => {
   const [activeTab, setActiveTab] = useState("basic");
   const [basicValues, setBasicValues] = useState<Record<string, string>>({});
   const [scenarioValues, setScenarioValues] = useState<Record<string, Record<string, string>>>({});
@@ -262,61 +263,62 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
     });
   };
 
-  const handleSave = (): void => {
-    const updatedScript: EditorScript = {
-      ...script,
-      form: script.form.map((field) => {
-        const updatedField = { ...field };
-        delete updatedField.value; // Remove any field-level value
-        
-        if (field.messages && basicValues[field.id]) {
-          updatedField.messages = field.messages.map(message => {
-            if (message.speaker === "agent") {
-              return {
-                ...message,
-                value: basicValues[field.id]
-              };
+  // Expose handleSave method via ref
+  useImperativeHandle(ref, () => ({
+    handleSave: () => {
+      const updatedScript: EditorScript = {
+        ...script,
+        form: script.form.map((field) => {
+          const updatedField = { ...field };
+          delete updatedField.value;
+          
+          if (field.messages && basicValues[field.id]) {
+            updatedField.messages = field.messages.map(message => {
+              if (message.speaker === "agent") {
+                return {
+                  ...message,
+                  value: basicValues[field.id]
+                };
+              }
+              return message;
+            });
+          }
+          return updatedField;
+        }),
+      };
+
+      const updatedScenarios: Scenarios = {};
+      scenarios.forEach((scenario) => {
+        const updatedSteps = scenario.steps.map((step) => {
+          const updatedMessages = step.messages.map((message) => {
+            if (message.speaker === "agent" && message.fieldId) {
+              const value = scenarioValues[scenario.id]?.[message.fieldId];
+              if (value) {
+                return {
+                  ...message,
+                  content: value,
+                  value: value
+                };
+              }
             }
             return message;
           });
-        }
-        return updatedField;
-      }),
-    };
-
-
-    const updatedScenarios: Scenarios = {};
-    scenarios.forEach((scenario) => {
-      const updatedSteps = scenario.steps.map((step) => {
-        const updatedMessages = step.messages.map((message) => {
-          if (message.speaker === "agent" && message.fieldId) {
-            const value = scenarioValues[scenario.id]?.[message.fieldId];
-            if (value) {
-              return {
-                ...message,
-                content: value,
-                value: value
-              };
-            }
-          }
-          return message;
+          
+          return {
+            ...step,
+            messages: updatedMessages,
+          };
         });
         
-        return {
-          ...step,
-          messages: updatedMessages,
+        updatedScenarios[scenario.id] = {
+          ...scenario,
+          steps: updatedSteps,
         };
       });
-      
-      updatedScenarios[scenario.id] = {
-        ...scenario,
-        steps: updatedSteps,
-      };
-    });
 
-    onSave(updatedScript, updatedScenarios);
-  };
-
+      onSave(updatedScript, updatedScenarios);
+    }
+  }));
 
   if (!script || !Array.isArray(scenarios) || scenarios.length === 0) {
     return null;
@@ -358,7 +360,7 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
       </Tabs>
 
       <div className="flex justify-between pt-6 border-t">
-        <Button onClick={handleSave} variant="outline">
+        <Button onClick={() => ref && typeof ref === 'object' && ref.current?.handleSave()} variant="outline">
           <Save className="mr-2 h-4 w-4" />
           Save Changes
         </Button>
@@ -369,4 +371,4 @@ export function ScriptEditor({ script, scenarios, onSave, onContinue, voiceModel
       </div>
     </div>
   );
-}
+});
