@@ -43,6 +43,7 @@ export class UseCasesService {
   private static baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
   static async getIndustryData(industry: string): Promise<IndustryData | null> {
+    
     try {
       if (!this.baseUrl) {
         return mockIndustryData.default;

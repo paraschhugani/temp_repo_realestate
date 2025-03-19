@@ -1,4 +1,4 @@
-"use client"
+
 
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -9,14 +9,14 @@ interface UseCase {
   features: { title: string }[]
 }
 
-interface IndustryData {
+export interface IndustryData {
   title: string
   description: string
   useCases: Record<string, UseCase>
 }
 
 interface IndustryPageContentProps {
-  industryData: IndustryData
+  industryData: IndustryData 
   industry: string
 }
 

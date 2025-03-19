@@ -1,28 +1,36 @@
 "use client"
-import { notFound, useParams } from "next/navigation";
-import { UseCasesService } from "@/services/use-cases-service";
-import UseCasePageContent from "@/components/use-case/use-case-page-content";
+import { notFound, useParams } from "next/navigation"
+import { UseCasesService } from "@/services/use-cases-service"
+import UseCasePageContent from "@/components/use-case/use-case-page-content"
+import { useState, useEffect } from "react";
 
 
 
-export default async function UseCasePage() {
-  const params = useParams();
-  const industry = params.industry as string;
+export default function UseCasePage() {
+ const  params = useParams();
+ const industry = params.industry as string;
   const useCase = params.useCase as string;
-  const industryLower = industry.toLowerCase();
-  const useCaseLower = useCase.toLowerCase();
 
-  const useCaseData = await UseCasesService.getUseCaseData(industryLower, useCaseLower);
+  const [useCaseData, setUseCaseData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const fetchUseCaseData = async () => {
+      setIsLoading(true);
+      const data = await UseCasesService.getUseCaseData(industry, useCase);
+      setUseCaseData(data);
+      setIsLoading(false);
+    };
+    fetchUseCaseData();
+  }, [industry, useCase]);
 
-  if (!useCaseData) {
-    notFound();
+  if(isLoading) {
+    return <div>Loading...</div>
   }
 
-  return (
-    <UseCasePageContent
-      useCaseData={useCaseData}
-      industry={industryLower}
-      useCase={useCaseLower}
-    />
-  );
+  if(!useCaseData) {
+    notFound()
+  }
+
+  return <UseCasePageContent useCaseData={useCaseData} industry={industry} useCase={useCase} />
 }
+

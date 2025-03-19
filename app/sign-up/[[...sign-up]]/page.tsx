@@ -1,13 +1,11 @@
+"use client"
 import { SignUp } from '@clerk/nextjs'
-import React from 'react'
+import { useSearchParams } from 'next/navigation'
 
-const SignUpPage = ({
-  searchParams,
-}: {
-  searchParams: { redirect_url?: string }
-}) => {
+export default function SignUpPage() {
+  const searchParams = useSearchParams()
   // Get the redirect URL from the search params or use the default
-  const redirectUrl = searchParams.redirect_url || '/'
+  const redirectUrl = searchParams.get('redirect_url') || '/'
 
   return (
     <main className="flex h-screen w-full items-center justify-center">
@@ -19,5 +17,3 @@ const SignUpPage = ({
     </main>
   )
 }
-
-export default SignUpPage

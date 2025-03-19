@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { IntegrationService } from "@/services/integration-service";
 import { useEffect, useState } from "react";
+import { Suspense } from 'react'
 
 export default function TypeformCallbackPage() {
     const searchParams = useSearchParams();
@@ -27,6 +28,7 @@ export default function TypeformCallbackPage() {
     }, [code, getToken, userId]);
     
     return (
+      <Suspense>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
         <div className="text-center">
@@ -83,5 +85,6 @@ export default function TypeformCallbackPage() {
         </div>
       </div>
     </div>
+    </Suspense>
     )
 }

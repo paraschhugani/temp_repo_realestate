@@ -4,6 +4,9 @@ const nextConfig = {
   images: {
     domains: ['cdn.prod.website-files.com'],
   },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
