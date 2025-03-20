@@ -11,14 +11,14 @@ export class OnboardingService {
     async getScript(useCaseID: string, token: string) {
        try{
     
-        const scriptForm = StorageService.getItem(scriptFormKey)
-        if (scriptForm ) {
-            const temp = JSON.parse(scriptForm)
-         
+        const scriptForm = StorageService.getCachedScript()
+        if (scriptForm) {
+            const temp =  JSON.parse(JSON.parse(scriptForm));
             if(temp.id === useCaseID) {
-                console.log("scriptForm found in local storage")
+               
                 return temp;
             }else{
+              
                 return null;
             }
         }

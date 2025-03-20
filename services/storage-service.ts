@@ -6,7 +6,7 @@ export class StorageService {
   }
 
   static getItem(key: string) {
-    return JSON.parse(localStorage.getItem(key) || '{}')
+    return JSON.parse(localStorage.getItem(key) ?? "{}")
   }
 
   static removeItem(key: string) {
@@ -33,6 +33,9 @@ export class StorageService {
     localStorage.setItem(scenarioTabViewKey, "true")
   }
 
+  static getCachedScript(){
+   return localStorage.getItem(scriptFormKey);
+  }
 }
 
 

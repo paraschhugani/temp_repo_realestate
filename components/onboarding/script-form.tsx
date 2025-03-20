@@ -122,6 +122,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
           useCase,
           token ?? ""
         );
+
         let data: ScriptResponse;
         if (typeof response === "string") {
           data = JSON.parse(response);
@@ -130,6 +131,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         }
 
         if(data === null) {
+          setIsLoading(false);
           setIsNotFound(true);
           return;
         }
@@ -377,6 +379,10 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     setVoiceModel(value);
   }
 
+  if (isNotFound) {
+    return <ScriptNotFound />;
+  }
+
   if (isInitializing || isLoading || !scriptData || !scenarios) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -385,9 +391,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     );
   }
 
-  if (isNotFound) {
-    return <ScriptNotFound />;
-  }
+ 
 
   return (
     <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
