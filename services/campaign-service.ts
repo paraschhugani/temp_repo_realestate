@@ -41,7 +41,7 @@ export class CampaignService {
           }
         });
         toastService.success("Test call initiated successfully!");
-        console.log(response.data);
+   
         return response.data;
     
      
@@ -98,7 +98,6 @@ export class CampaignService {
         }
       });
       toastService.success("Campaign launched successfully!");
-      console.log(response.data);
       return response.data;
 
 

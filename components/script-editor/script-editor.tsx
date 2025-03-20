@@ -369,7 +369,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-between pt-6 border-t">
+      <div className="flex justify-between pt-6 border-t md:flex-row flex-col">
         <Button onClick={() => ref && typeof ref === 'object' && ref.current?.handleSave()} variant="outline">
           <Save className="mr-2 h-4 w-4" />
           Save Changes

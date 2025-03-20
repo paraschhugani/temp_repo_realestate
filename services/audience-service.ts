@@ -29,9 +29,9 @@ export class AudienceService {
         }
       );
       if(response.status === 200) {
-        console.log(response.data);
+  
        const audience_id = response.data.audience_id || "";
-       console.log(audience_id);
+    
        if(audience_id !== "") {
         StorageService.setItem(audienceIdKey, audience_id);
        } else {

@@ -59,9 +59,9 @@ export function BasicInfoEditor({ basicFields, values, onChange, voiceModelList,
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="flex items-center justify-between gap-2 mb-2 md:flex-row flex-col ">
         <p className="text-base text-gray-500">Configure the header of your script</p>
-        <div className="flex items-center gap-3"> 
+        <div className="flex items-center   gap-3"> 
           <SelectedVoiceModelComponent selectedVoiceName={selectedVoiceName} selectedVoiceID={voiceModel} />
           <VoiceConfigModal
             voiceModelList={voiceModelList}

@@ -17,7 +17,7 @@ export default  function IndustryPage() {
       const fetchIndustryData = async () => {
         setIsLoading(true);
         const data = await UseCasesService.getIndustryData(industry);
-        console.log(data);
+    
         setIndustryData(data as IndustryData);
         setIsLoading(false);
       };

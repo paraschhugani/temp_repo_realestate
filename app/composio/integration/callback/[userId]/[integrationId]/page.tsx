@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 export default function CallbackPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  
+  const channel = new BroadcastChannel("integration");  
   const userId = params.userId as string;
   const integrationId = params.integrationId as string;
   
@@ -18,6 +18,7 @@ export default function CallbackPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
   const { getToken } = useAuth();
+  
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -30,6 +31,7 @@ export default function CallbackPage() {
       setIsLoading(true);
       const integrationService = new IntegrationService();
       const data =  await integrationService.checkIntegrationConnection(userId, clerkToken ?? "", appName ?? "");
+      channel.postMessage(data.data.is_connected);
       setIsConnected(data.data.is_connected);
       setIsLoading(false);
       
