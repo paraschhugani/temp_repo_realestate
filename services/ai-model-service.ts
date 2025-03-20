@@ -1,16 +1,12 @@
 import axios from "axios";
 
-interface TextToSpeechRequest {
-  text: string;
-}
-
 export class AIModelService {
   baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   
 
   async textToSpeech(text: string, voice_id: string): Promise<Blob> {
     try {
-    
+
       const response = await axios.post(
         `${this.baseURL}/text-to-speech`,
         { text, voice_id},

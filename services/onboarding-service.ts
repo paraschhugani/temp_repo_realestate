@@ -13,7 +13,7 @@ export class OnboardingService {
     
         const scriptForm = StorageService.getItem(scriptFormKey)
         if (scriptForm ) {
-            const temp = JSON.parse(JSON.parse(scriptForm))
+            const temp = JSON.parse(scriptForm)
          
             if(temp.id === useCaseID) {
                 console.log("scriptForm found in local storage")

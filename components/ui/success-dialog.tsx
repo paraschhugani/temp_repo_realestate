@@ -1,9 +1,8 @@
 "use client"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { CheckCircle } from "lucide-react"
-
+import ContinueCtaButton from "@/components/continue-cta-button"
 interface SuccessDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -28,16 +27,7 @@ export function SuccessDialog({ open, onOpenChange, onContinue }: SuccessDialogP
               Let's move forward with the integration step.
             </p>
           </div>
-          <Button 
-            className="w-full sm:w-auto"
-            size="lg"
-            onClick={() => {
-              onContinue()
-              onOpenChange(false)
-            }}
-          >
-            Continue to Integration
-          </Button>
+          <ContinueCtaButton text="Continue to Integration" onClick={onContinue} disabled={false} />
         </div>
       </DialogContent>
     </Dialog>

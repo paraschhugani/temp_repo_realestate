@@ -3,14 +3,12 @@
 import { useState, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Save } from "lucide-react";
 import { BasicInfoEditor } from "./basic-info-editor";
 import { ScenarioEditor } from "./scenario-editor";
-import { AIModelService } from "@/services/ai-model-service";
-import { toastService } from "@/services/toast-service";
-import { useAuth } from "@clerk/nextjs";
+import { StorageService } from "@/services/storage-service";
+import ContinueCtaButton from "@/components/continue-cta-button";
+import { Save } from "lucide-react";
 
-// Define interfaces
 interface Message {
   speaker: string;
   content: string;
@@ -66,14 +64,15 @@ interface ScriptEditorProps {
   script: EditorScript;
   scenarios: Scenario[];
   onSave: (updatedScript: EditorScript, updatedScenarios: Scenarios) => void;
-  onContinue: () => void;
+  onContinue: (setActiveTab: (activeTab: string) => void) => void;
   voiceModelList: Record<string, any>;
   voiceModel: string;
   setVoiceModel: (voiceModel: string) => void;
+  showLaunchAgent: boolean;
 }
 
 export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorProps>(
-  ({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel }, ref) => {
+  ({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel, showLaunchAgent }, ref) => {
   const [activeTab, setActiveTab] = useState("basic");
   const [basicValues, setBasicValues] = useState<Record<string, string>>({});
   const [scenarioValues, setScenarioValues] = useState<Record<string, Record<string, string>>>({});
@@ -320,9 +319,20 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
     }
   }));
 
+  const getContinueText = () => {
+    if(!StorageService.getScenarioTabViewed()){
+      return "Continue with Scenarios"
+    }else if(!StorageService.getTestAgentButtonClicked()){
+      return "Test Agent"
+    }else{
+      return "Continue with Integration"
+    }
+  }
+
   if (!script || !Array.isArray(scenarios) || scenarios.length === 0) {
     return null;
   }
+
 
   return (
     <div className="space-y-6">
@@ -364,10 +374,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
           <Save className="mr-2 h-4 w-4" />
           Save Changes
         </Button>
-        <Button onClick={onContinue}>
-          Continue
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+       { !showLaunchAgent &&  <ContinueCtaButton text={getContinueText()} onClick={() => onContinue(setActiveTab)} disabled={false} />}
       </div>
     </div>
   );

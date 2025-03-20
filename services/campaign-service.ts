@@ -24,7 +24,7 @@ export class CampaignService {
   
         const scriptForm = StorageService.getItem(scriptFormKey);
         if (scriptForm) {
-            const scriptFormData = JSON.parse(JSON.parse(scriptForm));
+            const scriptFormData = JSON.parse(scriptForm);
             formData.append('company_name', scriptFormData.fields[0].messages[0].value);
             formData.append('app_name', "googlecalender");
             formData.append('assistant_name',scriptFormData.fields[1].messages[0].value);
@@ -80,14 +80,14 @@ export class CampaignService {
       formData.append('app_name', "googlecalender");
       const scriptForm = StorageService.getItem(scriptFormKey);
       if (scriptForm) {
-          const scriptFormData = JSON.parse(JSON.parse(scriptForm));
+          const scriptFormData = JSON.parse(scriptForm);
           formData.append('company_name', scriptFormData.fields[0].messages[0].value);
           formData.append('assistant_name',scriptFormData.fields[1].messages[0].value);
           formData.append('form_model',JSON.stringify(scriptFormData));
       }
-      formData.append('bg_noice', JSON.parse(StorageService.getItem("background_sound") ?? "false").toString());
-      formData.append('voice_id', JSON.parse(StorageService.getItem("voice_model") ?? "{}").toString());
-      formData.append('speed', JSON.parse(StorageService.getItem("voice_speed") ?? "1").toString());
+      formData.append('bg_noice', StorageService.getItem("background_sound") ?? "false");
+      formData.append('voice_id', StorageService.getItem("voice_model") ?? "");
+      formData.append('speed', StorageService.getItem("voice_speed") ?? "1");
       formData.append('campaign_start_date', new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/(\d+)\/(\d+)\/(\d+),\s(\d+):(\d+):(\d+)/, '$3-$1-$2 $4:$5:$6'));
       formData.append('campaign_end_date', new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/(\d+)\/(\d+)\/(\d+),\s(\d+):(\d+):(\d+)/, '$3-$1-$2 $4:$5:$6'));
       

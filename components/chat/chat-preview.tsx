@@ -22,6 +22,7 @@ interface ChatPreviewProps {
 }
 
 export function ChatPreview({ messages, onAudioToggle, isSpeakerLoading, playingAudio, setVoiceModel, voiceModelList, voiceModel }: ChatPreviewProps) {
+
   return (
     <div>
       <h3 className="text-lg font-medium text-gray-900 pb-2">Conversation Preview</h3>
@@ -50,7 +51,7 @@ export function ChatPreview({ messages, onAudioToggle, isSpeakerLoading, playing
                 </div> */}
       <Card>
         <CardContent className="p-4">
-          <ScrollArea className="h-[500px] pr-4">
+          <ScrollArea className="pr-4">
             <div className="space-y-4">
               {messages.map((message, index) => (
                 <ChatMessage

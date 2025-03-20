@@ -3,9 +3,9 @@
 import { ScriptField } from "./script-field"
 import { ChatPreview } from "../chat/chat-preview"
 import { useAudioPlayer } from "@/hooks/use-audio-player"
-import { VoiceConfigModal } from "../voice-config/voice-config-modal"
+import SelectedVoiceModelComponent, { VoiceConfigModal } from "../dialogues/voice-config-modal"
 import { Volume2 } from "lucide-react"
-
+import IIcon from "@/components/ui/i-icon-comp"
 interface Message {
   speaker: string
   content?: string
@@ -61,11 +61,8 @@ export function BasicInfoEditor({ basicFields, values, onChange, voiceModelList,
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-2 mb-2">
         <p className="text-base text-gray-500">Configure the header of your script</p>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-2 py-1 border rounded-md text-sm text-gray-600">
-            <Volume2 className="h-4 w-4" />
-            <span className="truncate max-w-[150px]">{selectedVoiceName}</span>
-          </div>
+        <div className="flex items-center gap-3"> 
+          <SelectedVoiceModelComponent selectedVoiceName={selectedVoiceName} selectedVoiceID={voiceModel} />
           <VoiceConfigModal
             voiceModelList={voiceModelList}
             voiceModel={voiceModel}
@@ -78,27 +75,7 @@ export function BasicInfoEditor({ basicFields, values, onChange, voiceModelList,
         <div className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-lg font-medium text-gray-900">Edit Agent Responses</h3>
-                  <div className="relative flex items-center group">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16" 
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="M12 16v-4"/>
-                      <path d="M12 8h.01"/>
-                    </svg>
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-xs text-white rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                      Edit the agent responses for the basic info section
-                    </div>
-                  </div>
+                    <IIcon text="Edit the agent responses for the basic info section" />
                 </div>
           {basicFields.map((field) => (
             field.messages?.some(msg => msg.speaker === "agent") && (

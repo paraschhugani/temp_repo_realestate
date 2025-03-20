@@ -3,15 +3,11 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-
-import { ArrowRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-
 import { GoogleCalendar, CalCom, Calendly } from "@/assets/svg/svgs"
 import { IntegrationService } from "@/services/integration-service"
 import { useAuth } from "@clerk/nextjs"
 import { toastService } from "@/services/toast-service"
-
+import ContinueCtaButton from "@/components/continue-cta-button"
 export interface Provider {
   id: string
   name: string
@@ -129,23 +125,7 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
         </div>
 
         <div className="flex justify-center">
-          <Button 
-            onClick={() => handleNextStep()} 
-            className="px-8 py-3 text-lg bg-black hover:bg-gray-800 text-white rounded" 
-            disabled={isLoading || !selectedProvider}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Checking connection...
-              </>
-            ) : ( 
-              <>
-                Next
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </>
-            )}
-          </Button>
+         <ContinueCtaButton text="Next" onClick={() => handleNextStep()} disabled={isLoading || !selectedProvider} isLoading={isLoading} loadingText="Checking connection..." />
         </div>
       </motion.div>
     </div>

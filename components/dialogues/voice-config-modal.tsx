@@ -4,6 +4,7 @@ import { useState } from "react"
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,7 +23,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { Headset, Info } from "lucide-react"
+import { Headset, Info, Volume2 } from "lucide-react"
+import { AIModelService } from "@/services/ai-model-service"
 interface VoiceConfigModalProps {
   voiceModelList: Record<string, any>
   voiceModel: string
@@ -37,10 +39,20 @@ export function VoiceConfigModal({
   const [selectedGender, setSelectedGender] = useState("")
   const [selectedAccent, setSelectedAccent] = useState("")
   const [selectedLanguage, setSelectedLanguage] = useState("")
+  const [open, setOpen] = useState(false)
 
   const languages = [...new Set(Object.values(voiceModelList).map((voice: any) => voice.language))]
-  const accents = [...new Set(Object.values(voiceModelList).map((voice: any) => voice.accent))]
+  const allAccents = [...new Set(Object.values(voiceModelList).map((voice: any) => voice.accent))]
   const genders = [...new Set(Object.values(voiceModelList).map((voice: any) => voice.gender))]
+
+  // Filter accents based on selected language
+  const accents = selectedLanguage 
+    ? selectedLanguage.toLowerCase() === 'hindi' 
+      ? ['Standard']
+      : selectedLanguage.toLowerCase() === 'english'
+        ? allAccents.filter(accent => accent !== 'Standard')
+        : allAccents
+    : []
 
   const filteredVoiceModels = Object.entries(voiceModelList).filter(([_, voice]: [string, any]) => {
     return (
@@ -51,7 +63,7 @@ export function VoiceConfigModal({
   })
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
@@ -64,7 +76,9 @@ export function VoiceConfigModal({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Voice Configuration</DialogTitle>
+          <DialogTitle>    
+             Voice Configuration          
+          </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
@@ -116,9 +130,10 @@ export function VoiceConfigModal({
               <Select
                 value={selectedAccent}
                 onValueChange={setSelectedAccent}
+                disabled={!selectedLanguage}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select accent" />
+                  <SelectValue placeholder={selectedLanguage ? accents[0] : "Select language to choose accent"} />
                 </SelectTrigger>
                 <SelectContent>
                   {accents.map((accent) => (
@@ -195,7 +210,44 @@ export function VoiceConfigModal({
             </div>
           </div>
         </div>
+        <DialogFooter> 
+        <Button onClick={() => {
+          setOpen(false)
+        }} type="submit">Save & Apply</Button>
+      </DialogFooter>
       </DialogContent>
+     
     </Dialog>
   )
 } 
+
+
+
+
+export default function SelectedVoiceModelComponent({selectedVoiceName,selectedVoiceID}: {selectedVoiceName: string,selectedVoiceID: string,}){
+ const handleClick = async () => {
+  if(selectedVoiceName === "No voice selected"){
+    return;
+  }
+  const aiModelService =  new AIModelService();
+  const blob = await aiModelService.textToSpeech(`Hello,I'm ${selectedVoiceName} and this is how I sound.`, selectedVoiceID);
+  const audioElement = await aiModelService.playAudio(blob);
+  audioElement.play();
+ }
+  return (
+    <div className="relative flex items-center gap-2 px-2 py-1 border rounded-md text-sm text-gray-600 cursor-pointer group" onClick={handleClick}>
+        <Volume2 className="h-4 w-4" />
+        <span className="truncate max-w-[150px]">{selectedVoiceName}</span>
+          <TooltipProvider>
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild>
+                <div className="absolute inset-0"></div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p> {selectedVoiceName === "No voice selected" ? "Select a voice model to test" : selectedVoiceName}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+   </div>
+  )
+}
