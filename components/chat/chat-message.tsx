@@ -71,15 +71,15 @@ export function ChatMessage({ message, onAudioToggle, isSpeakerLoading, playingA
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-0.5 h-6 w-6 hover:bg-blue-500 bg-blue-500 absolute -bottom-2 -right-2 rounded-full shadow-md flex items-center justify-center border border-white/20 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                    className="p-0.5 h-6 w-6 hover:bg-blue-100 bg-white border-blue-500 absolute -bottom-2 -right-2 rounded-full shadow-md flex items-center justify-center border  transition-all duration-200 hover:scale-105 hover:shadow-lg"
                     onClick={() => message.content && onAudioToggle(message.content)}
                   >
                     {isSpeakerLoading === message.content ? (
-                      <Loader2 className="h-3.5 w-3.5 text-white animate-spin" />
+                      <Loader2 className="h-3.5 w-3.5 text-blue-500 animate-spin" />
                     ) : playingAudio === message.content ? (
-                      <Pause className="h-3.5 w-3.5 text-white" />
+                      <Pause className="h-3.5 w-3.5 text-blue-500" />
                     ) : (
-                      <Play className="h-3.5 w-3.5 text-white translate-x-[1px]" />
+                      <Play className="h-3.5 w-3.5 text-blue-500 translate-x-[1px]" />
                     )}
                   </Button>
                 </TooltipTrigger>
