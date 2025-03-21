@@ -7,14 +7,17 @@ import { ScriptEditor } from "@/components/script-editor/script-editor";
 import { useAuth } from "@clerk/clerk-react";
 import { OnboardingService } from "@/services/onboarding-service";
 import ScriptNotFound from "./script-not-found";
-import { scriptFormKey, StorageService, voice_model } from "@/services/storage-service";
+import {
+  scriptFormKey,
+  StorageService,
+  voice_model,
+} from "@/services/storage-service";
 import { toastService } from "@/services/toast-service";
 import { AIModelService, default_voice_id } from "@/services/ai-model-service";
 import { Button } from "@/components/ui/button";
 import { CampaignService } from "@/services/campaign-service";
 import { SuccessDialog } from "../ui/success-dialog";
 import { TestAgentDialog } from "../dialogues/test-agent-dialog";
-
 
 interface ScriptField {
   id: string;
@@ -90,7 +93,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
   const [voiceModelList, setVoiceModelList] = useState<Record<string, any>>({});
-
+  const [finalLaunchLoading, setFinalLaunchLoading] = useState(false);
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState(1);
@@ -103,11 +106,10 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
 
   const cached_voice_id = StorageService.getItem(voice_model);
   var inital_voice_id;
-  if(cached_voice_id)  inital_voice_id = cached_voice_id;
-  else inital_voice_id = default_voice_id
+  if (cached_voice_id) inital_voice_id = cached_voice_id;
+  else inital_voice_id = default_voice_id;
   const [voiceModel, setVoiceModel] = useState(inital_voice_id);
-   
-  
+
   useEffect(() => {
     let isMounted = true;
 
@@ -325,7 +327,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
-   
+
       const token = await getToken();
 
       await campaignService.testCampaign({
@@ -336,7 +338,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         token: token ?? "",
         userID: userId ?? "",
       });
-      
+
       StorageService.setTestAgentButtonClicked(); // set the test agent button clicked to true
       setIsTestDialogOpen(false);
     } catch (error) {
@@ -347,8 +349,8 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   };
 
   const handleLaunchAgent = async () => {
-
     try {
+      setFinalLaunchLoading(true);
       const token = await getToken();
       await campaignService.launchAgent({
         campaign_name: "Test Campaign",
@@ -357,11 +359,12 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         userID: userId ?? "",
         token: token ?? "",
       });
-   
+      setFinalLaunchLoading(false);
     } catch (error) {
       toastService.error("Failed to launch campaign");
+      setFinalLaunchLoading(false);
     } finally {
-     // done !!
+      // done !!
     }
   };
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -432,7 +435,14 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                       onClick={handleLaunchAgent}
                       className="bg-black hover:bg-gray-800 text-white rounded-lg px-8 py-3 text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center"
                     >
-                      Launch Agent
+                      {finalLaunchLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Launching...
+                        </>
+                      ) : (
+                        "Launch Agent"
+                      )}
                     </Button>
                   )}
                 </div>
@@ -452,9 +462,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                 voiceModelList={voiceModelList}
                 voiceModel={voiceModel}
                 setVoiceModel={handleVoiceModelChange}
-                selectedVoiceName={
-                voiceModel ?? "No voice selected"
-                }
+                selectedVoiceName={voiceModel ?? "No voice selected"}
               />
 
               <div className="bg-white shadow-md rounded-lg p-6 mb-8">

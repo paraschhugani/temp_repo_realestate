@@ -72,7 +72,7 @@ export class CampaignService {
   },) {
     try {
       const formData = new FormData();
-      const audience_id = JSON.parse(StorageService.getItem("audience_id") ?? "{}");
+      const audience_id = StorageService.getItem("audience_id");
       formData.append('audience_id', audience_id ?? "");
       formData.append('campaign_name', campaignData.campaign_name);
       formData.append('campaign_description', campaignData.campaign_description);
