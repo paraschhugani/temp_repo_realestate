@@ -41,7 +41,7 @@ export class AudienceService {
         throw new Error(response.data.message);
       }
     } catch (error: any) {
-       console.log(error);
+       console.error(error);
         throw new Error("Something went wrong");
       
     }   

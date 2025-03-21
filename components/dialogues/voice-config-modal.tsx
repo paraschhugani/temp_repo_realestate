@@ -30,7 +30,6 @@ interface VoiceConfigModalProps {
   voiceModel: string
   setVoiceModel: (voiceModel: string) => void
 }
-
 export function VoiceConfigModal({
   voiceModelList,
   voiceModel,
@@ -91,7 +90,7 @@ export function VoiceConfigModal({
                       <Info className="h-4 w-4 text-gray-400 " />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Select the primary language for the voice model</p>
+                      <p>Select the primary language for the voice</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -180,14 +179,14 @@ export function VoiceConfigModal({
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <label>Voice Model</label>
+                <label>Voice</label>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-gray-400 " />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Select from available voice models based on your filters</p>
+                      <p>Select from available voices based on your filters</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -197,7 +196,7 @@ export function VoiceConfigModal({
                 onValueChange={setVoiceModel}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select voice model" />
+                  <SelectValue placeholder="Select a voice" />
                 </SelectTrigger>
                 <SelectContent>
                   {filteredVoiceModels.map(([id, voice] : [string, any]) => (

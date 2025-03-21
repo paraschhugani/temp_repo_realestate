@@ -15,10 +15,8 @@ export class OnboardingService {
         if (scriptForm) {
             const temp =  JSON.parse(JSON.parse(scriptForm));
             if(temp.id === useCaseID) {
-               
                 return temp;
             }else{
-              
                 return null;
             }
         }

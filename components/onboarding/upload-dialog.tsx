@@ -66,7 +66,7 @@ export function UploadDialog({ open, onOpenChange, onUploadSuccess }: UploadDial
           }
           reader.readAsText(file)
         } catch (error: any) {
-          console.log(error);
+          console.error(error);
           setError(error.message || "Failed to create audience")
         } finally {
           setIsLoading(false)

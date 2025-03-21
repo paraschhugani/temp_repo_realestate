@@ -1,6 +1,7 @@
 import { toastService } from "./toast-service";
 import axios from "axios";
 import { scriptFormKey, StorageService } from "./storage-service";
+import { OnboardingService } from "./onboarding-service";
 
 export class CampaignService {
   baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -21,6 +22,7 @@ export class CampaignService {
         formData.append('bg_noice', campaignData.backgroundSound ? "true" : "false");
         formData.append('voice_id', campaignData.voiceModel);
         formData.append('speed', campaignData.voiceSpeed.toString());
+        formData.append('from_demo',"false")
   
         const scriptForm = StorageService.getItem(scriptFormKey);
         if (scriptForm) {
@@ -103,6 +105,71 @@ export class CampaignService {
 
     }catch (error: any) {
       console.error("Error launching agent:", error);
+      throw error;
+    }
+  }
+
+
+  async launchDemoCampaign(campaignData: {
+    backgroundSound : boolean;
+    phone_number : string;
+    userID : string;
+    voiceModel : string;
+    voiceSpeed : number;
+    token : string;
+    useCase: string;
+    assistant_name : string;
+  },) {
+    try {
+      
+        const formData = new FormData();
+        formData.append('user_id', campaignData.userID);
+        formData.append('phone_number', campaignData.phone_number);
+        formData.append('bg_noice', campaignData.backgroundSound ? "true" : "false");
+        formData.append('voice_id', campaignData.voiceModel);
+        formData.append('speed', campaignData.voiceSpeed.toString());
+        formData.append('assistant_name',campaignData.assistant_name);
+        formData.append('company_name', "SuperU");
+        formData.append('app_name', "googlecalender");
+        formData.append("from_demo","true");
+
+        const onboardingService = new OnboardingService(
+          process.env.NEXT_PUBLIC_BACKEND_URL || ""
+        );
+        const scriptResponse = await onboardingService.getScript(
+          campaignData.useCase,
+          campaignData.token ?? ""
+        );
+      
+        if (scriptResponse) {   
+            formData.append('form_model',JSON.stringify(scriptResponse));
+        }
+      
+        // for (const pair of formData.entries()) {
+        //   console.log(pair);
+        // }
+        const response = await axios.post(`${this.baseURL}/campaign/test`, formData, {
+          headers: {
+            "Authorization" : `Bearer ${campaignData.token}`,
+           'Content-Type': 'application/json',
+          }
+        });
+        toastService.success("Test call initiated successfully!");
+   
+        return response.data;
+    
+     
+    } catch (error: any) {
+      console.error("Error testing campaign:", error);
+      
+      if (error.response?.status === 401) {
+        toastService.error("Unauthorized. Please sign in again.");
+      } else if (error.response?.status === 400) {
+        toastService.error(error.response.data.message || "Invalid request data");
+      } else {
+        toastService.error("Failed to initiate test call. Please try again.");
+      }
+      
       throw error;
     }
   }

@@ -5,7 +5,6 @@ import UseCasePageContent from "@/components/use-case/use-case-page-content"
 import { useState, useEffect } from "react";
 
 
-
 export default function UseCasePage() {
  const  params = useParams();
  const industry = params.industry as string;

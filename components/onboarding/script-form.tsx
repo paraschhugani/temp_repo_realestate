@@ -82,7 +82,7 @@ interface ScriptFormProps {
 }
 
 export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
-  const campaignService = useMemo(() => new CampaignService(), [])
+  const campaignService = useMemo(() => new CampaignService(), []);
   const [scriptData, setScriptData] = useState<Script | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,10 +96,10 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const [backgroundSound, setbackgroundSound] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isTestingAgent, setIsTestingAgent] = useState(false);
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const router = useRouter();
   const { getToken, isSignedIn, isLoaded, userId } = useAuth();
-  const [phoneNumberError, setPhoneNumberError] = useState("")
+  const [phoneNumberError, setPhoneNumberError] = useState("");
   const [isLaunchingAgent, setIsLaunchingAgent] = useState(false);
   const scriptEditorRef = useRef<{ handleSave: () => void } | null>(null);
   useEffect(() => {
@@ -130,7 +130,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
           data = response;
         }
 
-        if(data === null) {
+        if (data === null) {
           setIsLoading(false);
           setIsNotFound(true);
           return;
@@ -206,8 +206,8 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         delete formattedField.value;
         return formattedField;
       }),
-      scenarios: Array.isArray(updatedScenarios) 
-        ? updatedScenarios 
+      scenarios: Array.isArray(updatedScenarios)
+        ? updatedScenarios
         : Object.values(updatedScenarios),
       value: updatedScript.value ?? "",
     };
@@ -226,20 +226,22 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     StorageService.setItem(scriptFormKey, JSON.stringify(formattedScript));
   };
 
-  const handleSubmit = async (setActiveTab: (activeTab: string) => void): Promise<void> => {
+  const handleSubmit = async (
+    setActiveTab: (activeTab: string) => void
+  ): Promise<void> => {
     setIsLoading(true);
     try {
-      if(!StorageService.getScenarioTabViewed()){
+      if (!StorageService.getScenarioTabViewed()) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         StorageService.setScenarioTabViewed();
         setActiveTab("scenarios");
         return;
-      }else if(!StorageService.getTestAgentButtonClicked()){
+      } else if (!StorageService.getTestAgentButtonClicked()) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
-      }else{
-      scriptEditorRef.current?.handleSave();
-      setIsSuccessDialogOpen(true);
+      } else {
+        scriptEditorRef.current?.handleSave();
+        setIsSuccessDialogOpen(true);
       }
     } catch (err) {
       console.error("Failed to submit form:", err);
@@ -256,7 +258,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     const loadSavedData = () => {
       const savedData = StorageService.getItem(scriptFormKey);
       if (savedData) {
-        try {     
+        try {
           setScriptData({
             id: savedData.id,
             industry: savedData.industry,
@@ -305,48 +307,49 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     setIsTesting(true);
     try {
       scriptEditorRef.current?.handleSave(); // save updated script to localstorage
-      const digitsOnly = phoneNumber.replace(/\D/g, '');
+      const digitsOnly = phoneNumber.replace(/\D/g, "");
       if (digitsOnly.length < 10) {
-        toastService.error("Please enter a valid phone number with at least 10 digits");
-       return;
+        toastService.error(
+          "Please enter a valid phone number with at least 10 digits"
+        );
+        return;
       }
-      if(!voiceModel){
+      if (!voiceModel) {
         toastService.error("Please select a voice model");
         window.scrollTo({ top: 0, behavior: "smooth" });
-        return
+        return;
       }
-        setIsTestingAgent(true);
-        const token = await getToken();
-        
-        await campaignService.testCampaign({
-          phone_number: phoneNumber,
-          voiceModel : voiceModel,
-          voiceSpeed : voiceSpeed,
-          backgroundSound : backgroundSound,
-          token : token ?? "",
-          userID : userId ?? ""
-        });
-      toastService.success("Test call initiated successfully!");
+      setIsTestingAgent(true);
+      const token = await getToken();
+
+      await campaignService.testCampaign({
+        phone_number: phoneNumber,
+        voiceModel: voiceModel,
+        voiceSpeed: voiceSpeed,
+        backgroundSound: backgroundSound,
+        token: token ?? "",
+        userID: userId ?? "",
+      });
+      
       StorageService.setTestAgentButtonClicked(); // set the test agent button clicked to true
       setIsTestDialogOpen(false);
     } catch (error) {
-      toastService.error("Failed to initiate test call");
+      console.error(error);
     } finally {
       setIsTesting(false);
     }
-  
-  }
+  };
 
   const handleLaunchAgent = async () => {
     setIsLaunchingAgent(true);
     try {
       const token = await getToken();
       await campaignService.launchAgent({
-        campaign_name : "Test Campaign",
-        campaign_description : "Test Campaign Description",
-        campaign_status : "active",
-        userID : userId ?? "",
-        token : token ?? ""
+        campaign_name: "Test Campaign",
+        campaign_description: "Test Campaign Description",
+        campaign_status: "active",
+        userID: userId ?? "",
+        token: token ?? "",
       });
       toastService.success("Campaign launched successfully!");
       setIsLaunchingAgent(false);
@@ -355,11 +358,11 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     } finally {
       setIsLaunchingAgent(false);
     }
-  }
+  };
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     if (value.length <= 10) {
-      const formatted = value;   // TODO : Format the phone number
+      const formatted = value; // TODO : Format the phone number
       setPhoneNumber(formatted);
     }
   };
@@ -367,17 +370,17 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const handleVoiceSpeedChange = (value: number) => {
     StorageService.setItem("voice_speed", value.toString());
     setVoiceSpeed(value);
-  }
+  };
 
   const handleBackgroundSoundChange = (value: boolean) => {
     StorageService.setItem("background_sound", value.toString());
     setbackgroundSound(value);
-  } 
+  };
 
   const handleVoiceModelChange = (value: string) => {
-    StorageService.setItem("voice_model", value); 
+    StorageService.setItem("voice_model", value);
     setVoiceModel(value);
-  }
+  };
 
   if (isNotFound) {
     return <ScriptNotFound />;
@@ -390,8 +393,6 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
       </div>
     );
   }
-
- 
 
   return (
     <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
@@ -411,9 +412,8 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                   <h2 className="text-lg font-semibold text-gray-600">
                     Use case : {formatUseCase(useCase)}
                   </h2>
-                 
                 </div>
-               
+
                 <div className="mt-4 md:mt-0 flex flex-row gap-4">
                   <Button
                     onClick={() => setIsTestDialogOpen(true)}
@@ -447,7 +447,9 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                 voiceModelList={voiceModelList}
                 voiceModel={voiceModel}
                 setVoiceModel={handleVoiceModelChange}
-                selectedVoiceName={voiceModelList[voiceModel]?.name ?? "No voice selected"}
+                selectedVoiceName={
+                voiceModelList[voiceModel]?.name ?? "No voice selected"
+                }
               />
 
               <div className="bg-white shadow-md rounded-lg p-6 mb-8">
@@ -463,11 +465,11 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                   showLaunchAgent={showLaunchAgent ?? false}
                 />
               </div>
-              <SuccessDialog 
-        open={isSuccessDialogOpen} 
-        onOpenChange={setIsSuccessDialogOpen}
-        onContinue={handleContinueToIntegration}
-      />    
+              <SuccessDialog
+                open={isSuccessDialogOpen}
+                onOpenChange={setIsSuccessDialogOpen}
+                onContinue={handleContinueToIntegration}
+              />
             </>
           )}
         </motion.div>

@@ -91,7 +91,7 @@ export function TestAgentDialog({
             </div>
              <div>
              <div className="flex items-center gap-3">
-          <SelectedVoiceModelComponent selectedVoiceName={selectedVoiceName} />
+          <SelectedVoiceModelComponent selectedVoiceName={selectedVoiceName} selectedVoiceID={voiceModel} />
           <VoiceConfigModal
             voiceModelList={voiceModelList}
             voiceModel={voiceModel}
