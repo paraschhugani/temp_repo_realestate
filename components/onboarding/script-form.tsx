@@ -357,7 +357,6 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         userID: userId ?? "",
         token: token ?? "",
       });
-      toastService.success("Campaign launched successfully!");
    
     } catch (error) {
       toastService.error("Failed to launch campaign");

@@ -114,13 +114,13 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, vo
 
   return (
     <div className="space-y-2 mb-6">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-2 mb-2 md:flex-row flex-col">
+        <div className="flex md:flex-col flex-col">
           <h2 className="text-xl font-semibold text-gray-900">Scenario Scripts</h2>
           <p className="text-sm text-gray-600">Edit how your agent responds in different conversation scenarios.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <SelectedVoiceModelComponent selectedVoiceName={selectedVoiceName} selectedVoiceID={voiceModel}/>
+        <div className="flex items-center  gap-3"> 
+          <SelectedVoiceModelComponent selectedVoiceName={selectedVoiceName} selectedVoiceID={voiceModel} />
           <VoiceConfigModal
             voiceModelList={voiceModelList}
             voiceModel={voiceModel}
