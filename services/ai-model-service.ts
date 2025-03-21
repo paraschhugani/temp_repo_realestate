@@ -1,5 +1,7 @@
 import axios from "axios";
 
+
+export const default_voice_id = "kdmDKE6EkgrWrrykO9Qt";  // default voice model : Alexandra, English - American - Female
 export class AIModelService {
   baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   

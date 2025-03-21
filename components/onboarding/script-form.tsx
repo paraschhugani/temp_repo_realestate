@@ -7,13 +7,14 @@ import { ScriptEditor } from "@/components/script-editor/script-editor";
 import { useAuth } from "@clerk/clerk-react";
 import { OnboardingService } from "@/services/onboarding-service";
 import ScriptNotFound from "./script-not-found";
-import { scriptFormKey, StorageService } from "@/services/storage-service";
+import { scriptFormKey, StorageService, voice_model } from "@/services/storage-service";
 import { toastService } from "@/services/toast-service";
-import { AIModelService } from "@/services/ai-model-service";
+import { AIModelService, default_voice_id } from "@/services/ai-model-service";
 import { Button } from "@/components/ui/button";
 import { CampaignService } from "@/services/campaign-service";
 import { SuccessDialog } from "../ui/success-dialog";
 import { TestAgentDialog } from "../dialogues/test-agent-dialog";
+
 
 interface ScriptField {
   id: string;
@@ -89,7 +90,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
   const [voiceModelList, setVoiceModelList] = useState<Record<string, any>>({});
-  const [voiceModel, setVoiceModel] = useState("");
+
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState(1);
@@ -99,9 +100,16 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const router = useRouter();
   const { getToken, isSignedIn, isLoaded, userId } = useAuth();
-  const [phoneNumberError, setPhoneNumberError] = useState("");
   const [isLaunchingAgent, setIsLaunchingAgent] = useState(false);
   const scriptEditorRef = useRef<{ handleSave: () => void } | null>(null);
+
+  const cached_voice_id = StorageService.getItem(voice_model);
+  var inital_voice_id;
+  if(cached_voice_id)  inital_voice_id = cached_voice_id;
+  else inital_voice_id = default_voice_id
+  const [voiceModel, setVoiceModel] = useState(inital_voice_id);
+   
+  
   useEffect(() => {
     let isMounted = true;
 
@@ -448,7 +456,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                 voiceModel={voiceModel}
                 setVoiceModel={handleVoiceModelChange}
                 selectedVoiceName={
-                voiceModelList[voiceModel]?.name ?? "No voice selected"
+                voiceModel ?? "No voice selected"
                 }
               />
 

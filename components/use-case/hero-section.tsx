@@ -8,7 +8,7 @@ import { toastService } from "@/services/toast-service";
 import { StorageService } from "@/services/storage-service";
 import { CampaignService } from "@/services/campaign-service";
 import { useAuth } from "@clerk/nextjs";
-import { AIModelService } from "@/services/ai-model-service";
+import { AIModelService, default_voice_id } from "@/services/ai-model-service";
 import TryAgentModal from "./try-agent-dialogue";
 
 interface HeroSectionProps {
@@ -29,7 +29,7 @@ export default function HeroSection({
   const campaignService = useMemo(() => new CampaignService(), []);
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [voiceModelList, setVoiceModelList] = useState<Record<string, any>>({});
-  const [voiceModel, setVoiceModel] = useState("");
+  const [voiceModel, setVoiceModel] = useState(default_voice_id);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState(1);
   const [backgroundSound, setbackgroundSound] = useState(false);

@@ -6,7 +6,8 @@ export class StorageService {
   }
 
   static getItem(key: string) {
-    return JSON.parse(localStorage.getItem(key) ?? "{}")
+    if(localStorage.getItem(key)) return JSON.parse(localStorage.getItem(key) ?? "{}")
+    else return null;
   }
 
   static removeItem(key: string) {
@@ -44,3 +45,5 @@ export const scriptFormKey = 'script-form'
 export const audienceIdKey = 'audience_id'
 export const scenarioTabViewKey = 'scenario_tab_viewed'
 export const agentTestAttemptKey = 'agent_test_attempted'
+export const voice_model = "voice_model"
+export const background_sound = "background_sound"
