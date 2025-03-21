@@ -96,11 +96,9 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   const [voiceSpeed, setVoiceSpeed] = useState(1);
   const [backgroundSound, setbackgroundSound] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
-  const [isTestingAgent, setIsTestingAgent] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const router = useRouter();
   const { getToken, isSignedIn, isLoaded, userId } = useAuth();
-  const [isLaunchingAgent, setIsLaunchingAgent] = useState(false);
   const scriptEditorRef = useRef<{ handleSave: () => void } | null>(null);
 
   const cached_voice_id = StorageService.getItem(voice_model);
@@ -327,7 +325,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
-      setIsTestingAgent(true);
+   
       const token = await getToken();
 
       await campaignService.testCampaign({
@@ -349,7 +347,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   };
 
   const handleLaunchAgent = async () => {
-    setIsLaunchingAgent(true);
+
     try {
       const token = await getToken();
       await campaignService.launchAgent({
@@ -360,11 +358,11 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         token: token ?? "",
       });
       toastService.success("Campaign launched successfully!");
-      setIsLaunchingAgent(false);
+   
     } catch (error) {
       toastService.error("Failed to launch campaign");
     } finally {
-      setIsLaunchingAgent(false);
+     // done !!
     }
   };
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
