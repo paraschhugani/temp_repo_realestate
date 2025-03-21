@@ -76,7 +76,6 @@ export class AIModelService {
 
   async getVoiceModelList(token : string) {
       try{
-        
         const response = await axios.get(`${this.baseURL}/get-voice-list`, {
           headers: {
             Authorization: `Bearer ${token}`,
