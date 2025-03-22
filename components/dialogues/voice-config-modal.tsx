@@ -243,6 +243,7 @@ export default function SelectedVoiceModelComponent({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const handleClick = async () => {
+    if(isLoading) return;
     setIsLoading(true);
     if (selectedVoiceName === "No voice selected") {
       return;

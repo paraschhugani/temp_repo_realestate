@@ -313,6 +313,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   };
 
   const handleTestAgent = async () => {
+    if(isTesting) return;
     setIsTesting(true);
     try {
       scriptEditorRef.current?.handleSave(); // save updated script to localstorage
@@ -351,6 +352,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
 
   const handleLaunchAgent = async () => {
     try {
+      if(finalLaunchLoading) return;
       setFinalLaunchLoading(true);
       const token = await getToken();
       await campaignService.launchAgent({

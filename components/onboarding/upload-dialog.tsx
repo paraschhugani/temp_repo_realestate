@@ -127,7 +127,6 @@ export function UploadDialog({ open, onOpenChange, onUploadSuccess }: UploadDial
               <p className="text-lg font-medium mb-2">Click to upload or drag and drop</p>
               <p className="text-sm text-gray-500 mb-4">You can upload a file up to 2 MB</p>
               <div className="text-sm text-gray-600">
-              Need Help?{" "}
               <Button onClick={(e) => {
                 e.stopPropagation();
                 const link = document.createElement('a');
@@ -136,10 +135,9 @@ export function UploadDialog({ open, onOpenChange, onUploadSuccess }: UploadDial
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-              }} variant="link" className="p-0 h-auto text-blue-500 hover:text-black">
-                Download our CSV
+              }} className="bg-black mt-5 hover:bg-gray-800 cursor-pointer text-white rounded group transition-all duration-300 ease-in-out">
+                Download our CSV template
               </Button>{" "}
-              template to make sure your CSV is formatted correctly.
             </div>
             {isLoading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
             </div>
