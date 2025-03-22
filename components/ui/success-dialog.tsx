@@ -23,8 +23,8 @@ export function SuccessDialog({ open, onOpenChange, onContinue }: SuccessDialogP
           <div className="space-y-2 text-center">
             <h3 className="text-lg font-semibold">Agent Testing Complete</h3>
             <p className="text-muted-foreground">
-              Great job! You've successfully completed the agent testing phase. 
-              Let's move forward with the integration step.
+              Great job! You've successfully completed agent testing. 
+              Let's move forward with the integration.
             </p>
           </div>
           <ContinueCtaButton text="Continue to Integration" onClick={onContinue} disabled={false} />

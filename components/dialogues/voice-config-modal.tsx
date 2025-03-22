@@ -275,7 +275,7 @@ export default function SelectedVoiceModelComponent({
           </TooltipTrigger>
           <TooltipContent>
            
-              <p>
+              <p className="text-xs">
                 Click me to test my voice
               </p>
             

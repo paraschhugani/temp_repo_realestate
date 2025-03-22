@@ -249,7 +249,6 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       } else {
-        scriptEditorRef.current?.handleSave();
         setIsSuccessDialogOpen(true);
       }
     } catch (err) {
