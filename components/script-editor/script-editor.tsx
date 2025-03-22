@@ -93,6 +93,12 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
     [script.form]
   );
 
+
+  const handleTabValueChange = (value :string)=>{
+    StorageService.setScenarioTabViewed();
+    setActiveTab(value);
+  }
+
   // Add this helper function at the top of the component
   const replacePlaceholders = (content: string, companyName?: string, agentName?: string) => {
     let updatedContent = content;
@@ -344,7 +350,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
         }
       `}</style>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabValueChange} className="w-full">
         <div className="flex justify-center mb-8">
           <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto tabs-container">
             <TabsTrigger value="basic">Basic Information</TabsTrigger>
