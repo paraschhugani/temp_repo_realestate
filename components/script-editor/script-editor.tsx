@@ -8,6 +8,7 @@ import { ScenarioEditor } from "./scenario-editor";
 import { StorageService } from "@/services/storage-service";
 import ContinueCtaButton from "@/components/continue-cta-button";
 import { Save } from "lucide-react";
+import debounce from "lodash.debounce";
 
 interface Message {
   speaker: string;
@@ -92,6 +93,20 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
     () => script.form,
     [script.form]
   );
+
+    // Create a debounced version of handleSave
+    const debouncedHandleSave = useMemo(() => 
+      debounce(() => {
+        ref && typeof ref === "object" && ref.current?.handleSave();
+      }, 500), [ref]
+    );
+  
+    // Cancel debounce on unmount
+    useEffect(() => {
+      return () => {
+        debouncedHandleSave.cancel();
+      };
+    }, [debouncedHandleSave]);
 
 
   const handleTabValueChange = (value :string)=>{
@@ -237,15 +252,18 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
           }
         });
       }
-
+     
       // Store the final values
       storeValues({
         basicValues: newBasicValues,
         scenarioValues
       });
-
+    
       return newBasicValues;
     });
+
+    debouncedHandleSave();
+
   };
 
   const handleScenarioChange = (scenarioId: string, fieldId: string, value: string): void => {
@@ -257,7 +275,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
           [fieldId]: value,
         },
       };
-
+      ref && typeof ref === 'object' && ref.current?.handleSave()
       // Store updated values
       storeValues({
         basicValues,
@@ -266,6 +284,8 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
 
       return newScenarioValues;
     });
+    debouncedHandleSave();
+  
   };
 
   // Expose handleSave method via ref

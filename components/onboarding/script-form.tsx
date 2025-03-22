@@ -230,7 +230,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
       fields: formattedScript.fields,
     });
     setScenarios(formattedScript.scenarios);
-    toastService.success("Script saved successfully!");
+    // toastService.success("Script saved successfully!");
     StorageService.setItem(scriptFormKey, JSON.stringify(formattedScript));
   };
 
