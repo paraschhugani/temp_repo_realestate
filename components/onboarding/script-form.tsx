@@ -245,6 +245,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         setActiveTab("scenarios");
         return;
       } else if (!StorageService.getTestAgentButtonClicked()) {
+        toastService.custom("Please test your agent at least once before proceeding.");
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       } else {
@@ -462,7 +463,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                 voiceModelList={voiceModelList}
                 voiceModel={voiceModel}
                 setVoiceModel={handleVoiceModelChange}
-                selectedVoiceName={voiceModel ?? "No voice selected"}
+                selectedVoiceName={voiceModelList[voiceModel]?.name ?? "No voice selected"}
               />
 
               <div className="bg-white shadow-md rounded-lg p-6 mb-8">

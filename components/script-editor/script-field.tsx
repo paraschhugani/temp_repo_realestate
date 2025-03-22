@@ -67,7 +67,7 @@ export function ScriptField({ field, value, onChange, className = "" }: ScriptFi
             value={value}
             onChange={(e) => onChange(field.id, e.target.value)}
             placeholder={field.placeholder}
-            className="w-full h-12 text-base px-4 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full h-12 text-base px-4 focus:border-gray-400 focus:ring-gray-400"
           />
         )}
       </div>
