@@ -1,5 +1,3 @@
-"use client"
-
 import { useMemo, useState } from "react"
 import { X, CheckCircle, AlertCircle, Phone, User, Mail, Globe } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -9,12 +7,11 @@ import SelectedVoiceModelComponent, { VoiceConfigModal } from "../dialogues/voic
 import { toastService } from "@/services/toast-service"
 import { CampaignService } from "@/services/campaign-service"
 
-
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   companyWebsite: z.string(),
   email: z.string().email({ message: "Please enter a valid email address" }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number" }),
+  phone: z.string().length(10, { message: "Please enter a valid phone number" }),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -40,30 +37,31 @@ export default function TryAgentModal({
 }: TryAgentModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const campaignService = useMemo(() => new CampaignService(), []);
+  const campaignService = useMemo(() => new CampaignService(), [])
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
   })
 
+  const phoneValue = watch("phone") || ""
 
   const handleTestAgent = async (data: FormData) => {
     const { phone, name } = data
-    if(selectedVoiceName == "No voice selected"){
+    if (selectedVoiceName === "No voice selected") {
       toastService.error("Please select a voice model")
-      return;
+      return
     }
     if (!voiceModel) {
-
       toastService.error("Please select a voice model")
       window.scrollTo({ top: 0, behavior: "smooth" })
       return
     }
-   
+
     try {
       await campaignService.launchDemoCampaign({
         phone_number: phone,
@@ -75,9 +73,7 @@ export default function TryAgentModal({
         useCase: useCase,
         assistant_name: name, 
       })
-      
     } catch (error) {
-      
       throw error
     }
   }
@@ -85,7 +81,7 @@ export default function TryAgentModal({
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      await handleTestAgent(data).then(()=>{
+      await handleTestAgent(data).then(() => {
         console.log("Form data submitted:", data)
         setIsSuccess(true)
         setTimeout(() => {
@@ -147,8 +143,39 @@ export default function TryAgentModal({
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+         
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  Enter your phone number to get a call
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Phone size={18} />
+                  </div>
+                  <input
+                    id="phone"
+                    type="tel"
+                    placeholder="9191919191"
+                    className={`pl-10 text-sm w-full rounded-md border ${
+                      phoneValue.length >= 10 && errors.phone
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    } py-2 px-3 focus:outline-none focus:ring-2 transition-all duration-200`}
+                    {...register("phone")}
+                  />
+                </div>
+               
+                {phoneValue.length >= 10 && errors.phone && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" />
+                    {errors.phone.message}
+                  </p>
+                )}
+              </div>
+
+           
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Name field */}
+              
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Your Name
@@ -177,7 +204,7 @@ export default function TryAgentModal({
                   )}
                 </div>
 
-                {/* Email field */}
+               
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Business Email
@@ -207,64 +234,32 @@ export default function TryAgentModal({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Company Website field */}
-                <div>
-                  <label htmlFor="companyWebsite" className="block text-sm font-medium text-gray-700 mb-1">
-                    Company Website
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <Globe size={18} />
-                    </div>
-                    <input
-                      id="companyWebsite"
-                      type="text"
-                      placeholder="https://company.com"
-                      className={`pl-10 w-full text-sm rounded-md border ${
-                        errors.companyWebsite
-                          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      } py-2 px-3 focus:outline-none focus:ring-2 transition-all duration-200`}
-                      {...register("companyWebsite")}
-                    />
+              <div>
+                <label htmlFor="companyWebsite" className="block text-sm font-medium text-gray-700 mb-1">
+                  Company Website
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Globe size={18} />
                   </div>
-                  {errors.companyWebsite && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center">
-                      <AlertCircle size={14} className="mr-1" />
-                      {errors.companyWebsite.message}
-                    </p>
-                  )}
+                  <input
+                    id="companyWebsite"
+                    type="text"
+                    placeholder="https://company.com"
+                    className={`pl-10 w-full text-sm rounded-md border ${
+                      errors.companyWebsite
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    } py-2 px-3 focus:outline-none focus:ring-2 transition-all duration-200`}
+                    {...register("companyWebsite")}
+                  />
                 </div>
-
-                {/* Phone Number field */}
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <Phone size={18} />
-                    </div>
-                    <input
-                      id="phone"
-                      type="tel"
-                      placeholder="9191919191"
-                      className={`pl-10 text-sm w-full rounded-md border ${
-                        errors.phone
-                          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      } py-2 px-3 focus:outline-none focus:ring-2 transition-all duration-200`}
-                      {...register("phone")}
-                    />
-                  </div>
-                  {errors.phone && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center">
-                      <AlertCircle size={14} className="mr-1" />
-                      {errors.phone.message}
-                    </p>
-                  )}
-                </div>
+                {errors.companyWebsite && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" />
+                    {errors.companyWebsite.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-3">
@@ -279,7 +274,7 @@ export default function TryAgentModal({
                 />
               </div>
 
-              {/* Submit button */}
+  
               <button
                 type="submit"
                 disabled={isSubmitting || !isValid}
