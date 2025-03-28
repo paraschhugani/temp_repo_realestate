@@ -25,8 +25,8 @@ export default function VoiceDemoContainer({
     return Array.from({ length }, () => minHeight + Math.random() * (maxHeight - minHeight))
   }
 
-  const agentWaveformData = useRef(generateWaveformData(100, 5, 25))
-  const customerWaveformData = useRef(generateWaveformData(100, 5, 25))
+  const agentWaveformData = useRef(generateWaveformData(150, 5, 25))
+  const customerWaveformData = useRef(generateWaveformData(150, 5, 25))
 
   const conversationSegments = [
     { speaker: "agent", startPercent: 0, endPercent: 15 },
@@ -37,6 +37,10 @@ export default function VoiceDemoContainer({
     { speaker: "customer", startPercent: 60, endPercent: 70 },
     { speaker: "agent", startPercent: 70, endPercent: 85 },
     { speaker: "customer", startPercent: 85, endPercent: 100 },
+    { speaker: "agent", startPercent: 100, endPercent: 115 },
+    { speaker: "customer", startPercent: 115, endPercent: 125 },
+    { speaker: "agent", startPercent: 125, endPercent: 140 },
+    { speaker: "customer", startPercent: 140, endPercent: 150 },
   ]
 
   const audioSrc = "/spa_smaple.wav" // Place the audio in your /public folder

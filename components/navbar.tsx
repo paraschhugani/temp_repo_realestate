@@ -31,12 +31,20 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             {/* <SolutionsDropdown /> */}
 
-            <Link href="/integration" className="text-gray-200 hover:text-blue-400 transition-colors">
+            {/* <Link href="/integration" className="text-gray-200 hover:text-blue-400 transition-colors">
               Integration
+            </Link> */}
+
+            <Link href="#FAQ" className="text-gray-200 hover:text-blue-400 transition-colors">
+              FAQ
             </Link>
 
-            <Link href="/pricing" className="text-gray-200 hover:text-blue-400 transition-colors">
+            <Link href="#pricing" className="text-gray-200 hover:text-blue-400 transition-colors">
               Pricing
+            </Link>
+
+            <Link href="#HIW" className="text-gray-200 hover:text-blue-400 transition-colors">
+              How it works
             </Link>
           </div>
 

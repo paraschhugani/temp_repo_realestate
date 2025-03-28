@@ -12,7 +12,7 @@ const features = [
 
 export default function SpaPricingSection() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white" id="pricing">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl shadow-xl overflow-hidden border border-blue-100">
@@ -59,7 +59,7 @@ export default function SpaPricingSection() {
               </div>
 
               <Link
-                href="/launch/useCase=automated-meeting-confirmation/form"
+                href="/launch/spa-and-salon-appointment-scheduling/form"
                 className="btn-primary inline-flex items-center text-lg px-8 py-4 w-full justify-center bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
               >
                 Get Started Now
