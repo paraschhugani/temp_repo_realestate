@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import { Play, Pause, Volume2, VolumeX } from "lucide-react"
 
@@ -11,24 +9,25 @@ interface VoiceDemoProps {
   durationInSeconds?: number
 }
 
-export default function VoiceDemoContainer({ title, description, durationInSeconds = 30 }: VoiceDemoProps) {
+export default function VoiceDemoContainer({
+  title,
+  description,
+  durationInSeconds = 30,
+}: VoiceDemoProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [progress, setProgress] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
-  const animationRef = useRef<number | null>(null)
-  const startTimeRef = useRef<number | null>(null)
 
-   //TODO : change this to real value
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
   const generateWaveformData = (length: number, minHeight: number, maxHeight: number) => {
     return Array.from({ length }, () => minHeight + Math.random() * (maxHeight - minHeight))
   }
 
-
   const agentWaveformData = useRef(generateWaveformData(100, 5, 25))
   const customerWaveformData = useRef(generateWaveformData(100, 5, 25))
 
-  // Conversation segments to highlight who is speaking when
   const conversationSegments = [
     { speaker: "agent", startPercent: 0, endPercent: 15 },
     { speaker: "customer", startPercent: 15, endPercent: 20 },
@@ -40,6 +39,8 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
     { speaker: "customer", startPercent: 85, endPercent: 100 },
   ]
 
+  const audioSrc = "/spa_smaple.wav" // Place the audio in your /public folder
+
   const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60)
     const seconds = Math.floor(timeInSeconds % 60)
@@ -47,47 +48,21 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
   }
 
   const togglePlayPause = () => {
+    if (!audioRef.current) return
+
     if (isPlaying) {
-      pauseAnimation()
+      audioRef.current.pause()
     } else {
-      startAnimation()
+      audioRef.current.play()
     }
     setIsPlaying(!isPlaying)
   }
 
   const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted
+    }
     setIsMuted(!isMuted)
-  }
-
-  const startAnimation = () => {
-    startTimeRef.current = Date.now() - currentTime * 1000
-
-    const animate = () => {
-      if (!startTimeRef.current) return
-
-      const elapsed = (Date.now() - startTimeRef.current) / 1000
-      const newProgress = (elapsed / durationInSeconds) * 100
-
-      if (newProgress >= 100) {
-        setProgress(100)
-        setCurrentTime(durationInSeconds)
-        setIsPlaying(false)
-        return
-      }
-
-      setProgress(newProgress)
-      setCurrentTime(elapsed)
-      animationRef.current = requestAnimationFrame(animate)
-    }
-
-    animationRef.current = requestAnimationFrame(animate)
-  }
-
-  const pauseAnimation = () => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current)
-      animationRef.current = null
-    }
   }
 
   const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -96,28 +71,40 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
     const clickPosition = e.clientX - rect.left
     const newProgress = (clickPosition / rect.width) * 100
 
-    setProgress(newProgress)
-    setCurrentTime((newProgress / 100) * durationInSeconds)
-
-    if (isPlaying) {
-      pauseAnimation()
-      startTimeRef.current = Date.now() - (newProgress / 100) * durationInSeconds * 1000
-      animationRef.current = requestAnimationFrame(startAnimation)
-    } else {
-      startTimeRef.current = Date.now() - (newProgress / 100) * durationInSeconds * 1000
+    const newTime = (newProgress / 100) * durationInSeconds
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime
     }
+
+    setProgress(newProgress)
+    setCurrentTime(newTime)
   }
 
-
   useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [])
+    const audio = audioRef.current
+    if (!audio) return
 
-  // Determine which speaker is active based on current progress
+    const handleTimeUpdate = () => {
+      const current = audio.currentTime
+      const percent = (current / durationInSeconds) * 100
+      setCurrentTime(current)
+      setProgress(percent)
+    }
+
+    const handleEnded = () => {
+      setIsPlaying(false)
+      setProgress(100)
+    }
+
+    audio.addEventListener("timeupdate", handleTimeUpdate)
+    audio.addEventListener("ended", handleEnded)
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleTimeUpdate)
+      audio.removeEventListener("ended", handleEnded)
+    }
+  }, [durationInSeconds])
+
   const getActiveSpeaker = () => {
     const segment = conversationSegments.find((seg) => progress >= seg.startPercent && progress <= seg.endPercent)
     return segment?.speaker || "none"
@@ -126,12 +113,14 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
   const activeSpeaker = getActiveSpeaker()
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-gray-100 animate-fade-in-delay w-full h-full">
+    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-gray-100 w-full h-full">
+      {/* Hidden audio element */}
+      <audio ref={audioRef} src={audioSrc} preload="auto" />
+
       <div className="mb-6 relative">
-       
         <div className="h-28 md:h-32 relative mb-2">
-        
-         <div
+          {/* Agent waveform */}
+          <div
             className={`absolute top-0 left-0 right-0 h-1/2 flex items-center justify-center ${
               activeSpeaker === "agent" ? "opacity-100" : "opacity-40"
             } transition-opacity duration-300`}
@@ -146,29 +135,32 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
                   style={{
                     height: `${activeSpeaker === "agent" ? height : height * 0.6}px`,
                     width: "2px",
-                    transform: `scaleY(${progress > ((index / agentWaveformData.current.length) * 100) ? 1 : 0.3})`,
+                    transform: `scaleY(${
+                      progress > (index / agentWaveformData.current.length) * 100 ? 1 : 0.3
+                    })`,
                     opacity: progress > (index / agentWaveformData.current.length) * 100 ? 1 : 0.3,
                   }}
                 />
               ))}
             </div>
-          </div> 
+          </div>
 
-      
+          {/* Middle label */}
           <div className="absolute top-1/2 left-0 right-0 flex items-center justify-between px-2 transform -translate-y-1/2">
-            <div className="h-px bg-gray-200 flex-grow"></div>
+            <div className="h-px bg-gray-200 flex-grow" />
             <div className="px-3 text-xs text-gray-500 bg-white">
               {activeSpeaker === "customer"
                 ? "Customer speaking"
                 : activeSpeaker === "agent"
-                  ? "Agent speaking"
-                  : "Conversation"}
+                ? "Agent speaking"
+                : "Conversation"}
             </div>
-            <div className="h-px bg-gray-200 flex-grow"></div>
+            <div className="h-px bg-gray-200 flex-grow" />
           </div>
 
+          {/* Customer waveform */}
           <div
-           className={`absolute bottom-0 left-0 right-0 h-1/2 flex items-center justify-center ${
+            className={`absolute bottom-0 left-0 right-0 h-1/2 flex items-center justify-center ${
               activeSpeaker === "customer" ? "opacity-100" : "opacity-40"
             } transition-opacity duration-300`}
           >
@@ -182,30 +174,30 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
                   style={{
                     height: `${activeSpeaker === "customer" ? height : height * 0.6}px`,
                     width: "2px",
-                    transform: `scaleY(${progress > ((index / customerWaveformData.current.length) * 100) ? 1 : 0.3})`,
+                    transform: `scaleY(${
+                      progress > (index / customerWaveformData.current.length) * 100 ? 1 : 0.3
+                    })`,
                     opacity: progress > (index / customerWaveformData.current.length) * 100 ? 1 : 0.3,
                   }}
                 />
               ))}
             </div>
           </div>
-
-          
         </div>
 
-      
+        {/* Progress bar */}
         <div className="h-2 bg-gray-200 rounded-full cursor-pointer relative" onClick={handleProgressBarClick}>
           <div className="h-full bg-black rounded-full" style={{ width: `${progress}%` }} />
         </div>
 
-    
+        {/* Time labels */}
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(durationInSeconds)}</span>
         </div>
       </div>
 
-    
+      {/* Play/pause/mute controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
@@ -220,10 +212,12 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
             <div className="font-medium">{activeSpeaker === "agent" ? "AI Agent" : "Customer"}</div>
             <div className="text-gray-500 text-xs">
               {activeSpeaker === "agent"
-                ? progress == 0 ? "Tap on play button to play demo" : "Speaking now"
+                ? progress === 0
+                  ? "Tap on play button to play demo"
+                  : "Speaking now"
                 : activeSpeaker === "customer"
-                  ? "Responding"
-                  : "Conversation paused"}
+                ? "Responding"
+                : "Conversation paused"}
             </div>
           </div>
         </div>
@@ -239,4 +233,3 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
     </div>
   )
 }
-

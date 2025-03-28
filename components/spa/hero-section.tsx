@@ -46,7 +46,7 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
               <VoiceDemoContainer
                   title={title}
                   description={`An AI ${title.toLowerCase()} agent is having a conversation with a customer, demonstrating how it handles real-world scenarios.`}
-                  durationInSeconds={45}
+                  durationInSeconds={88}
                 />
               </div>
               <h3 className="text-xl font-semibold mb-2">See the AI in action</h3>
