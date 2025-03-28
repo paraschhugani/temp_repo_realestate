@@ -36,9 +36,11 @@ const providers: Provider[] = [
 interface IntegrationStepProps {
   useCase: string;
   onComplete?: () => void;
+  dashboard?: boolean;
+  dashboardNextStep?: () => void;
 }
 
-export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
+export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNextStep}: IntegrationStepProps) {
   const [selectedProvider, setSelectedProvider] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -49,7 +51,12 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
 
   const handleProviderSelect = (providerId: string) => {
     setSelectedProvider(providerId);
-    handleIntegrationConnect(providerId);
+    if (!localcheckIntegrationConnection(providerId)) {
+      handleIntegrationConnect(providerId);
+    }else{
+      setIsConnected(true);
+      toastService.success("Integration already connected!");
+    }
   };
 
   channel.onmessage = function (e) {
@@ -57,12 +64,22 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
     else setIsError(true)
   };
 
+  async function localcheckIntegrationConnection(providerId: string){
+    const token = await getToken();
+    const integrationService = new IntegrationService();
+    const data = await integrationService.checkIntegrationConnection(
+      userId ?? "",
+      token ?? "",
+      providerId
+    );
+    return data.data.is_connected;
+  }
   const handleIntegrationConnect = async (providerId: string) => {
     if (!providerId) return;
     setIsLoading(true);
     try {
 
-      const domain = window.location.hostname;
+      const domain = window.location.host;
       const token = await getToken();
       const integrationService = new IntegrationService();
       const data = await integrationService.initializeIntegration(
@@ -97,7 +114,12 @@ export function IntegrationStep({ useCase, onComplete }: IntegrationStepProps) {
       if (data.data.is_connected) {
         toastService.success("Integration connected successfully!");
         // router.push(`/launch/${useCase}/configure`);
-        router.push(`/launch/${useCase}/audience`);
+        if (dashboard) {
+          dashboardNextStep && dashboardNextStep();
+        } else {
+          // router.push(`/launch/${useCase}/audience`);
+          router.push(`/launch/${useCase}/launch-agent`)
+        }
       } else {
         toastService.warning(
           "Integration connection failed. Please check your integration and try again."

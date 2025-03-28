@@ -13,7 +13,11 @@ import { motion } from 'framer-motion';
 import { FiUser, FiLogOut } from 'react-icons/fi';
 import { userService } from '@/services/userService';
 
-const UserAvatar = () => {
+interface UserAvatarProps {
+  dashboard?: boolean;
+}
+
+export default function UserAvatar({ dashboard }: UserAvatarProps) {
   const { user } = useUser();
   const { getToken } = useAuth();
   
@@ -54,10 +58,10 @@ const UserAvatar = () => {
           </button>
         </DropdownMenuTrigger>
 
-    
-        <DropdownMenuContent asChild align="end" className="w-56">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+        {!dashboard ? (
+          <DropdownMenuContent asChild align="end" className="w-56">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
@@ -78,9 +82,11 @@ const UserAvatar = () => {
             </DropdownMenuItem>
           </motion.div>
         </DropdownMenuContent>
+      
+      ) : (
+        <></>
+      )}
       </DropdownMenu>
     </div>
   );
 };
-
-export default UserAvatar;

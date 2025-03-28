@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import SelectedVoiceModelComponent, { VoiceConfigModal } from "../dialogues/voice-config-modal"
 import { toastService } from "@/services/toast-service"
 import { CampaignService } from "@/services/campaign-service"
+import { useAuth } from "@clerk/nextjs"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -47,7 +48,7 @@ export default function TryAgentModal({
     resolver: zodResolver(formSchema),
     mode: "onChange",
   })
-
+  const { getToken  , userId } = useAuth()
   const phoneValue = watch("phone") || ""
 
   const handleTestAgent = async (data: FormData) => {
@@ -63,13 +64,14 @@ export default function TryAgentModal({
     }
 
     try {
+      const token = await getToken();
       await campaignService.launchDemoCampaign({
         phone_number: phone,
         voiceModel: voiceModel,
         voiceSpeed: 1, 
         backgroundSound: false, 
-        token: "demo_user_token",
-        userID: "demo_user",
+        token: token ?? "",
+        userID: userId ?? "",
         useCase: useCase,
         assistant_name: name, 
       })

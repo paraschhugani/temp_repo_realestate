@@ -13,7 +13,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <nav className="bg-black shadow-sm sticky top-0 z-50">
+    <nav className="bg-black shadow-sm sticky top-0 z-50 Navbar-all-pages">
       <div className="container-custom">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -29,7 +29,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <SolutionsDropdown />
+            {/* <SolutionsDropdown /> */}
 
             <Link href="/integration" className="text-gray-200 hover:text-blue-400 transition-colors">
               Integration

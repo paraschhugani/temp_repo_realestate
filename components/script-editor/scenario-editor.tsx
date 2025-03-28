@@ -171,7 +171,7 @@ export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, vo
                   .map((message : any, index) => {
                     const field = scenarioFields.find(f => f.id === message.fieldId)
                   
-                    const label = field ? formatFieldName(field.label || field.question) : (message.label || "Response")
+                    const label = field ? formatFieldName(field.label || field.question || "") : (message.label || "Response")
                    
                     return (
                       <ScriptField
