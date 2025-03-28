@@ -26,6 +26,11 @@ const testimonials = [
     business: "Serenity Thai Spa",
     text: "We used to get overwhelmed with calls during weekends. Now, clients just talk to the assistant, and everything gets booked without stress. It's like having a second front desk that works 24/7.",
   },
+  {
+    id: 6,
+    business: "LUXE Hair Studio",
+    text: "As a luxury salon, client experience is key—missed calls hurt revenue and reputation. With superU, our front desk runs smoothly. Their Voice AI books, reschedules, and keeps our brand voice. We gained $4,000 in a month—without extra hires."
+  },
 ]
 
 export default function SpaTestimonialSection() {

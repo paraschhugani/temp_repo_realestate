@@ -13,7 +13,7 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
         <div className="flex flex-col md:flex-row items-center md:space-x-12">
           <div className="md:w-1/2 mb-12 md:mb-0">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 animate-fade-in leading-tight">
-              Never Miss Another Client Call Again
+              Never Miss Client Call Again
             </h1>
             <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-700">
               Voice AI for Spas, Salons & Beauty Clinics
