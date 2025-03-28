@@ -18,8 +18,8 @@ export class StorageService {
     localStorage.clear()
   }
 
-  static setTestAgentButtonClicked() {
-    localStorage.setItem(agentTestAttemptKey,"true")
+  static setTestAgentButtonClicked(value : boolean) {
+    localStorage.setItem(agentTestAttemptKey, value.toString())
   }
 
   static getTestAgentButtonClicked() {
@@ -30,8 +30,8 @@ export class StorageService {
     return localStorage.getItem(scenarioTabViewKey) === 'true'
   }
 
-  static setScenarioTabViewed() {
-    localStorage.setItem(scenarioTabViewKey, "true")
+  static setScenarioTabViewed(value : boolean) {
+    localStorage.setItem(scenarioTabViewKey, value.toString())
   }
 
   static getCachedScript(){

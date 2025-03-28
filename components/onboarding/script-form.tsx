@@ -83,9 +83,12 @@ interface ScriptResponse {
 interface ScriptFormProps {
   useCase: string;
   showLaunchAgent?: boolean;
+  dashboard?: boolean;
+  setBack?: () => void;
+  setNext?: () => void;
 }
 
-export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
+export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setNext}: ScriptFormProps) {
   const campaignService = useMemo(() => new CampaignService(), []);
   const [scriptData, setScriptData] = useState<Script | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[] | null>(null);
@@ -241,12 +244,13 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     try {
       if (!StorageService.getScenarioTabViewed()) {
         window.scrollTo({ top: 0, behavior: "smooth" });
-        StorageService.setScenarioTabViewed();
+        StorageService.setScenarioTabViewed(true);
         setActiveTab("scenarios");
         return;
       } else if (!StorageService.getTestAgentButtonClicked()) {
-        toastService.custom("Please test your agent at least once before proceeding.");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        // toastService.custom("Please test your agent at least once before proceeding.");
+        // window.scrollTo({ top: 0, behavior: "smooth" });
+        setIsTestDialogOpen(true);
         return;
       } else {
         setIsSuccessDialogOpen(true);
@@ -259,7 +263,11 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   };
 
   const handleContinueToIntegration = () => {
-    router.push(`/launch/${useCase}/integration`);
+    if (dashboard) {
+      setNext && setNext();
+    } else {
+      router.push(`/launch/${useCase}/integration`);
+    }
   };
 
   useEffect(() => {
@@ -316,6 +324,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
     setIsTesting(true);
     try {
       scriptEditorRef.current?.handleSave(); // save updated script to localstorage
+      setBack && setBack();
       const digitsOnly = phoneNumber.replace(/\D/g, "");
       if (digitsOnly.length < 10) {
         toastService.error(
@@ -340,7 +349,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
         userID: userId ?? "",
       });
 
-      StorageService.setTestAgentButtonClicked(); // set the test agent button clicked to true
+      StorageService.setTestAgentButtonClicked(true); // set the test agent button clicked to true
       setIsTestDialogOpen(false);
     } catch (error) {
       console.error(error);
@@ -405,7 +414,7 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
+    <div className={`min-h-screen ${dashboard ? "" : "bg-gray-50"} py-2 px-4 sm:px-6 lg:px-8`}>
       <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -417,10 +426,10 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
               <div className="flex flex-col md:flex-row items-center justify-between mb-8">
                 <div className="flex-1 text-left md:pr-8">
                   <h1 className="text-3xl font-extrabold mb-2">
-                    Configure Your AI Agent Script
+                    {dashboard ? "" : "Configure Your AI Agent Script"}
                   </h1>
                   <h2 className="text-lg font-semibold text-gray-600">
-                    Use case : {formatUseCase(useCase)}
+                    {dashboard ? "" : "Use case : " + formatUseCase(useCase)}
                   </h2>
                 </div>
 
@@ -478,6 +487,8 @@ export function ScriptForm({ useCase, showLaunchAgent }: ScriptFormProps) {
                   voiceModel={voiceModel}
                   setVoiceModel={handleVoiceModelChange}
                   showLaunchAgent={showLaunchAgent ?? false}
+                  dashboard={dashboard}
+                  setBack={setBack}
                 />
               </div>
               <SuccessDialog

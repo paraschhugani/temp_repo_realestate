@@ -36,7 +36,7 @@ export class CampaignService {
         // for (const pair of formData.entries()) {
         //   console.log(pair);
         // }
-        const response = await axios.post(`${this.baseURL}/campaign/test`, formData, {
+        const response = await axios.post(`${this.baseURL}/agent/test`, formData, {
           headers: {
             "Authorization" : `Bearer ${campaignData.token}`,
            'Content-Type': 'application/json',

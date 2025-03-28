@@ -33,15 +33,16 @@ export default function HeroSection({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState(1);
   const [backgroundSound, setbackgroundSound] = useState(false);
-
+  const { getToken } = useAuth()
 
 
 
   useEffect(() => {
     const fetchVoiceModelList = async () => {
       try {
+        const token = await getToken();
         const voiceModelList = await new AIModelService().getVoiceModelList(
-          "demo_user_token"
+          token ?? ""
         );
         setVoiceModelList(voiceModelList);
       } catch (error) {
@@ -127,7 +128,7 @@ export default function HeroSection({
         selectedVoiceName={voiceModelList[voiceModel]?.name ?? "No voice selected"}
         voiceModelList={voiceModelList}
         setVoiceModel={setVoiceModel}
-
+    
         />
       </div>
     </section>

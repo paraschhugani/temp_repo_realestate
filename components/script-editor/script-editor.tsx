@@ -70,10 +70,12 @@ interface ScriptEditorProps {
   voiceModel: string;
   setVoiceModel: (voiceModel: string) => void;
   showLaunchAgent: boolean;
+  setBack?: () => void;
+  dashboard?: boolean;
 }
 
-export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorProps>(
-  ({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel, showLaunchAgent }, ref) => {
+export const ScriptEditor = forwardRef<{ handleSave: () => void}, ScriptEditorProps>(
+  ({ script, scenarios, onSave, onContinue, voiceModelList, voiceModel, setVoiceModel, showLaunchAgent , setBack, dashboard}, ref) => {
   const [activeTab, setActiveTab] = useState("basic");
   const [basicValues, setBasicValues] = useState<Record<string, string>>({});
   const [scenarioValues, setScenarioValues] = useState<Record<string, Record<string, string>>>({});
@@ -110,7 +112,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
 
 
   const handleTabValueChange = (value :string)=>{
-    StorageService.setScenarioTabViewed();
+    StorageService.setScenarioTabViewed(true);
     setActiveTab(value);
   }
 
@@ -136,6 +138,11 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
   const storeValues = (values: any) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
   };
+
+  useEffect(() => {
+    StorageService.setScenarioTabViewed(false);
+    StorageService.setTestAgentButtonClicked(false);
+  }, []);
 
   useEffect(() => {
     const initialBasicValues: Record<string, string> = {};
@@ -342,6 +349,9 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
       });
 
       onSave(updatedScript, updatedScenarios);
+    },
+    setBack: () => {
+      setBack && setBack();
     }
   }));
 
@@ -402,6 +412,13 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void }, ScriptEditorP
         </Button>
        { !showLaunchAgent &&  <ContinueCtaButton text={getContinueText()} onClick={() => onContinue(setActiveTab)} disabled={false} />}
       </div>
+      { dashboard && 
+      <div className="flex justify-between pt-4">
+          <Button variant="outline" onClick={setBack}>
+            Back
+          </Button>
+      </div>
+      }
     </div>
   );
 });

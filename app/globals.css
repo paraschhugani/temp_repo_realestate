@@ -131,3 +131,15 @@
   }
 }
 
+.rdp {
+  @apply flex items-center justify-center;
+}
+
+
+.rdp-week {
+  @apply flex items-center justify-center;
+}
+
+.rdp-day {
+  @apply flex items-center justify-center;
+}

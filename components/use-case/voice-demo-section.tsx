@@ -126,7 +126,7 @@ export default function VoiceDemoContainer({ title, description, durationInSecon
   const activeSpeaker = getActiveSpeaker()
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-gray-100 animate-fade-in-delay">
+    <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-gray-100 animate-fade-in-delay w-full h-full">
       <div className="mb-6 relative">
        
         <div className="h-28 md:h-32 relative mb-2">
