@@ -88,6 +88,29 @@ interface ScriptFormProps {
   setNext?: () => void;
 }
 
+const countries = [
+  { code: "US", name: "United States", flag: "🇺🇸", dialCode: "+1" },
+  { code: "IN", name: "India", flag: "🇮🇳", dialCode: "+91" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧", dialCode: "+44" },
+  { code: "CA", name: "Canada", flag: "🇨🇦", dialCode: "+1" },
+  { code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61" },
+  { code: "DE", name: "Germany", flag: "🇩🇪", dialCode: "+49" },
+  { code: "FR", name: "France", flag: "🇫🇷", dialCode: "+33" },
+  { code: "JP", name: "Japan", flag: "🇯🇵", dialCode: "+81" },
+  { code: "CN", name: "China", flag: "🇨🇳", dialCode: "+86" },
+  { code: "BR", name: "Brazil", flag: "🇧🇷", dialCode: "+55" },
+  { code: "MX", name: "Mexico", flag: "🇲🇽", dialCode: "+52" },
+  { code: "IT", name: "Italy", flag: "🇮🇹", dialCode: "+39" },
+  { code: "ES", name: "Spain", flag: "🇪🇸", dialCode: "+34" },
+  { code: "KR", name: "South Korea", flag: "🇰🇷", dialCode: "+82" },
+  { code: "NL", name: "Netherlands", flag: "🇳🇱", dialCode: "+31" },
+  { code: "SG", name: "Singapore", flag: "🇸🇬", dialCode: "+65" },
+  { code: "AE", name: "United Arab Emirates", flag: "🇦🇪", dialCode: "+971" },
+  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦", dialCode: "+966" },
+  { code: "ZA", name: "South Africa", flag: "🇿🇦", dialCode: "+27" },
+  { code: "RU", name: "Russia", flag: "🇷🇺", dialCode: "+7" },
+]
+
 export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setNext}: ScriptFormProps) {
   const campaignService = useMemo(() => new CampaignService(), []);
   const [scriptData, setScriptData] = useState<Script | null>(null);
@@ -106,6 +129,7 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
   const router = useRouter();
   const { getToken, isSignedIn, isLoaded, userId } = useAuth();
   const scriptEditorRef = useRef<{ handleSave: () => void } | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Record<string, any> | null>(countries[0]);
 
   const cached_voice_id = StorageService.getItem(voice_model);
   var inital_voice_id;
@@ -188,6 +212,9 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
     };
   }, [useCase, getToken, router, isSignedIn, isLoaded]);
 
+  useEffect(() => {
+    console.log(selectedCountry);
+  }, [selectedCountry]);
   const convertToEditorScript = (script: Script): EditorScript => {
     return {
       id: script.id,
@@ -341,6 +368,7 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
       const token = await getToken();
 
       await campaignService.testCampaign({
+        country_code: selectedCountry?.dialCode,
         phone_number: phoneNumber,
         voiceModel: voiceModel,
         voiceSpeed: voiceSpeed,
@@ -474,6 +502,9 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
                 voiceModel={voiceModel}
                 setVoiceModel={handleVoiceModelChange}
                 selectedVoiceName={voiceModelList[voiceModel]?.name ?? "No voice selected"}
+                countries={countries}
+                selectedCountry={selectedCountry || countries[0]}
+                setSelectedCountry={setSelectedCountry}
               />
 
               <div className="bg-white shadow-md rounded-lg p-6 mb-8">

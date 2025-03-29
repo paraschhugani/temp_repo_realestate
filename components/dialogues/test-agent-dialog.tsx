@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import IIcon from "@/components/ui/i-icon-comp";
 import { VoiceConfigModal } from "./voice-config-modal";
 import SelectedVoiceModelComponent from "./voice-config-modal";
+import { useState } from "react";
+import { SelectValue } from "@radix-ui/react-select"
+import { SelectContent, SelectItem, SelectTrigger, Select } from "../ui/select"
 interface TestAgentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,7 +34,11 @@ interface TestAgentDialogProps {
   voiceModel: string;
   setVoiceModel: (voiceModel: string) => void;
   selectedVoiceName: string;
+  countries: Record<string, any>[];
+  selectedCountry: Record<string, any>;
+  setSelectedCountry: (country: Record<string, any>) => void;
 }
+
 
 export function TestAgentDialog({
   open,
@@ -48,6 +55,9 @@ export function TestAgentDialog({
   voiceModel,
   setVoiceModel,
   selectedVoiceName,
+  countries,
+  selectedCountry,
+  setSelectedCountry
 }: TestAgentDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -68,8 +78,25 @@ export function TestAgentDialog({
               </Label>
              <IIcon text="Enter your phone number to receive a test call from the AI agent" />
             </div>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <div className="flex items-center gap-5">
+
+              <div className="flex items-center  w-full gap-2">
+              <Select 
+                value={selectedCountry.code} 
+                onValueChange={(value) => setSelectedCountry(countries.find(c => c.code === value) || countries[0])}
+              >
+                <SelectTrigger className="w-28">
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                      {country.flag} {country.dialCode}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Phone className="h-4 w-4 absolute left-32" />
               <Input
                 id="phone-number"
                 type="tel"
@@ -78,6 +105,7 @@ export function TestAgentDialog({
                 value={phoneNumber}
                 onChange={onPhoneNumberChange}
               />
+              </div>
             </div>
           </div>
           

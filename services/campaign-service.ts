@@ -13,12 +13,13 @@ export class CampaignService {
     voiceModel : string;
     voiceSpeed : number;
     token : string;
+    country_code: string;
   },) {
     try {
       
         const formData = new FormData();
         formData.append('user_id', campaignData.userID);
-        formData.append('phone_number', campaignData.phone_number);
+        formData.append('phone_number', campaignData.country_code + campaignData.phone_number);
         formData.append('bg_noice', campaignData.backgroundSound ? "true" : "false");
         formData.append('voice_id', campaignData.voiceModel);
         formData.append('speed', campaignData.voiceSpeed.toString());
