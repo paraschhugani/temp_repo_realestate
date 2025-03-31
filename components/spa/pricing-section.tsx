@@ -62,7 +62,7 @@ export default function SpaPricingSection() {
                 href="/launch/spa-and-salon-appointment-scheduling/form"
                 className="btn-primary inline-flex items-center text-lg px-8 py-4 w-full justify-center bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
               >
-                Get Started Now
+                Get Started Now - Free for today
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </div>
