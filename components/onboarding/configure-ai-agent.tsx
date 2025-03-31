@@ -490,14 +490,15 @@ export default function ConfigureAIAgent({ params }: ConfigureAIAgentProps) {
       setIsTestingAgent(true);
       const token = await getToken();
       
-      await campaignService.testCampaign({
-        phone_number: phoneNumber,
-        voiceModel : voiceModel,
-        voiceSpeed : voiceSpeed,
-        backgroundSound : backgroundSound,
-        token : token ?? "",
-        userID : userId ?? ""
-      });
+      // await campaignService.testCampaign({
+      //   phone_number: phoneNumber,
+      //   voiceModel : voiceModel,
+      //   voiceSpeed : voiceSpeed,
+      //   backgroundSound : backgroundSound,
+      //   token : token ?? "",
+      //   userID : userId ?? "",
+
+      // });
       
 
     } catch (error) {
