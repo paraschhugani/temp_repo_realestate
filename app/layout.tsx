@@ -32,6 +32,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               })(window, document, "clarity", "script", "qvbjhl2lgc");`,
             }}
           />
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-L5KP1EZQEM"></script>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-L5KP1EZQEM');
+              `,
+            }}
+          />
+
         </head>
         <body className={inter.className}>
           <Navbar />
