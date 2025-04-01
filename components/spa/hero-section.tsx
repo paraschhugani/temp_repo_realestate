@@ -50,7 +50,6 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
       setPhoneNumber(formatted);
       setSelectedCountry(countries[0])
       setIsTestDialogOpen(false)
-
     }
   };
 
