@@ -51,8 +51,6 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
       setSelectedCountry(countries[0])
       setIsTestDialogOpen(false)
 
-      toastService.success("You will receive a call from the AI agent shortly")
-
     }
   };
 
@@ -67,6 +65,13 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
       }
     }
   )
+
+  if (response.status === 200) {
+    toastService.success("You will receive a call from the AI agent shortly")
+  } else {
+    toastService.error("Something went wrong , please try again later")
+  }
+
   }
 
   return (
