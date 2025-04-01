@@ -10,6 +10,7 @@ interface SpaHeroSectionProps {
 import { DemoCallDialog } from "@/components/dialogues/demo-call";
 import { useState } from "react";
 import axios from "axios";
+import { toastService } from "@/services/toast-service";
 
 const countries = [
   { code: "US", name: "United States", flag: "🇺🇸", dialCode: "+1" },
@@ -47,6 +48,11 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
     if (value.length <= 10) {
       const formatted = value; // TODO : Format the phone number
       setPhoneNumber(formatted);
+      setSelectedCountry(countries[0])
+      setIsTestDialogOpen(false)
+
+      toastService.success("You will receive a call from the AI agent shortly")
+
     }
   };
 
@@ -61,7 +67,6 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
       }
     }
   )
-    console.log(response)
   }
 
   return (
