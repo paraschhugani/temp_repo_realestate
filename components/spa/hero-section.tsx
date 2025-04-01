@@ -49,7 +49,6 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
       const formatted = value; // TODO : Format the phone number
       setPhoneNumber(formatted);
       setSelectedCountry(countries[0])
-      setIsTestDialogOpen(false)
     }
   };
 
