@@ -143,3 +143,16 @@
 .rdp-day {
   @apply flex items-center justify-center;
 }
+
+.cl-internal-1dauvpw{
+  display: none;
+}
+
+.cl-cardBox{
+  width: 100%;
+  box-shadow: none;
+}
+
+.cl-footer{
+  background: none;
+}
