@@ -35,16 +35,20 @@ export default function Navbar() {
               Integration
             </Link> */}
 
-            <Link href="#FAQ" className="text-gray-200 hover:text-blue-400 transition-colors">
-              FAQ
+            
+
+            
+
+            <Link href="#HIW" className="text-gray-200 hover:text-blue-400 transition-colors">
+              How it works
             </Link>
 
             <Link href="#pricing" className="text-gray-200 hover:text-blue-400 transition-colors">
               Pricing
             </Link>
 
-            <Link href="#HIW" className="text-gray-200 hover:text-blue-400 transition-colors">
-              How it works
+            <Link href="#FAQ" className="text-gray-200 hover:text-blue-400 transition-colors">
+              FAQ
             </Link>
           </div>
 

@@ -44,6 +44,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
 
+          <Script
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.$crisp=[];
+              window.CRISP_WEBSITE_ID="caee1270-e055-43f8-9039-e3a3f8576f53";
+              (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+
+              $crisp.push(["do", "message:show", ["text", "Hey there! Need any help? 😊"]]);
+            `,
+          }}
+          />
+
         </head>
         <body className={inter.className}>
           <Navbar />

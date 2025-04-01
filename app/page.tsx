@@ -31,9 +31,9 @@ export default function Home() {
   return (
     <main className="bg-white">
       <SpaHeroSection title="Spa" />
+      <SpaHowItWorksSection />
       <SpaTestimonialSection />
       <SpaImpactSection />
-      <SpaHowItWorksSection />
       <SpaPricingSection />
       <SpaFaqSection />
 

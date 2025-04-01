@@ -1,12 +1,69 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import VoiceDemoContainer from "@/components/use-case/voice-demo-section";
-
+import { Phone } from "lucide-react";
 interface SpaHeroSectionProps {
     title: string;
   }
+import { DemoCallDialog } from "@/components/dialogues/demo-call";
+import { useState } from "react";
+import axios from "axios";
+
+const countries = [
+  { code: "US", name: "United States", flag: "🇺🇸", dialCode: "+1" },
+  { code: "IN", name: "India", flag: "🇮🇳", dialCode: "+91" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧", dialCode: "+44" },
+  { code: "CA", name: "Canada", flag: "🇨🇦", dialCode: "+1" },
+  { code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61" },
+  { code: "DE", name: "Germany", flag: "🇩🇪", dialCode: "+49" },
+  { code: "FR", name: "France", flag: "🇫🇷", dialCode: "+33" },
+  { code: "JP", name: "Japan", flag: "🇯🇵", dialCode: "+81" },
+  { code: "CN", name: "China", flag: "🇨🇳", dialCode: "+86" },
+  { code: "BR", name: "Brazil", flag: "🇧🇷", dialCode: "+55" },
+  { code: "MX", name: "Mexico", flag: "🇲🇽", dialCode: "+52" },
+  { code: "IT", name: "Italy", flag: "🇮🇹", dialCode: "+39" },
+  { code: "ES", name: "Spain", flag: "🇪🇸", dialCode: "+34" },
+  { code: "KR", name: "South Korea", flag: "🇰🇷", dialCode: "+82" },
+  { code: "NL", name: "Netherlands", flag: "🇳🇱", dialCode: "+31" },
+  { code: "SG", name: "Singapore", flag: "🇸🇬", dialCode: "+65" },
+  { code: "AE", name: "United Arab Emirates", flag: "🇦🇪", dialCode: "+971" },
+  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦", dialCode: "+966" },
+  { code: "ZA", name: "South Africa", flag: "🇿🇦", dialCode: "+27" },
+  { code: "RU", name: "Russia", flag: "🇷🇺", dialCode: "+7" },
+]
 
 export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
+  const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  
+
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 10) {
+      const formatted = value; // TODO : Format the phone number
+      setPhoneNumber(formatted);
+    }
+  };
+
+  const handleTestAgent = async () => {
+    const response = await axios.post(`${baseURL}/democall`, {
+      phoneNumber: selectedCountry?.dialCode + phoneNumber,
+      vapi_assistant_id: "f74611d0-6216-4516-8dcc-5c421fc9ee8f"
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }
+  )
+    console.log(response)
+  }
+
   return (
     <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-24 md:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,22 +71,22 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
           <div className="md:w-1/2 mb-12 md:mb-0">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 animate-fade-in leading-tight">
               Never Miss Client Call Again
-            </h1>
+              </h1>
             <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-700">
-              Voice AI for Spas, Salons & Beauty Clinics
+              AI Receptionist for Spas, Salons & Beauty Clinics
             </h2>
             <ul className="space-y-3 mb-10 text-lg">
               <li className="flex items-start">
-                <span className="text-blue-500 mr-2">•</span>
-                <span>Handle inbound appointment requests 24/7</span>
+                <span className="text-green-500 mr-2">✅</span>
+                <span>Answer calls 24/7 — no missed bookings</span>
               </li>
               <li className="flex items-start">
-                <span className="text-blue-500 mr-2">•</span>
-                <span>Confirm/cancel/reschedule appointments</span>
+                <span className="text-green-500 mr-2">✅</span>
+                <span>Confirm, cancel, or reschedule appointments</span>
               </li>
               <li className="flex items-start">
-                <span className="text-blue-500 mr-2">•</span>
-                <span>Answer pricing, service list, location, hours, policies</span>
+                <span className="text-green-500 mr-2">✅</span>
+                <span>Instantly respond to pricing, services, hours & more</span>
               </li>
             </ul>
             <Link
@@ -41,6 +98,19 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
             </Link>
           </div>
           <div className="md:w-1/2">
+            <div className="flex justify-end cursor-pointer ">
+                <button
+                  onClick={() => {
+                    setIsTestDialogOpen(true)
+                    setPhoneNumber("")
+                    setSelectedCountry(countries[0])
+                  }}
+                  className="mb-4 cursor-pointer inline-flex items-center bg-black text-white hover:bg-gray-800 font-medium py-2 px-5 text-sm rounded-md transition transform duration-300 hover:scale-105 shadow-md hover:shadow-lg group"
+                >
+                  <Phone className="mr-2 h-4 w-4 group-hover:animate-pulse" />
+                  Try Now - Get a Demo Call
+                </button>
+              </div>
             <div className="bg-white p-6 rounded-lg shadow-xl">
               <div className="aspect-video rounded-md flex items-center justify-center mb-4">
               <VoiceDemoContainer
@@ -58,6 +128,17 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
           </div>
         </div>
       </div>
+
+      <DemoCallDialog
+        open={isTestDialogOpen}
+        onOpenChange={setIsTestDialogOpen}
+        phoneNumber={phoneNumber}
+        onPhoneNumberChange={handlePhoneNumberChange}
+        handleTestAgent={handleTestAgent}
+        countries={countries}
+        selectedCountry={selectedCountry || countries[0]}
+        setSelectedCountry={(country) => setSelectedCountry(country as typeof countries[0])}
+      />
     </section>
   )
 }

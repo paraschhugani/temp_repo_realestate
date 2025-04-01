@@ -22,7 +22,7 @@ export default function Footer() {
               Superu is the no-code platform that empowers you to build human-like AI calling solutions effortlessly for
               inbound support and automated outbound sales.
             </p>
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
                 <Facebook size={20} />
               </a>
@@ -35,11 +35,11 @@ export default function Footer() {
               <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
                 <Instagram size={20} />
               </a>
-            </div>
+            </div> */}
           </div>
 
           {/* Quick Links */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-4">Solutions</h3>
             <ul className="space-y-2">
               <li>
@@ -63,10 +63,10 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Company */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
@@ -90,7 +90,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">

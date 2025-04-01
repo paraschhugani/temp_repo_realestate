@@ -206,7 +206,7 @@ export default function VoiceDemoContainer({
         <div className="flex items-center space-x-4">
           <button
             onClick={togglePlayPause}
-            className="w-10 h-10 md:w-12 md:h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+            className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700  text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-1" />}
