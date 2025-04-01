@@ -68,10 +68,10 @@ export default function UserAvatar({ dashboard }: UserAvatarProps) {
             className="rounded-md bg-white shadow-md ring-1 ring-black ring-opacity-5"
           >
             <DropdownMenuItem asChild>
-              <Link href="/account" className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
+              {/* <Link href="/account" className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
                 <FiUser />
                 <span>Account</span>
-              </Link>
+              </Link> */}
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => signOut()} 
