@@ -39,6 +39,11 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [demoCallIsSubmitting, setDemoCallIsSubmitting] = useState(false)
+  const [demoCallName, setDemoCallName] = useState("")
+  const [demoCallEmail, setDemoCallEmail] = useState("")
+  const [demoCallWebsite, setDemoCallWebsite] = useState("")
   
 
   const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -55,7 +60,10 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
   const handleTestAgent = async () => {
     const response = await axios.post(`${baseURL}/democall`, {
       phoneNumber: selectedCountry?.dialCode + phoneNumber,
-      vapi_assistant_id: "f74611d0-6216-4516-8dcc-5c421fc9ee8f"
+      vapi_assistant_id: "f74611d0-6216-4516-8dcc-5c421fc9ee8f",
+      name: demoCallName,
+      email: demoCallEmail,
+      website: demoCallWebsite
     },
     {
       headers: {
@@ -65,7 +73,8 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
   )
 
   if (response.status === 200) {
-    toastService.success("You will receive a call from the AI agent shortly")
+    toastService.success("Your test assistant is calling — check your phone!")
+    setIsTestDialogOpen(false)
   } else {
     toastService.error("Something went wrong , please try again later")
   }
@@ -146,6 +155,14 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
         countries={countries}
         selectedCountry={selectedCountry || countries[0]}
         setSelectedCountry={(country) => setSelectedCountry(country as typeof countries[0])}
+        demoCallIsSubmitting={demoCallIsSubmitting}
+        setDemoCallIsSubmitting={setDemoCallIsSubmitting}
+        demoCallName={demoCallName}
+        setDemoCallName={setDemoCallName}
+        demoCallEmail={demoCallEmail}
+        setDemoCallEmail={setDemoCallEmail}
+        demoCallWebsite={demoCallWebsite}
+        setDemoCallWebsite={setDemoCallWebsite}
       />
     </section>
   )
