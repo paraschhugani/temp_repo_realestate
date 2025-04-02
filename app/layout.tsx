@@ -7,7 +7,7 @@ import Footer from "@/components/footer";
 import { Toaster } from "sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
-
+import { v4 as uuidv4 } from "uuid";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const isDev = process.env.DEV === "True";
+  const storedUserId = uuidv4();
   return (
     <ClerkProvider>
       <html lang="en">
@@ -30,7 +31,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
                 t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                 y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-              })(window, document, "clarity", "script", "qvbjhl2lgc");`,
+              })(window, document, "clarity", "script", "qvbjhl2lgc");
+              
+              var clarity_user_id = localStorage.getItem("clarity_user_id");
+              if (!clarity_user_id) {
+                clarity_user_id = "${storedUserId}";
+                localStorage.setItem("clarity_user_id", clarity_user_id);
+              }
+              window.clarity("set", "user_id", clarity_user_id);
+              `,
             }}
           />
           <script async src="https://www.googletagmanager.com/gtag/js?id=G-L5KP1EZQEM"></script>
