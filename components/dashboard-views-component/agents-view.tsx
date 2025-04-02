@@ -90,6 +90,8 @@ export default function AgentsView() {
   const [useCases, setUseCases] = useState<{ id: string, title: string, subheadline: string }[]>([])
   const [script, setScript] = useState<any>(null)
 
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+
   useEffect(() => {
     if (newAgent.industry) {
       getUseCases()
@@ -100,7 +102,7 @@ export default function AgentsView() {
     console.log(userId)
     const token = await getToken();
     console.log(token)
-    axios.post(`http://localhost:5000/agent/list` , {
+    axios.post(`${baseURL}/agent/list` , {
       user_id: userId ?? ""
     }, {
       headers: {
@@ -118,7 +120,7 @@ export default function AgentsView() {
   }, [userId])
 
   function getUseCases() {
-    axios.get(`http://localhost:5000/usecases/industry/${newAgent.industry.toLowerCase()}`).then((response) => {
+    axios.get(`${baseURL}/usecases/industry/${newAgent.industry.toLowerCase()}`).then((response) => {
       const useCases_keys = Object.keys(response.data['useCases'])
       const usecase_dict = useCases_keys.map((key) => ({ id : key , title: response.data['useCases'][key].title , subheadline: response.data['useCases'][key].subheadline }))
       console.log(usecase_dict)
@@ -128,7 +130,7 @@ export default function AgentsView() {
 
   async function getUseCaseDetails(id: string) {
     const token = await getToken();
-    axios.get(`http://localhost:5000/scripts/${id}` , {
+    axios.get(`${baseURL}/scripts/${id}` , {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -206,7 +208,7 @@ export default function AgentsView() {
     request_json['speed'] = StorageService.getItem("voice_speed") ?? "1";
     request_json['user_id'] = userId;
     request_json['type'] = newAgent.type;
-    axios.post("http://localhost:5000/agent/create", request_json , {
+    axios.post(`${baseURL}/agent/create`, request_json , {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`

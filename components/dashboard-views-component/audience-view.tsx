@@ -56,12 +56,13 @@ export default function AudienceView() {
 
   const [lists, setLists] = useState<List[]>([
   ])
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
   useEffect(() => {
     async function getLists() {
       const token = await getToken();
       if (userId) {
-        axios.get(`http://localhost:5000/audience/list?user_id=${userId}`, {
+        axios.get(`${baseURL}/audience/list?user_id=${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -74,7 +75,7 @@ export default function AudienceView() {
           console.log(err)
           })
 
-      axios.get(`http://localhost:5000/audience/contacts/list?user_id=${userId}`, {
+      axios.get(`${baseURL}/audience/contacts/list?user_id=${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -114,7 +115,7 @@ export default function AudienceView() {
                 formData.append('csv_file', csvFile);
             }   
             
-            axios.post(`http://localhost:5000/audience/create?user_id=${userId}&audience_name=${encodeURIComponent(newList.name)}&audience_description=${encodeURIComponent(newList.description || '')}`, formData, {
+            axios.post(`${baseURL}/audience/create?user_id=${userId}&audience_name=${encodeURIComponent(newList.name)}&audience_description=${encodeURIComponent(newList.description || '')}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     'Authorization': `Bearer ${token}`

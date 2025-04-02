@@ -12,6 +12,8 @@ interface StripeCheckoutProps {
 export default function StripeCheckout({ amount }: StripeCheckoutProps) {
   const [loading, setLoading] = useState(false);
   const { getToken , userId } = useAuth();
+
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   const handleCheckout = async () => {
     setLoading(true);
     const stripe = await stripePromise;
@@ -24,7 +26,7 @@ export default function StripeCheckout({ amount }: StripeCheckoutProps) {
 
     // Create a Stripe Checkout Session
     const token = await getToken()
-    const response = await axios.post("http://localhost:5000/wallet-topup-create-checkout-session", {
+    const response = await axios.post(`${baseURL}/wallet-topup-create-checkout-session`, {
       amount: amount * 100,
       token: token,
             user_id: userId

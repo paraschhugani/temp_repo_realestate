@@ -34,6 +34,8 @@ interface LaunchAgentProps {
 }
 
 export default function LaunchAgent({ useCase }: LaunchAgentProps) {
+
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
     console.log(useCase);
     const {getToken ,  userId } = useAuth();
     const handleAddAgent = async () => {
@@ -52,7 +54,7 @@ export default function LaunchAgent({ useCase }: LaunchAgentProps) {
         request_json['speed'] = StorageService.getItem("voice_speed") ?? "1";
         request_json['user_id'] = userId;
         request_json['type'] = StorageService.getItem(`agentType-${useCase}`) ?? "";
-        axios.post("http://localhost:5000/agent/create", request_json , {
+        axios.post(`${baseURL}/agent/create`, request_json , {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -60,7 +62,8 @@ export default function LaunchAgent({ useCase }: LaunchAgentProps) {
         }).then((response) => {
           StorageService.setItem(`first_onboarding_agent_phone_number`, 'true');
           StorageService.setItem(`first_onboarding_agent_campaign`, 'true');
-          window.location.href = StorageService.getItem(`agentType-${useCase}`) === "inbound" ? "/dashboard" : "/dashboard/outbound";
+          // window.location.href = StorageService.getItem(`agentType-${useCase}`) === "outbound" ? "/dashboard/outbound" : "/dashboard/inbound";
+          window.location.href = "/dashboard/phone-numbers";
         }).catch((error) => {
           console.log(error)
         })

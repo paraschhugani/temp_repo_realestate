@@ -94,6 +94,8 @@ export default function OutboundView() {
 
   const [audienceLists, setAudienceLists] = useState<AudienceList[]>([])
 
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+
 
   const validateDateTime = (date: Date | null): boolean => {
     if (!date) return false
@@ -124,7 +126,7 @@ export default function OutboundView() {
       const now = new Date()
       const isScheduled = newCampaign.startTime > now
 
-      axios.post(`http://localhost:5000/campaign/outbound/create` , {
+      axios.post(`${baseURL}/campaign/outbound/create` , {
         user_id: userId,
         campaign: newCampaign.name,
         agent: newCampaign.agent,
@@ -259,7 +261,7 @@ export default function OutboundView() {
 
   async function getAgents() {
     const token = await getToken();
-    axios.post(`http://localhost:5000/agent/list` , {
+    axios.post(`${baseURL}/agent/list` , {
       user_id: userId
     }, {
       headers: {
@@ -278,7 +280,7 @@ export default function OutboundView() {
 
   async function getPhoneNumbers() {
     const token = await getToken();
-    axios.post(`http://localhost:5000/phoneNumber/owned` , {
+    axios.post(`${baseURL}/phoneNumber/owned` , {
       user_id: userId
     }, {
       headers: {
@@ -293,7 +295,7 @@ export default function OutboundView() {
 
   async function getAudienceLists() {
     const token = await getToken();
-    axios.get(`http://localhost:5000/audience/list?user_id=${userId}`, {
+    axios.get(`${baseURL}/audience/list?user_id=${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -309,7 +311,7 @@ export default function OutboundView() {
 
   async function getOutboundCampaigns() {
     const token = await getToken();
-    axios.get(`http://localhost:5000/campaign/outbound/list?user_id=${userId}`, {
+    axios.get(`${baseURL}/campaign/outbound/list?user_id=${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

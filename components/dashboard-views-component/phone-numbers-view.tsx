@@ -75,6 +75,8 @@ export default function PhoneNumbersView() {
   const [first_onboarding_agent_phone_number, setFirstOnboardingAgentPhoneNumber] = useState(false)
   const [first_onboarding_agent_campaign, setFirstOnboardingAgentCampaign] = useState(false)
 
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+
   const handleSearchNumbers = async () => {
     if (newNumber.country) {
       setIsSearching(true)
@@ -83,7 +85,7 @@ export default function PhoneNumbersView() {
         const token = await getToken()
 
         const response = await axios.post(
-          "http://localhost:5000/phoneNumber/search",
+          `${baseURL}/phoneNumber/search`,
           {
             country: newNumber.country,
             prefixNumber: newNumber.number,
@@ -125,7 +127,7 @@ export default function PhoneNumbersView() {
 
   const currentUserCredits = async () => {
     const token = await getToken()
-    const response = await axios.post("http://localhost:5000/user/current-credit-balance", {
+    const response = await axios.post(`${baseURL}/user/current-credit-balance`, {
       user_id: userId,
     }, {
       headers: {
@@ -152,7 +154,7 @@ export default function PhoneNumbersView() {
       const token = await getToken()
 
       // Make a request to your backend to create a Checkout Session
-      const response = await axios.post("http://localhost:5000/user/phone-number-purchase-direct", {
+      const response = await axios.post(`${baseURL}/user/phone-number-purchase-direct`, {
         amount: amount,
         user_id: userId,
         phone_number_id: selectedNumberData?.id,
@@ -196,7 +198,7 @@ export default function PhoneNumbersView() {
       if (selectedPaymentMethod === "credits") {
         const token = await getToken()
         // Process payment with credits
-        axios.post("http://localhost:5000/user/purchase-phone-number-with-phone-credit", {
+        axios.post(`${baseURL}/user/purchase-phone-number-with-phone-credit`, {
           user_id: userId,
           phone_number_id: selectedNumberData?.id,
           phone_number: selectedNumberData?.number,
@@ -254,7 +256,7 @@ export default function PhoneNumbersView() {
     
     const token = await getToken()
     const phoneNumbers = await axios.post(
-      "http://localhost:5000/phoneNumber/owned",
+      `${baseURL}/phoneNumber/owned`,
       {
         user_id: userId,
       },
@@ -368,7 +370,7 @@ export default function PhoneNumbersView() {
       const token = await getToken()
 
       // Make a request to your backend to create a Checkout Session
-      const response = await axios.post("http://localhost:5000/user/wallet-topup-create-checkout-session", {
+      const response = await axios.post(`${baseURL}/user/wallet-topup-create-checkout-session`, {
         amount: amount,
         user_id: userId,
         credits: amount, // Calculate credits based on package

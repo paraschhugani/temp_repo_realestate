@@ -69,7 +69,6 @@ export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNext
       token ?? "",
       providerId
     );
-    console.log(data.data.is_connected);
     return data.data.is_connected;
   }
   const handleIntegrationConnect = async (providerId: string) => {

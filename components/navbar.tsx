@@ -58,7 +58,7 @@ export default function Navbar() {
               <UserAvatar />
             </SignedIn>
             <SignedOut>
-              <Link href="/sign-in" className="btn-primary">
+              <Link href="/launch/spa-and-salon-appointment-scheduling/form" className="btn-primary">
                 Start Free Now
               </Link>
             </SignedOut>

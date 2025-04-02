@@ -49,9 +49,10 @@ export default function InboundView() {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)
   const [first_onboarding_agent_phone_number, setFirstOnboardingAgentPhoneNumber] = useState(false)
   const [first_onboarding_agent_campaign, setFirstOnboardingAgentCampaign] = useState(false)
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   async function getAgents() {
     const token = await getToken();
-    axios.post(`http://localhost:5000/agent/list` , {
+    axios.post(`${baseURL}/agent/list` , {
       user_id: userId
     }, {
       headers: {
@@ -66,7 +67,7 @@ export default function InboundView() {
 
   async function getInboundCampaigns() {
     const token = await getToken();
-    const inboundCampaigns = await axios.get(`http://localhost:5000/campaign/inbound/list?user_id=${userId}`, {
+    const inboundCampaigns = await axios.get(`${baseURL}/campaign/inbound/list?user_id=${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -104,7 +105,7 @@ export default function InboundView() {
   const handleAssignNumber = async () => {
     // /campaign/inbound/create
     const token = await getToken();
-    axios.post("http://localhost:5000/campaign/inbound/create", {
+    axios.post(`${baseURL}/campaign/inbound/create`, {
       user_id: userId,
       phoneNumber: newAssignment.phoneNumber,
       agent: newAssignment.agent,
