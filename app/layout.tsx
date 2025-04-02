@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const isDev = process.env.DEV === "True";
   return (
     <ClerkProvider>
       <html lang="en">
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               `,
             }}
           />
-
+          {!isDev && (
           <Script
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `,
           }}
           />
+          )}
 
         </head>
         <body className={inter.className}>

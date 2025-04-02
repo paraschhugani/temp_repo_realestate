@@ -43,7 +43,7 @@ export class CampaignService {
            'Content-Type': 'application/json',
           }
         });
-        toastService.success("Test call initiated successfully!");
+        toastService.success("Check your phone for a call from your assistant!");
    
         return response.data;
     

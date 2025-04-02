@@ -22,11 +22,6 @@ const providers: Provider[] = [
     logo: GoogleCalendar,
   },
   {
-    id: "cal-com",
-    name: "Cal.com",
-    logo: CalCom,
-  },
-  {
     id: "calendly",
     name: "Calendly",
     logo: Calendly,
@@ -49,9 +44,11 @@ export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNext
   const router = useRouter();
   const { getToken, userId } = useAuth();
 
-  const handleProviderSelect = (providerId: string) => {
+  const handleProviderSelect = async (providerId: string) => {
     setSelectedProvider(providerId);
-    if (!localcheckIntegrationConnection(providerId)) {
+    const isConnected = await localcheckIntegrationConnection(providerId);
+    if (!isConnected) {
+      console.log("Connecting to integration");
       handleIntegrationConnect(providerId);
     }else{
       setIsConnected(true);
@@ -72,6 +69,7 @@ export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNext
       token ?? "",
       providerId
     );
+    console.log(data.data.is_connected);
     return data.data.is_connected;
   }
   const handleIntegrationConnect = async (providerId: string) => {
