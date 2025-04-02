@@ -93,7 +93,7 @@ export default function Navbar() {
               Pricing
             </Link>
 
-            <Link href="/sign-in" className="block py-2 text-blue-400 font-medium" onClick={() => setIsOpen(false)}>
+            <Link href="/launch/spa-and-salon-appointment-scheduling/form" className="block py-2 text-blue-400 font-medium" onClick={() => setIsOpen(false)}>
               Start Free Now
             </Link>
           </div>
