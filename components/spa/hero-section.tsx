@@ -56,7 +56,6 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
     if (value.length <= 10) {
       const formatted = value; // TODO : Format the phone number
       setPhoneNumber(formatted);
-      setSelectedCountry(countries[0])
     }
   };
 
