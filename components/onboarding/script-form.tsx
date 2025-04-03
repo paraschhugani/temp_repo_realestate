@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { CampaignService } from "@/services/campaign-service";
 import { SuccessDialog } from "../ui/success-dialog";
 import { TestAgentDialog } from "../dialogues/test-agent-dialog";
+import CallRatingModal from "@/components/call-rating-modal";
 
 interface ScriptField {
   id: string;
@@ -131,6 +132,8 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
   const scriptEditorRef = useRef<{ handleSave: () => void } | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<Record<string, any> | null>(countries[0]);
 
+  const [callFeedbackOpen, setCallFeedbackOpen] = useState(false);
+  const [callUUID, setCallUUID] = useState("");
   const cached_voice_id = StorageService.getItem(voice_model);
   var inital_voice_id;
   if (cached_voice_id) inital_voice_id = cached_voice_id;
@@ -351,7 +354,7 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
     setIsTesting(true);
     try {
       scriptEditorRef.current?.handleSave(); // save updated script to localstorage
-      setBack && setBack();
+      // setBack && setBack();
       const digitsOnly = phoneNumber.replace(/\D/g, "");
       if (digitsOnly.length < 10) {
         toastService.error(
@@ -367,7 +370,7 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
 
       const token = await getToken();
 
-      await campaignService.testCampaign({
+      const DemoCallResponse = await campaignService.testCampaign({
         country_code: selectedCountry?.dialCode,
         phone_number: phoneNumber,
         voiceModel: voiceModel,
@@ -377,6 +380,8 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
         userID: userId ?? "",
       });
 
+      setCallUUID(DemoCallResponse.id);
+      setCallFeedbackOpen(true);
       StorageService.setTestAgentButtonClicked(true); // set the test agent button clicked to true
       setIsTestDialogOpen(false);
     } catch (error) {
@@ -526,6 +531,11 @@ export function ScriptForm({ useCase, showLaunchAgent, dashboard , setBack, setN
                 open={isSuccessDialogOpen}
                 onOpenChange={setIsSuccessDialogOpen}
                 onContinue={handleContinueToIntegration}
+              />
+              <CallRatingModal
+                isOpen={callFeedbackOpen}
+                onClose={() => setCallFeedbackOpen(false)}
+                callUUID={callUUID}
               />
             </>
           )}

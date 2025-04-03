@@ -101,11 +101,8 @@ export default function PhoneNumbersView() {
 
         if (response.data.length > 0) {
           setSearchResults(response.data)
-          setSearchStep("results")
-        } else {
-          
-          setSearchStep("input")
         }
+        setSearchStep("results")
       } catch (error) {
         console.error("Error searching for numbers:", error)
       } finally {
@@ -284,8 +281,6 @@ export default function PhoneNumbersView() {
 
   useEffect(() => {
     if (userId) {
-      StorageService.setItem(`first_onboarding_agent_phone_number`, 'true');
-      StorageService.setItem(`first_onboarding_agent_campaign`, 'true');
       getPhoneNumbers()
     }
   }, [userId])
@@ -487,13 +482,12 @@ export default function PhoneNumbersView() {
               </div>
             )}
 
-            {searchStep === "results" && searchResults.length > 0 && (
+            {searchStep === "results" && searchResults.length > 0 ? (
               <div className="space-y-4 mt-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Available Numbers</h3>
                   <div className="text-sm text-muted-foreground">{searchResults.length} numbers found</div>
                 </div>
-
                 <div className="border rounded-md overflow-hidden max-h-[300px] overflow-y-auto">
                   <table className="w-full overflow-y-auto">
                     <thead className="bg-muted sticky top-0">
@@ -529,7 +523,13 @@ export default function PhoneNumbersView() {
                   </table>
                 </div>
               </div>
-            )}
+            ) : searchStep === "results" && searchResults.length === 0 ? (
+              <div className="space-y-4 mt-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">No numbers found</h3>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <DialogFooter>

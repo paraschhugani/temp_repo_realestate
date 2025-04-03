@@ -52,6 +52,7 @@ interface Agent {
   id: string
   name: string
   status: "active" | "inactive"
+  created_date: string
   industry: string
   useCase: string
   type: string
@@ -250,8 +251,8 @@ export default function AgentsView() {
       accessorKey: "useCase" as keyof Agent,
     },
     {
-      header: "Type",
-      accessorKey: "type" as keyof Agent,
+      header: "Created Date",
+      accessorKey: "created_date" as keyof Agent,
     },
     {
       header: "Status",

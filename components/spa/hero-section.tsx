@@ -11,6 +11,7 @@ import { DemoCallDialog } from "@/components/dialogues/demo-call";
 import { useState } from "react";
 import axios from "axios";
 import { toastService } from "@/services/toast-service";
+import CallRatingModal from "@/components/call-rating-modal";
 
 const countries = [
   { code: "US", name: "United States", flag: "🇺🇸", dialCode: "+1" },
@@ -44,6 +45,8 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
   const [demoCallName, setDemoCallName] = useState("")
   const [demoCallEmail, setDemoCallEmail] = useState("")
   const [demoCallWebsite, setDemoCallWebsite] = useState("")
+  const [callUUID, setCallUUID] = useState("")
+  const [callFeedbackOpen, setCallFeedbackOpen] = useState(false)
   
 
   const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -75,6 +78,8 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
   if (response.status === 200) {
     toastService.success("Your test assistant is calling — check your phone!")
     setIsTestDialogOpen(false)
+    setCallUUID(response.data.id)
+    setCallFeedbackOpen(true)
   } else {
     toastService.error("Something went wrong , please try again later")
   }
@@ -163,6 +168,11 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
         setDemoCallEmail={setDemoCallEmail}
         demoCallWebsite={demoCallWebsite}
         setDemoCallWebsite={setDemoCallWebsite}
+      />
+      <CallRatingModal
+        isOpen={callFeedbackOpen}
+        onClose={() => setCallFeedbackOpen(false)}
+        callUUID={callUUID}
       />
     </section>
   )

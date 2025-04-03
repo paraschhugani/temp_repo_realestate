@@ -27,7 +27,7 @@ export function SuccessDialog({ open, onOpenChange, onContinue }: SuccessDialogP
               Let's move forward with the integration.
             </p>
           </div>
-          <ContinueCtaButton text="Continue to Integration" onClick={onContinue} disabled={false} />
+          <ContinueCtaButton text="Connect your Calendar" onClick={onContinue} disabled={false} />
         </div>
       </DialogContent>
     </Dialog>

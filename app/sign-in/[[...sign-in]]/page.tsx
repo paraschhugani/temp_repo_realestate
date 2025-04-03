@@ -77,7 +77,7 @@ export default function SignupPage() {
                           ></path>
                         </svg>
                       ))}
-                      <span className="ml-1 text-white text-lg">4.8</span>
+                      <span className="ml-1 text-white text-lg">4.6</span>
                     </div>
                   </div>
 

@@ -14,6 +14,12 @@ export interface Provider {
   name: string;
   logo: () => React.JSX.Element;
 }
+import {
+  scriptFormKey,
+  StorageService,
+} from "@/services/storage-service";
+
+import axios from "axios";
 
 const providers: Provider[] = [
   {
@@ -36,6 +42,7 @@ interface IntegrationStepProps {
 }
 
 export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNextStep}: IntegrationStepProps) {
+  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   const [selectedProvider, setSelectedProvider] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -98,6 +105,37 @@ export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNext
     }
   };
 
+  const handleAddAgent = async () => {
+    const token = await getToken();
+    var request_json : any = {}
+    const scriptForm = StorageService.getItem(scriptFormKey);
+    if (scriptForm) {
+        const scriptFormData = JSON.parse(scriptForm);
+        request_json['company_name'] = scriptFormData.fields[0].messages[0].value;
+        request_json['assistant_name'] = scriptFormData.fields[1].messages[0].value;
+        request_json['form_model'] = JSON.stringify(scriptFormData);
+    }
+
+    request_json['bg_noice'] = StorageService.getItem("background_sound") ?? "false";
+    request_json['voice_id'] = StorageService.getItem("voice_model") ?? "";
+    request_json['speed'] = StorageService.getItem("voice_speed") ?? "1";
+    request_json['user_id'] = userId;
+    request_json['type'] = StorageService.getItem(`agentType-${useCase}`) ?? "";
+    axios.post(`${baseURL}/agent/create`, request_json , {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then((response) => {
+      StorageService.setItem(`first_onboarding_agent_phone_number`, 'true');
+      StorageService.setItem(`first_onboarding_agent_campaign`, 'true');
+      // window.location.href = StorageService.getItem(`agentType-${useCase}`) === "outbound" ? "/dashboard/outbound" : "/dashboard/inbound";
+      window.location.href = "/dashboard/phone-numbers";
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
   const handleNextStep = async () => {
     try {
       setIsLoading(true);
@@ -115,7 +153,8 @@ export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNext
           dashboardNextStep && dashboardNextStep();
         } else {
           // router.push(`/launch/${useCase}/audience`);
-          router.push(`/launch/${useCase}/launch-agent`)
+          handleAddAgent();
+          
         }
       } else {
         toastService.warning(
@@ -144,7 +183,7 @@ export function IntegrationStep({ useCase, onComplete , dashboard, dashboardNext
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-3xl font-extrabold text-center mb-8">
-          Choose Your Integration
+          Connect your Calendar
         </h1>
         <p className="text-center text-gray-600 mb-12">
           Select the calendar provider you want to integrate with Superu.

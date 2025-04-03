@@ -361,7 +361,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void}, ScriptEditorPr
     }else if(!StorageService.getTestAgentButtonClicked()){
       return "Test Agent"
     }else{
-      return "Continue with Integration"
+      return "Connect your Calendar"
     }
   }
 
@@ -405,7 +405,7 @@ export const ScriptEditor = forwardRef<{ handleSave: () => void}, ScriptEditorPr
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-between pt-6 border-t md:flex-row flex-col">
+      <div className="flex justify-between p-6 border-t md:flex-row flex-col fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
         <Button onClick={() => ref && typeof ref === 'object' && ref.current?.handleSave()} variant="outline">
           <Save className="mr-2 h-4 w-4" />
           Save Changes

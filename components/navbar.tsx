@@ -7,6 +7,7 @@ import SolutionsDropdown from "./solutions-dropdown"
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react"
 import { UserButton } from "@clerk/clerk-react"
 import UserAvatar from "@/components/user-avatar"
+import BuildTimer from "@/components/build-timer"
 
 export default function Navbar() {
   const { user } = useUser();
@@ -99,6 +100,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
+      <BuildTimer />
     </nav>
   )
 }
