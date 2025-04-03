@@ -115,7 +115,7 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
               href="/launch/spa-and-salon-appointment-scheduling/form"
               className="btn-primary inline-flex items-center text-lg px-8 py-4 group animate-fade-in-delay-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
             >
-              Get Started – Free for today
+              Get Started – Free for 7 days
               <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>

@@ -48,7 +48,7 @@ export default function Home() {
             href="/launch/spa-and-salon-appointment-scheduling/form"
             className="inline-flex items-center bg-white text-blue-600 hover:bg-blue-50 font-bold py-4 px-10 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 group transform hover:scale-105 text-xl"
           >
-            Get Started – Free for today
+            Get Started – Free for 7 days
             <ArrowRight className="ml-2 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>

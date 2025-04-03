@@ -16,7 +16,7 @@ export default function SignupPage() {
           <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-purple-700 p-8 md:p-12 text-white">
             <div className="h-full flex flex-col">
               <div className="mb-4">
-                <h2 className="text-3xl font-bold mb-4">Free for today</h2>
+                <h2 className="text-3xl font-bold mb-4">Free for 7 days</h2>
                 <p className="text-blue-100 text-lg mb-4">Try our AI receptionist with no credit card required</p>
               </div>
 

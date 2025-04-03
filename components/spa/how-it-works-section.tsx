@@ -306,7 +306,7 @@ export default function SpaHowItWorksSection() {
             href="/launch/spa-and-salon-appointment-scheduling/form"
             className="btn-primary inline-flex items-center text-lg px-10 py-4 group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
           >
-            Start Your Free Trial - Free for today
+            Start Your Free Trial - Free for 7 days
             <ArrowRight className="ml-2 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
