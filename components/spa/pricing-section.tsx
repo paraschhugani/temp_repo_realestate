@@ -23,7 +23,7 @@ export default function SpaPricingSection() {
               </div>
               <h3 className="text-2xl font-bold mb-1">💰 Special Offer Ends Soon!</h3>
               <div className="flex items-center justify-center space-x-2">
-                <span className="text-xl line-through opacity-75">$199/month</span>
+                <span className="text-xl line-through opacity-75">$119/month</span>
                 <span className="bg-white text-blue-600 text-sm font-bold px-2 py-1 rounded-full">Save 75%</span>
               </div>
               <div className="text-sm mt-1 flex items-center justify-center">
@@ -35,7 +35,7 @@ export default function SpaPricingSection() {
             {/* Main Pricing Content */}
             <div className="p-8 text-center">
               <h3 className="text-3xl font-bold mb-2">🔥 Limited-Time Deal:</h3>
-              <div className="text-5xl font-bold text-blue-600 mb-6">Just $49/month</div>
+              <div className="text-5xl font-bold text-blue-600 mb-6">Just $29/month</div>
 
               <div className="h-px bg-gray-200 w-full my-6"></div>
 

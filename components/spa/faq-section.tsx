@@ -48,7 +48,7 @@ const faqs = [
   },
   {
     question: "What's the pricing?",
-    answer: "We offer flexible monthly plans, starting from $49 per month. No long-term contracts.",
+    answer: "We offer flexible monthly plans, starting from $29 per month. No long-term contracts.",
   },
 ]
 
