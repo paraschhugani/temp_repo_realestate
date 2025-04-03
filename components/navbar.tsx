@@ -8,7 +8,10 @@ import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react"
 import { UserButton } from "@clerk/clerk-react"
 import UserAvatar from "@/components/user-avatar"
 import BuildTimer from "@/components/build-timer"
-
+import { Dropdown } from "react-day-picker"
+import { Button } from "./ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
 export default function Navbar() {
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false)
@@ -54,7 +57,16 @@ export default function Navbar() {
           </div>
 
           {/* CTA Button */}
-          <div className="hidden md:block">
+          <div className=" flex items-center space-x-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Need help <ChevronDown className="w-4 h-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => window.open("https://cal.com/superu/demo-setup-30min", "_blank")}>Book a demo</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.$crisp.push(["do", "chat:open"])}>Chat with us</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <SignedIn>
               <UserAvatar />
             </SignedIn>
