@@ -64,7 +64,7 @@ export default function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => window.open("https://cal.com/superu/demo-setup-30min", "_blank")}>Book a demo</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.$crisp.push(["do", "chat:open"])}>Chat with us</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {}}>Chat with us</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <SignedIn>
