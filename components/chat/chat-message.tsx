@@ -71,7 +71,7 @@ export function ChatMessage({ message, onAudioToggle, isSpeakerLoading, playingA
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-0.5 h-6 w-6 hover:bg-blue-100 bg-white border-blue-500 absolute -bottom-2 -right-2 rounded-full shadow-md flex items-center justify-center border  transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                    className="p-0.5 h-8 w-8 hover:bg-blue-100 bg-white border-blue-500 absolute -bottom-2 -right-2 rounded-full shadow-md flex items-center justify-center border  transition-all duration-200 hover:scale-105 hover:shadow-lg"
                     onClick={() => message.content && onAudioToggle(message.content)}
                   >
                     {isSpeakerLoading === message.content ? (
