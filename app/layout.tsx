@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 import { v4 as uuidv4 } from "uuid";
+import { PostHogProvider } from "@/components/PostHogProvider";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -54,38 +56,39 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
           {!isDev && (
-          <Script
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
+            <Script
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
               window.$crisp=[];
               window.CRISP_WEBSITE_ID="caee1270-e055-43f8-9039-e3a3f8576f53";
               (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
-
+              
               $crisp.push(["do", "message:show", ["text", "Hey there! Need any help? 😊"]]);
             `,
-          }}
-          />
+              }}
+            />
           )}
-
         </head>
         <body className={inter.className}>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-          <Toaster
-            position="top-right"
-            expand={true}
-            richColors
-            closeButton
-            toastOptions={{
-              duration: 5000,
-              style: {
-                border: "1px solid",
-                borderRadius: "0.5rem",
-              },
-            }}
-          />
+          <PostHogProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+            <Toaster
+              position="top-right"
+              expand={true}
+              richColors
+              closeButton
+              toastOptions={{
+                duration: 5000,
+                style: {
+                  border: "1px solid",
+                  borderRadius: "0.5rem",
+                },
+              }}
+            />
+          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>
