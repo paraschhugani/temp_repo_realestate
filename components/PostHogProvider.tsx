@@ -4,6 +4,7 @@ import posthog from "posthog-js"
 import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react"
 import { Suspense, useEffect } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
+import { useAuth, useUser } from '@clerk/nextjs'
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -28,6 +29,9 @@ function PostHogPageView() {
   const searchParams = useSearchParams()
   const posthog = usePostHog()
 
+  const { isSignedIn, userId } = useAuth()
+  const { user } = useUser()
+
   useEffect(() => {
     if (pathname && posthog) {
       let url = window.origin + pathname
@@ -39,6 +43,17 @@ function PostHogPageView() {
       posthog.capture("$pageview", { "$current_url": url })
     }
   }, [pathname, searchParams, posthog])
+
+  useEffect(() => {
+
+    if (isSignedIn && userId && user && !posthog._isIdentified()) {
+
+      posthog.identify(userId, {
+        email: user.primaryEmailAddress?.emailAddress,
+        username: user.username,
+      })
+    }
+  }, [posthog, user])
 
   return null
 }
