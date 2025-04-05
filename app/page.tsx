@@ -30,7 +30,7 @@ import { ArrowRight } from "lucide-react"
 import { toastService } from "@/services/toast-service";
 import { useSearchParams } from 'next/navigation';
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { DemoCallDialog } from "@/components/dialogues/demo-call";
 import CallRatingModal from "@/components/call-rating-modal";
 
@@ -58,7 +58,7 @@ const countries = [
 ]
 
 
-export default function Home() {
+function Home() {
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -179,4 +179,12 @@ export default function Home() {
       />
     </main>
   )
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Home />
+    </Suspense>
+  );
 }
