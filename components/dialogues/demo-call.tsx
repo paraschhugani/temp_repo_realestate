@@ -69,8 +69,9 @@ export function DemoCallDialog({
   const isNameValid = demoCallName.length > 0
   // email validation
   const isEmailValid = demoCallEmail.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(demoCallEmail)
-  const isWebsiteValid = demoCallWebsite.length > 0 && /^https?:\/\/[^\s]+$/.test(demoCallWebsite)
-  const isFormValid = isPhoneValid && isNameValid && isEmailValid && isWebsiteValid
+  // const isWebsiteValid = demoCallWebsite.length > 0 && /^https?:\/\/[^\s]+$/.test(demoCallWebsite)
+  const isWebsiteValid = demoCallWebsite.length > 0
+  const isFormValid = isPhoneValid && isNameValid && isEmailValid
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
