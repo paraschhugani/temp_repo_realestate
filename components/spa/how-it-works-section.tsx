@@ -3,12 +3,12 @@ import { ArrowRight, Bot } from "lucide-react"
 
 export default function SpaHowItWorksSection() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-40 bg-white" id="HIW" >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-bold mb-6 text-center">How It Works</h2>
         
 
-        <div className="flex flex-col md:flex-row align-top justify-between mb-16 max-w-5xl mx-auto">
+        <Link className="flex flex-col md:flex-row align-top justify-between mb-16 max-w-5xl mx-auto" href="/launch/spa-and-salon-appointment-scheduling/form">
           {/* Step 1: Customer Calls */}
           <div className="flex flex-col items-start text-center mb-12 md:mb-0 relative w-full md:w-1/5">
             <div className="w-32 h-32 rounded-3xl border-2 border-navy-900 flex items-center justify-center mb-4 bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md overflow-hidden self-center">
@@ -299,7 +299,7 @@ export default function SpaHowItWorksSection() {
             <div className="text-navy-900 font-bold text-lg self-center">Get More</div>
             <div className="text-navy-900 font-bold text-lg self-center">Bookings</div>
           </div>
-        </div>
+        </Link>
 
         <div className="text-center">
           <Link
