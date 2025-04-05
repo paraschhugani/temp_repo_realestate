@@ -145,6 +145,9 @@ export function DemoCallDialog({
                   onChange={(e) => setDemoCallName(e.target.value)}
                 />
               </div>
+              {!isNameValid && demoCallName && (
+              <p className="text-sm text-red-500">Please enter your name</p>
+            )}
             </div>
 
             {/* Email Input */}
@@ -163,6 +166,9 @@ export function DemoCallDialog({
                   onChange={(e) => setDemoCallEmail(e.target.value)}
                 />
               </div>
+              {!isEmailValid && demoCallEmail && (
+              <p className="text-sm text-red-500">Please enter a valid email address</p>
+            )}
             </div>
           </div>
 
@@ -182,6 +188,12 @@ export function DemoCallDialog({
                 onChange={(e) => setDemoCallWebsite(e.target.value)}
               />
             </div>
+            {!isWebsiteValid && demoCallWebsite && (
+              <div className="flex flex-col gap-2">
+                <p className="text-sm text-red-500">Please enter a valid website or Google Maps link</p>
+                <p className="text-sm text-red-500">Example: https://yourcompany.com or https://maps.app.goo.gl/1234567890</p>
+              </div>
+            )}
           </div>
 
           {/* Info Box */}

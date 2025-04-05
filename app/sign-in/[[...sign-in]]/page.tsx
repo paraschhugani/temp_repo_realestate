@@ -1,5 +1,5 @@
 "use client"
-import { SignIn } from '@clerk/nextjs'
+import { SignIn , GoogleOneTap } from '@clerk/nextjs'
 import { useSearchParams } from 'next/navigation'
 import Link from "next/link"
 import { ArrowLeft, Check, Phone, Bot, Calendar, MessageSquare } from "lucide-react"
@@ -137,6 +137,8 @@ export default function SignupPage() {
                   },
                 }}
               />
+            
+            <GoogleOneTap signInForceRedirectUrl={redirectUrl} itpSupport={true} />
           </div>
         </div>
       </div>

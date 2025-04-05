@@ -1,14 +1,29 @@
 import Link from "next/link"
 import { ArrowRight, Bot } from "lucide-react"
 
-export default function SpaHowItWorksSection() {
+interface SpaHowItWorksSectionProps {
+  setIsTestDialogOpen: (isOpen: boolean) => void;
+  setPhoneNumber: (phoneNumber: string) => void;
+  setSelectedCountry: (country: { code: string; name: string; flag: string; dialCode: string }) => void;
+  countries: Array<{ code: string; name: string; flag: string; dialCode: string }>;
+}
+
+export default function SpaHowItWorksSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: SpaHowItWorksSectionProps) {
   return (
     <section className="py-40 bg-white" id="HIW" >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-bold mb-6 text-center">How It Works</h2>
         
 
-        <Link className="flex flex-col md:flex-row align-top justify-between mb-16 max-w-5xl mx-auto" href="/launch/spa-and-salon-appointment-scheduling/form">
+        <div 
+        className="flex flex-col md:flex-row align-top justify-between mb-16 max-w-5xl mx-auto cursor-pointer" 
+        // href="/launch/spa-and-salon-appointment-scheduling/form"
+        onClick={() => {
+          setIsTestDialogOpen(true)
+          setPhoneNumber("")
+          setSelectedCountry(countries[0])
+        }}
+        >
           {/* Step 1: Customer Calls */}
           <div className="flex flex-col items-start text-center mb-12 md:mb-0 relative w-full md:w-1/5">
             <div className="w-32 h-32 rounded-3xl border-2 border-navy-900 flex items-center justify-center mb-4 bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md overflow-hidden self-center">
@@ -299,16 +314,21 @@ export default function SpaHowItWorksSection() {
             <div className="text-navy-900 font-bold text-lg self-center">Get More</div>
             <div className="text-navy-900 font-bold text-lg self-center">Bookings</div>
           </div>
-        </Link>
+        </div>
 
         <div className="text-center">
-          <Link
-            href="/launch/spa-and-salon-appointment-scheduling/form"
-            className="btn-primary inline-flex items-center text-lg px-10 py-4 group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+          <div
+            // href="/launch/spa-and-salon-appointment-scheduling/form"
+            onClick={() => {
+              setIsTestDialogOpen(true)
+              setPhoneNumber("")
+              setSelectedCountry(countries[0])
+            }}
+            className="btn-primary cursor-pointer inline-flex items-center text-lg px-10 py-4 group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
           >
             Start Your Free Trial - Free for 7 days
             <ArrowRight className="ml-2 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+          </div>
         </div>
       </div>
     </section>

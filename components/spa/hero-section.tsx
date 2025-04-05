@@ -6,84 +6,15 @@ import VoiceDemoContainer from "@/components/use-case/voice-demo-section";
 import { Phone } from "lucide-react";
 interface SpaHeroSectionProps {
     title: string;
-  }
-import { DemoCallDialog } from "@/components/dialogues/demo-call";
-import { useState } from "react";
-import axios from "axios";
-import { toastService } from "@/services/toast-service";
-import CallRatingModal from "@/components/call-rating-modal";
-
-const countries = [
-  { code: "US", name: "United States", flag: "🇺🇸", dialCode: "+1" },
-  { code: "IN", name: "India", flag: "🇮🇳", dialCode: "+91" },
-  { code: "GB", name: "United Kingdom", flag: "🇬🇧", dialCode: "+44" },
-  { code: "CA", name: "Canada", flag: "🇨🇦", dialCode: "+1" },
-  { code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61" },
-  { code: "DE", name: "Germany", flag: "🇩🇪", dialCode: "+49" },
-  { code: "FR", name: "France", flag: "🇫🇷", dialCode: "+33" },
-  { code: "JP", name: "Japan", flag: "🇯🇵", dialCode: "+81" },
-  { code: "CN", name: "China", flag: "🇨🇳", dialCode: "+86" },
-  { code: "BR", name: "Brazil", flag: "🇧🇷", dialCode: "+55" },
-  { code: "MX", name: "Mexico", flag: "🇲🇽", dialCode: "+52" },
-  { code: "IT", name: "Italy", flag: "🇮🇹", dialCode: "+39" },
-  { code: "ES", name: "Spain", flag: "🇪🇸", dialCode: "+34" },
-  { code: "KR", name: "South Korea", flag: "🇰🇷", dialCode: "+82" },
-  { code: "NL", name: "Netherlands", flag: "🇳🇱", dialCode: "+31" },
-  { code: "SG", name: "Singapore", flag: "🇸🇬", dialCode: "+65" },
-  { code: "AE", name: "United Arab Emirates", flag: "🇦🇪", dialCode: "+971" },
-  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦", dialCode: "+966" },
-  { code: "ZA", name: "South Africa", flag: "🇿🇦", dialCode: "+27" },
-  { code: "RU", name: "Russia", flag: "🇷🇺", dialCode: "+7" },
-]
-
-export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
-  const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
-  const [phoneNumber, setPhoneNumber] = useState("");
-
-  const [demoCallIsSubmitting, setDemoCallIsSubmitting] = useState(false)
-  const [demoCallName, setDemoCallName] = useState("")
-  const [demoCallEmail, setDemoCallEmail] = useState("")
-  const [demoCallWebsite, setDemoCallWebsite] = useState("")
-  const [callUUID, setCallUUID] = useState("")
-  const [callFeedbackOpen, setCallFeedbackOpen] = useState(false)
-  
-
-  const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
-
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "");
-    if (value.length <= 10) {
-      const formatted = value; // TODO : Format the phone number
-      setPhoneNumber(formatted);
-    }
-  };
-
-  const handleTestAgent = async () => {
-    const response = await axios.post(`${baseURL}/democall`, {
-      phoneNumber: selectedCountry?.dialCode + phoneNumber,
-      vapi_assistant_id: "f74611d0-6216-4516-8dcc-5c421fc9ee8f",
-      name: demoCallName,
-      email: demoCallEmail,
-      website: demoCallWebsite
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      }
-    }
-  )
-
-  if (response.status === 200) {
-    toastService.success("Your test assistant is calling — check your phone!")
-    setIsTestDialogOpen(false)
-    setCallUUID(response.data.id)
-    setCallFeedbackOpen(true)
-  } else {
-    toastService.error("Something went wrong , please try again later")
+    setIsTestDialogOpen: (isOpen: boolean) => void;
+    setPhoneNumber: (phoneNumber: string) => void;
+    setSelectedCountry: (country: { code: string; name: string; flag: string; dialCode: string }) => void;
+    countries: Array<{ code: string; name: string; flag: string; dialCode: string }>;
   }
 
-  }
+
+
+export default function SpaHeroSection({ title, setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: SpaHeroSectionProps) {
 
   return (
     <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-24 md:py-32">
@@ -110,13 +41,18 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
                 <span>Instantly respond to pricing, services, hours & more</span>
               </li>
             </ul>
-            <Link
-              href="/launch/spa-and-salon-appointment-scheduling/form"
-              className="btn-primary inline-flex items-center text-lg px-8 py-4 group animate-fade-in-delay-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+            <div
+              // href="/launch/spa-and-salon-appointment-scheduling/form"
+              onClick={() => {
+                setIsTestDialogOpen(true)
+                setPhoneNumber("")
+                setSelectedCountry(countries[0])
+              }}
+              className="btn-primary cursor-pointer inline-flex items-center text-lg px-8 py-4 group animate-fade-in-delay-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
             >
               Get Started – Free for 7 days
               <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+            </div>
           </div>
           <div className="md:w-1/2">
             <div className="flex justify-end cursor-pointer ">
@@ -149,30 +85,6 @@ export default function SpaHeroSection({ title }: SpaHeroSectionProps) {
           </div>
         </div>
       </div>
-
-      <DemoCallDialog
-        open={isTestDialogOpen}
-        onOpenChange={setIsTestDialogOpen}
-        phoneNumber={phoneNumber}
-        onPhoneNumberChange={handlePhoneNumberChange}
-        handleTestAgent={handleTestAgent}
-        countries={countries}
-        selectedCountry={selectedCountry || countries[0]}
-        setSelectedCountry={(country) => setSelectedCountry(country as typeof countries[0])}
-        demoCallIsSubmitting={demoCallIsSubmitting}
-        setDemoCallIsSubmitting={setDemoCallIsSubmitting}
-        demoCallName={demoCallName}
-        setDemoCallName={setDemoCallName}
-        demoCallEmail={demoCallEmail}
-        setDemoCallEmail={setDemoCallEmail}
-        demoCallWebsite={demoCallWebsite}
-        setDemoCallWebsite={setDemoCallWebsite}
-      />
-      <CallRatingModal
-        isOpen={callFeedbackOpen}
-        onClose={() => setCallFeedbackOpen(false)}
-        callUUID={callUUID}
-      />
     </section>
   )
 }
