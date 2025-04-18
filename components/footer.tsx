@@ -1,103 +1,95 @@
 import Link from "next/link"
-import Image from "next/image"
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-8 Footer-all-pages">
-      <div className="container-custom">
+    <footer className="bg-gray-900 text-white pt-12 pb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="inline-block mb-4">
-              <Image
-                src="https://cdn.prod.website-files.com/67a1abdaaf835294123e58bc/67a1b2a52838859820c21811_wordmark%20white-p-500.png"
-                alt="Superu Logo"
-                width={120}
-                height={40}
-                className="h-8 w-auto"
-              />
+              <span className="text-2xl font-bold text-white">superU</span>
             </Link>
             <p className="text-gray-400 mb-4 max-w-md">
-              Superu is the no-code platform that empowers you to build human-like AI calling solutions effortlessly for
-              inbound support and automated outbound sales.
+              superU is an AI inside sales agent built specifically for real estate teams. Save time, increase
+              appointments, and never miss a lead.
             </p>
-            {/* <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Instagram size={20} />
               </a>
-            </div> */}
+            </div>
           </div>
 
           {/* Quick Links */}
-          {/* <div>
-            <h3 className="text-lg font-semibold mb-4">Solutions</h3>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/industry/health" className="text-gray-400 hover:text-blue-600 transition-colors">
-                  Health
+                <Link href="#features" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  Features
                 </Link>
               </li>
               <li>
-                <Link href="/industry/mortgage" className="text-gray-400 hover:text-blue-600 transition-colors">
-                  Mortgage
+                <Link href="#how-it-works" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  How It Works
                 </Link>
               </li>
               <li>
-                <Link href="/industry/recruitment" className="text-gray-400 hover:text-blue-600 transition-colors">
-                  Recruitment
+                <Link href="#results" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  Testimonial
                 </Link>
               </li>
               <li>
-                <Link href="/industry/real-estate" className="text-gray-400 hover:text-blue-600 transition-colors">
-                  Real-Estate
+                <Link href="#faq" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  FAQ
                 </Link>
               </li>
             </ul>
-          </div> */}
+          </div>
 
-          {/* Company */}
-          {/* <div>
-            <h3 className="text-lg font-semibold mb-4">Company</h3>
+          {/* Contact */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-blue-600 transition-colors">
-                  About Us
+                <Link href="/demo" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  Book a Demo
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-blue-600 transition-colors">
-                  Contact
+                <Link href="/support" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  Support
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-blue-600 transition-colors">
+                <Link href="/privacy" className="text-gray-400 hover:text-blue-400 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-blue-600 transition-colors">
+                <Link href="/terms" className="text-gray-400 hover:text-blue-400 transition-colors">
                   Terms of Service
                 </Link>
               </li>
             </ul>
-          </div> */}
+          </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} Superu. All rights reserved.</p>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+          <p>&copy; {new Date().getFullYear()} superU AI. All rights reserved.</p>
         </div>
       </div>
     </footer>
   )
 }
-

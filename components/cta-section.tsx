@@ -1,25 +1,31 @@
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { Play } from "lucide-react"
 
 export default function CtaSection() {
   return (
-    <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-      <div className="container-custom">
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Customer Experience?</h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Claim your first 1000 free calls today and see how Superu can revolutionize your business communications.
+    <section className="py-20 bg-blue-600 text-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Real Estate Business?</h2>
+          <p className="text-xl mb-8">
+            Join the hundreds of real estate professionals who are saving time and closing more deals with superU.
           </p>
-          <Link
-            href="/launch"
-            className="inline-flex items-center bg-white text-blue-600 hover:bg-blue-50 font-bold py-3 px-8 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 group"
-          >
-            Get Started – First 1000 Calls Free
-            <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link
+              href="https://cal.com/superu/demo-setup-30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold py-3 px-8 rounded-md transition-all duration-300 text-center"
+            >
+              Book a Demo
+            </Link>
+            <button className="border-2 border-white text-white hover:bg-blue-700 font-semibold py-3 px-8 rounded-md transition-all duration-300 flex items-center justify-center">
+              <Play className="mr-2 h-5 w-5" />
+              Hear superU in Action
+            </button>
+          </div>
         </div>
       </div>
     </section>
   )
 }
-

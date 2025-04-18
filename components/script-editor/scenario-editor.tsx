@@ -51,14 +51,14 @@ interface ScenarioEditorProps {
 }
 
 export function ScenarioEditor({ scenarios, scenarioFields, values, onChange, voiceModelList, voiceModel, setVoiceModel }: ScenarioEditorProps) {
-  const [activeScenario, setActiveScenario] = useState<string>("")
+  const [activeScenario, setActiveScenario] = useState<string>(scenarios[0].id)
   const { handleAudioToggle, isSpeakerLoading, playingAudio } = useAudioPlayer(voiceModel);
   const selectedVoiceName = voiceModelList[voiceModel]?.name || "No voice selected";
-  useEffect(() => {
-    if (scenarios && scenarios.length > 0) {
-      setActiveScenario(scenarios[0].id)
-    }
-  }, [scenarios])
+  // useEffect(() => {
+  //   if (scenarios && scenarios.length > 0) {
+  //     setActiveScenario(scenarios[0].id)
+  //   }
+  // }, [scenarios])
 
   // Don't render if we don't have the required data
   if (!Array.isArray(scenarios) || !Array.isArray(scenarioFields) || scenarios.length === 0) {

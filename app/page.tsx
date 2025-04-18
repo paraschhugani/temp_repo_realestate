@@ -1,34 +1,16 @@
-// import HeroSection from "@/components/hero-section"
-// import FeaturesSection from "@/components/features-section"
-// import IndustrySection from "@/components/industry-section"
-// import IntegrationSection from "@/components/integration-section"
-// import PricingSection from "@/components/pricing-section"
-// import CtaSection from "@/components/cta-section"
-
-// export default function Home() {
-//   return (
-//     <>
-//       <HeroSection />
-//       <FeaturesSection />
-//       <IndustrySection />
-//       <IntegrationSection />
-//       <PricingSection />
-//       <CtaSection />
-//     </>
-//   )
-// }
-
 "use client"
-import SpaHeroSection from "@/components/spa/hero-section"
-import SpaTestimonialSection from "@/components/spa/testimonial-section"
-import SpaImpactSection from "@/components/spa/impact-section"
-import SpaHowItWorksSection from "@/components/spa/how-it-works-section"
-import SpaPricingSection from "@/components/spa/pricing-section"
-import SpaFaqSection from "@/components/spa/faq-section"
-import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+
+import Navbar from "@/components/navbar"
+import HeroSection from "@/components/hero-section"
+import FeaturesSection from "@/components/features-section"
+import UseCasesSection from "@/components/use-cases-section"
+import VoiceDemoSection from "@/components/voice-demo-section"
+import HowItWorksSection from "@/components/how-it-works-section"
+import ResultsSection from "@/components/results-section"
+import FAQSection from "@/components/faq-section"
+import CtaSection from "@/components/cta-section"
+import Footer from "@/components/footer"
 import { toastService } from "@/services/toast-service";
-import { useSearchParams } from 'next/navigation';
 import axios from "axios";
 import { Suspense, useEffect, useState } from "react";
 import { DemoCallDialog } from "@/components/dialogues/demo-call";
@@ -57,8 +39,7 @@ const countries = [
   { code: "RU", name: "Russia", flag: "🇷🇺", dialCode: "+7" },
 ]
 
-
-function Home() {
+export default function Home() {
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -70,23 +51,11 @@ function Home() {
   const [callUUID, setCallUUID] = useState("")
   const [callFeedbackOpen, setCallFeedbackOpen] = useState(false)
 
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const test = searchParams.get('DEMOCALL');
-    console.log(test)
-    if (test) {
-      setIsTestDialogOpen(true);
-      setPhoneNumber("")
-      setSelectedCountry(countries[0])
-    }
-  }, [searchParams]);
-  
-
   const baseURL: string = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
   const closeFeedbackModal = (isOpen: boolean) => {
     setCallFeedbackOpen(isOpen)
-    window.location.href = "/launch/spa-and-salon-appointment-scheduling/form"
+    // window.location.href = "/launch/spa-and-salon-appointment-scheduling/form"
     setCallUUID("")
   }
 
@@ -125,35 +94,16 @@ function Home() {
   }
   return (
     <main className="bg-white">
-      <SpaHeroSection title="Spa" setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
-      <SpaHowItWorksSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
-      <SpaTestimonialSection />
-      <SpaImpactSection />
-      <SpaPricingSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
-      <SpaFaqSection/>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-24 text-white">
-        <div className="container mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold mb-8 text-white">Ready to Transform Your Spa or Salon?</h2>
-          <p className="text-xl mb-12 max-w-3xl mx-auto text-blue-100">
-            Get started with your first 100 free calls and see the difference Superu can make for your beauty business.
-          </p>
-          <div
-            // href="/launch/spa-and-salon-appointment-scheduling/form"
-            onClick={() => {
-              setIsTestDialogOpen(true)
-              setPhoneNumber("")
-              setSelectedCountry(countries[0])
-            }}
-            className="inline-flex cursor-pointer items-center bg-white text-blue-600 hover:bg-blue-50 font-bold py-4 px-10 rounded-md shadow-lg hover:shadow-xl transition-all duration-300 group transform hover:scale-105 text-xl"
-          >
-            Get Started – Free for 7 days
-            <ArrowRight className="ml-2 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" />
-          </div>
-        </div>
-      </section>
-
+      {/* <Navbar /> */}
+      <HeroSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
+      <FeaturesSection />
+      <UseCasesSection />
+      <VoiceDemoSection />
+      <HowItWorksSection />
+      <ResultsSection />
+      <FAQSection />
+      <CtaSection />
+      {/* <Footer /> */}
       <DemoCallDialog
         open={isTestDialogOpen}
         onOpenChange={setIsTestDialogOpen}
@@ -179,12 +129,4 @@ function Home() {
       />
     </main>
   )
-}
-
-export default function Page() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Home />
-    </Suspense>
-  );
 }

@@ -71,7 +71,7 @@ export function DemoCallDialog({
   const isEmailValid = demoCallEmail.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(demoCallEmail)
   // const isWebsiteValid = demoCallWebsite.length > 0 && /^https?:\/\/[^\s]+$/.test(demoCallWebsite)
   const isWebsiteValid = demoCallWebsite.length > 0
-  const isFormValid = isPhoneValid && isNameValid && isEmailValid
+  const isFormValid = isPhoneValid && isNameValid
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -129,7 +129,7 @@ export function DemoCallDialog({
           </div>
 
           {/* Optional Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className=" gap-4">
             {/* Name Input */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
@@ -152,7 +152,7 @@ export function DemoCallDialog({
             </div>
 
             {/* Email Input */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
                 Email Address
               </Label>
@@ -170,11 +170,11 @@ export function DemoCallDialog({
               {!isEmailValid && demoCallEmail && (
               <p className="text-sm text-red-500">Please enter a valid email address</p>
             )}
-            </div>
+            </div> */}
           </div>
 
           {/* Website Input */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="company-website" className="text-sm font-medium">
               Company Website or Google Maps Link
             </Label>
@@ -195,7 +195,7 @@ export function DemoCallDialog({
                 <p className="text-sm text-red-500">Example: https://yourcompany.com or https://maps.app.goo.gl/1234567890</p>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Info Box */}
           <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-sm text-blue-800">

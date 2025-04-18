@@ -1,35 +1,51 @@
-import { Zap, Layers, PhoneCall } from "lucide-react"
+import { MessageCircle, Calendar, Clock, BarChart3, Headphones, RefreshCw } from "lucide-react"
+import Link from "next/link"
 
 const features = [
   {
-    title: "Easy Integration",
-    description: "Seamlessly connect with your existing systems.",
-    icon: Zap,
+    title: "Natural Conversations",
+    description: "superU speaks naturally with pauses, filler words, and human-like responses.",
+    icon: MessageCircle,
   },
   {
-    title: "Industry-Specific Use Cases",
-    description: "Tailored solutions for Health, Mortgage, Recruitment, and Real-Estate.",
-    icon: Layers,
+    title: "Appointment Booking",
+    description: "Automatically schedules showings and meetings in your calendar.",
+    icon: Calendar,
   },
   {
-    title: "Automated Outbound Sales",
-    description: "Boost sales with intelligent, automated calling.",
-    icon: PhoneCall,
+    title: "24/7 Availability",
+    description: "Never miss a lead with round-the-clock response.",
+    icon: Clock,
+  },
+  {
+    title: "Performance Analytics",
+    description: "Track call outcomes, conversion rates, and ROI.",
+    icon: BarChart3,
+  },
+  {
+    title: "Call Handling",
+    description: "Manages objections, answers FAQs, and qualifies leads.",
+    icon: Headphones,
+  },
+  {
+    title: "Follow-up Automation",
+    description: "Persistent follow-up with leads until they convert.",
+    icon: RefreshCw,
   },
 ]
 
 export default function FeaturesSection() {
   return (
-    <section className="section-padding bg-white" id="features">
-      <div className="container-custom">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Superu?</h2>
+    <section className="py-20 bg-white" id="features">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold mb-4">Why superU Works</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Our platform provides powerful AI voice capabilities with an intuitive no-code interface.
+            superU is designed specifically for real estate professionals, with features that drive results.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -43,8 +59,22 @@ export default function FeaturesSection() {
             </div>
           ))}
         </div>
+
+        {/* Added CTAs */}
+        <div className="flex justify-center gap-4">
+          <Link
+            href="https://cal.com/superu/demo-setup-30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-all duration-300 flex items-center justify-center"
+          >
+            Book a Demo
+          </Link>
+          <button className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
+            Hear superU in Action
+          </button>
+        </div>
       </div>
     </section>
   )
 }
-
