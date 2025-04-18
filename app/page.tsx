@@ -70,7 +70,7 @@ export default function Home() {
   const handleTestAgent = async () => {
     const response = await axios.post(`${baseURL}/democall`, {
       phoneNumber: selectedCountry?.dialCode + phoneNumber,
-      vapi_assistant_id: "f74611d0-6216-4516-8dcc-5c421fc9ee8f",
+      vapi_assistant_id: "5c2f82e6-f1c9-400b-ad31-593a1138159c",
       name: demoCallName,
       email: demoCallEmail,
       website: demoCallWebsite
