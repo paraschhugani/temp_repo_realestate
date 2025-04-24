@@ -24,7 +24,7 @@ const steps = [
   },
 ]
 
-export default function HowItWorksSection() {
+export default function HowItWorksSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: { setIsTestDialogOpen: (isOpen: boolean) => void, setPhoneNumber: (phoneNumber: string) => void, setSelectedCountry: (selectedCountry: any) => void, countries: any }) {
   return (
     <section className="py-20 bg-gray-50" id="how-it-works">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,7 +60,7 @@ export default function HowItWorksSection() {
             >
               Book a Demo
             </Link>
-            <button className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
+            <button onClick={() => setIsTestDialogOpen(true)} className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
               Hear superU in Action
             </button>
           </div>

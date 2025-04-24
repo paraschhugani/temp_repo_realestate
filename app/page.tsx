@@ -96,13 +96,13 @@ export default function Home() {
     <main className="bg-white">
       {/* <Navbar /> */}
       <HeroSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
-      <FeaturesSection />
-      <UseCasesSection />
-      <VoiceDemoSection />
-      <HowItWorksSection />
-      <ResultsSection />
-      <FAQSection />
-      <CtaSection />
+      <FeaturesSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
+      <UseCasesSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries} />
+      <VoiceDemoSection  setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries} />
+      <HowItWorksSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries} />
+      <ResultsSection  setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries}/>
+      <FAQSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries} />
+      <CtaSection setIsTestDialogOpen={setIsTestDialogOpen} setPhoneNumber={setPhoneNumber} setSelectedCountry={setSelectedCountry} countries={countries} />
       {/* <Footer /> */}
       <DemoCallDialog
         open={isTestDialogOpen}

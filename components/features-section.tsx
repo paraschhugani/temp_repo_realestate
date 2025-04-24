@@ -34,7 +34,7 @@ const features = [
   },
 ]
 
-export default function FeaturesSection() {
+export default function FeaturesSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: { setIsTestDialogOpen: (isOpen: boolean) => void, setPhoneNumber: (phoneNumber: string) => void, setSelectedCountry: (selectedCountry: any) => void, countries: any }) {
   return (
     <section className="py-20 bg-white" id="features">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -70,7 +70,7 @@ export default function FeaturesSection() {
           >
             Book a Demo
           </Link>
-          <button className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
+          <button onClick={() => setIsTestDialogOpen(true)} className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
             Hear superU in Action
           </button>
         </div>

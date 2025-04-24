@@ -36,7 +36,7 @@ const faqs = [
   },
 ]
 
-export default function FAQSection() {
+export default function FAQSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: { setIsTestDialogOpen: (isOpen: boolean) => void, setPhoneNumber: (phoneNumber: string) => void, setSelectedCountry: (selectedCountry: any) => void, countries: any }) {
   return (
     <section className="py-20 bg-gray-50" id="faq">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,12 +69,9 @@ export default function FAQSection() {
             >
               Book a Demo
             </Link>
-            <Link
-              href="/contact"
-              className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center"
-            >
-              Contact Support
-            </Link>
+            <button onClick={() => setIsTestDialogOpen(true)} className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
+            Hear superU in Action
+          </button>
           </div>
         </div>
       </div>

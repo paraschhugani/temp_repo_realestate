@@ -1,11 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Play, Pause, Volume2 } from "lucide-react"
 import Link from "next/link"
 
-export default function VoiceDemoSection() {
+export default function VoiceDemoSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: { setIsTestDialogOpen: (isOpen: boolean) => void, setPhoneNumber: (phoneNumber: string) => void, setSelectedCountry: (selectedCountry: any) => void, countries: any }) {
   const [isPlaying, setIsPlaying] = useState(false)
+  const demoAudioRef = useRef<HTMLAudioElement>(null)
+  const playDemoAudio = () => {
+    if (demoAudioRef.current) {
+      demoAudioRef.current.play()
+      setIsPlaying(!isPlaying)
+    }
+  }
 
   const togglePlayback = () => {
     setIsPlaying(!isPlaying)
@@ -38,7 +45,7 @@ export default function VoiceDemoSection() {
                 </div>
               </div>
               <button
-                onClick={togglePlayback}
+                onClick={playDemoAudio}
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center transition-colors"
               >
                 {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-1" />}
@@ -46,16 +53,10 @@ export default function VoiceDemoSection() {
             </div>
 
             <div className="bg-white rounded-lg p-4 shadow-sm">
-              <div className="h-2 bg-gray-200 rounded-full mb-4">
-                <div
-                  className="h-2 bg-blue-600 rounded-full"
-                  style={{ width: isPlaying ? "45%" : "0%", transition: "width 0.1s linear" }}
-                ></div>
-              </div>
-              <div className="text-sm text-gray-500 flex justify-between">
-                <span>0:00</span>
-                <span>1:30</span>
-              </div>
+              <audio ref={demoAudioRef} controls className="w-full">
+                <source src="/RE-audio-file.wav" type="audio/wav" />
+                Your browser does not support the audio element.
+              </audio>
             </div>
 
             <div className="mt-6 flex justify-center gap-4">
@@ -67,7 +68,7 @@ export default function VoiceDemoSection() {
               >
                 Book a Demo
               </Link>
-              <button className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
+              <button  onClick={() => setIsTestDialogOpen(true)} className="btn-secondary px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-md transition-all duration-300 flex items-center justify-center">
                 Hear superU in Action
               </button>
             </div>

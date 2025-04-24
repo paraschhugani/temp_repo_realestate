@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Play } from "lucide-react"
 
-export default function CtaSection() {
+export default function CtaSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: { setIsTestDialogOpen: (isOpen: boolean) => void, setPhoneNumber: (phoneNumber: string) => void, setSelectedCountry: (selectedCountry: any) => void, countries: any }) {
   return (
     <section className="py-20 bg-blue-600 text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +19,7 @@ export default function CtaSection() {
             >
               Book a Demo
             </Link>
-            <button className="border-2 border-white text-white hover:bg-blue-700 font-semibold py-3 px-8 rounded-md transition-all duration-300 flex items-center justify-center">
+            <button onClick={() => setIsTestDialogOpen(true)} className="border-2 border-white text-white hover:bg-blue-700 font-semibold py-3 px-8 rounded-md transition-all duration-300 flex items-center justify-center">
               <Play className="mr-2 h-5 w-5" />
               Hear superU in Action
             </button>
