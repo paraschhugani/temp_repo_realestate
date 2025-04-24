@@ -1,7 +1,14 @@
 import Link from "next/link"
 import { ArrowRight, Play } from "lucide-react"
+import { useState, useRef } from "react"
 
 export default function HeroSection({ setIsTestDialogOpen, setPhoneNumber, setSelectedCountry, countries }: { setIsTestDialogOpen: (isOpen: boolean) => void, setPhoneNumber: (phoneNumber: string) => void, setSelectedCountry: (selectedCountry: any) => void, countries: any }) {
+  const demoAudioRef = useRef<HTMLAudioElement>(null)
+  const playDemoAudio = () => {
+    if (demoAudioRef.current) {
+      demoAudioRef.current.play()
+    }
+  }
   return (
     <section className="relative bg-gradient-to-r from-blue-50 to-indigo-50 overflow-hidden py-20 md:py-28">
       {/* Background elements */}
@@ -25,7 +32,10 @@ export default function HeroSection({ setIsTestDialogOpen, setPhoneNumber, setSe
             </p>
 
             {/* Audio player section moved to left */}
-            <div className="mb-8 bg-white rounded-xl shadow-md p-4 border border-gray-100">
+            <div
+              className="mb-8 bg-white rounded-xl shadow-md p-4 border border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={playDemoAudio}
+            >
               <div className="flex items-center gap-3 mb-2">
                 <Play className="h-5 w-5 text-blue-600" />
                 <div>
@@ -33,8 +43,8 @@ export default function HeroSection({ setIsTestDialogOpen, setPhoneNumber, setSe
                   <p className="text-sm text-gray-600">Listen to how superU handles a real estate inquiry</p>
                 </div>
               </div>
-              <audio controls className="w-full">
-                <source src="/demo-call.mp3" type="audio/mpeg" />
+              <audio ref={demoAudioRef} controls className="w-full">
+                <source src="/RE-audio-file.wav" type="audio/wav" />
                 Your browser does not support the audio element.
               </audio>
             </div>
