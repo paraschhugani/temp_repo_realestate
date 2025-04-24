@@ -75,7 +75,7 @@ export function DemoCallDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white rounded-xl shadow-2xl">
+      <DialogContent className="sm:max-w-[900px] p-0 overflow-hidden bg-white rounded-xl shadow-2xl">
         {/* Gradient Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
           <DialogHeader className="text-left">
@@ -86,127 +86,126 @@ export function DemoCallDialog({
           </DialogHeader>
         </div>
 
-        <div className="p-6 space-y-4">
-          {/* Phone Number Input - The most important field */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="phone-number" className="text-sm font-medium flex items-center gap-2">
-                Your Phone Number <span className="text-red-500">*</span>
-                <IIcon text="Enter your phone number to receive a test call from the AI agent" />
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Select
-                value={selectedCountry.code}
-                onValueChange={(value) => setSelectedCountry(countries.find((c) => c.code === value) || countries[0])}
-              >
-                <SelectTrigger className="w-28">
-                  <SelectValue placeholder="Country" />
-                </SelectTrigger>
-                <SelectContent>
-                  {countries.map((country) => (
-                    <SelectItem key={country.code} value={country.code}>
-                      {country.flag} {country.dialCode}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="relative flex-1">
-                <Phone className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  id="phone-number"
-                  type="tel"
-                  placeholder="Your phone number"
-                  className={`pl-10 ${!isPhoneValid && phoneNumber ? "border-red-300" : ""}`}
-                  value={phoneNumber}
-                  onChange={onPhoneNumberChange}
-                />
-              </div>
-            </div>
-            {!isPhoneValid && phoneNumber && (
-              <p className="text-sm text-red-500">Please enter a valid 10-digit phone number</p>
-            )}
-          </div>
-
-          {/* Optional Fields */}
-          <div className=" gap-4">
-            {/* Name Input */}
+        <div className="flex flex-col md:flex-row">
+          <div className="p-6 space-y-4 md:w-1/2">
+            {/* Phone Number Input - The most important field */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">
-                Your Name
-              </Label>
-              <div className="relative">
-                <User className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Full name"
-                  className="pl-10"
-                  value={demoCallName}
-                  onChange={(e) => setDemoCallName(e.target.value)}
-                />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="phone-number" className="text-sm font-medium flex items-center gap-2">
+                  Your Phone Number <span className="text-red-500">*</span>
+                  <IIcon text="Enter your phone number to receive a test call from the AI agent" />
+                </Label>
               </div>
-              {!isNameValid && demoCallName && (
-              <p className="text-sm text-red-500">Please enter your name</p>
-            )}
+              <div className="flex items-center gap-2">
+                <Select
+                  value={selectedCountry.code}
+                  onValueChange={(value) => setSelectedCountry(countries.find((c) => c.code === value) || countries[0])}
+                >
+                  <SelectTrigger className="w-28">
+                    <SelectValue placeholder="Country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.code} value={country.code}>
+                        {country.flag} {country.dialCode}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="relative flex-1">
+                  <Phone className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="phone-number"
+                    type="tel"
+                    placeholder="Your phone number"
+                    className={`pl-10 ${!isPhoneValid && phoneNumber ? "border-red-300" : ""}`}
+                    value={phoneNumber}
+                    onChange={onPhoneNumberChange}
+                  />
+                </div>
+              </div>
+              {!isPhoneValid && phoneNumber && (
+                <p className="text-sm text-red-500">Please enter a valid 10-digit phone number</p>
+              )}
             </div>
 
-            {/* Email Input */}
+            {/* Optional Fields */}
+            <div className=" gap-4">
+              {/* Name Input */}
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Your Name
+                </Label>
+                <div className="relative">
+                  <User className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Full name"
+                    className="pl-10"
+                    value={demoCallName}
+                    onChange={(e) => setDemoCallName(e.target.value)}
+                  />
+                </div>
+                {!isNameValid && demoCallName && (
+                <p className="text-sm text-red-500">Please enter your name</p>
+              )}
+              </div>
+
+              {/* Email Input */}
+              {/* <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    className="pl-10"
+                    value={demoCallEmail}
+                    onChange={(e) => setDemoCallEmail(e.target.value)}
+                  />
+                </div>
+                {!isEmailValid && demoCallEmail && (
+                <p className="text-sm text-red-500">Please enter a valid email address</p>
+              )}
+              </div> */}
+            </div>
+
+            {/* Website Input */}
             {/* <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email Address
+              <Label htmlFor="company-website" className="text-sm font-medium">
+                Company Website or Google Maps Link
               </Label>
               <div className="relative">
-                <Mail className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Link className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
+                  id="company-website"
+                  type="text"
+                  placeholder="https://yourcompany.com"
                   className="pl-10"
-                  value={demoCallEmail}
-                  onChange={(e) => setDemoCallEmail(e.target.value)}
+                  value={demoCallWebsite}
+                  onChange={(e) => setDemoCallWebsite(e.target.value)}
                 />
               </div>
-              {!isEmailValid && demoCallEmail && (
-              <p className="text-sm text-red-500">Please enter a valid email address</p>
-            )}
+              {!isWebsiteValid && demoCallWebsite && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm text-red-500">Please enter a valid website or Google Maps link</p>
+                  <p className="text-sm text-red-500">Example: https://yourcompany.com or https://maps.app.goo.gl/1234567890</p>
+                </div>
+              )}
             </div> */}
-          </div>
 
-          {/* Website Input */}
-          {/* <div className="space-y-2">
-            <Label htmlFor="company-website" className="text-sm font-medium">
-              Company Website or Google Maps Link
-            </Label>
-            <div className="relative">
-              <Link className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                id="company-website"
-                type="text"
-                placeholder="https://yourcompany.com"
-                className="pl-10"
-                value={demoCallWebsite}
-                onChange={(e) => setDemoCallWebsite(e.target.value)}
-              />
+            {/* Info Box */}
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-sm text-blue-800">
+              <p className="flex items-start">
+                <CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-blue-500" />
+                Our AI assistant will call you within seconds of clicking "Call Now"
+              </p>
             </div>
-            {!isWebsiteValid && demoCallWebsite && (
-              <div className="flex flex-col gap-2">
-                <p className="text-sm text-red-500">Please enter a valid website or Google Maps link</p>
-                <p className="text-sm text-red-500">Example: https://yourcompany.com or https://maps.app.goo.gl/1234567890</p>
-              </div>
-            )}
-          </div> */}
-
-          {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-sm text-blue-800">
-            <p className="flex items-start">
-              <CheckCircle className="h-4 w-4 mr-2 mt-0.5 text-blue-500" />
-              Our AI assistant will call you within seconds of clicking "Call Now"
-            </p>
-          </div>
-        </div>
-
-        <DialogFooter className="p-6 pt-0 flex justify-end gap-3">
+            <DialogFooter className="p-6 pt-0 flex justify-end gap-3">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
@@ -224,7 +223,17 @@ export function DemoCallDialog({
               "Call Now"
             )}
           </Button>
-        </DialogFooter>
+          </DialogFooter>
+          </div>
+
+          <div className="p-6 space-y-4 md:w-1/2">
+            <span className="text-sm font-medium">This Demo call is about a property inquiry</span>
+            <img src="/images/democall-image.png" alt="testimonial" width={400} height={400} />
+          </div>
+          
+        </div>
+
+
       </DialogContent>
     </Dialog>
   )
